@@ -10,10 +10,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS (via CDN for instant styling matching the guide) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Custom Brand Config -->
+    <!-- Custom Brand Config (Reiki Goddess Style) -->
     <script>
         tailwind.config = {
             theme: {
@@ -47,10 +47,10 @@
     </script>
 
     <style>
-        /* Custom Animations & Specific Style Guide Overrides */
+        /* Specific Style Guide Overrides */
         body {
-            background-color: #FFFBF5; /* Cream Background */
-            color: #5E5E5E; /* Body Regular */
+            background-color: #FFFBF5; 
+            color: #5E5E5E; 
             -webkit-font-smoothing: antialiased;
         }
 
@@ -60,12 +60,11 @@
             z-index: 10;
         }
         
-        /* The blue shadow block behind the card */
         .bevel-card-wrapper::before {
             content: '';
             position: absolute;
             top: 5px;
-            left: 5px; /* Offset for bevel */
+            left: 5px; 
             right: -5px;
             bottom: -5px;
             background-color: #0205B7;
@@ -96,7 +95,7 @@
             }
         }
 
-        /* Interactive Focus States */
+        /* Focus States */
         a:focus, button:focus {
             outline: 2px solid #0205B7;
             outline-offset: 2px;
@@ -105,13 +104,12 @@
 </head>
 <body class="min-h-screen flex items-center justify-center p-6 md:p-[66px]">
 
-    <!-- Main Container with Animation -->
+    <!-- Main Container -->
     <main class="w-full max-w-2xl animate-fade-up">
         
-        <!-- Logo Area (Optional placeholder based on guide spacing) -->
+        <!-- Logo Text -->
         <div class="text-center mb-8">
-            <!-- You can add your logo <img> here later -->
-            <h2 class="text-[#C4A962] font-bold text-xl tracking-wider uppercase">The Reiki Goddess Healing</h2>
+            <h2 class="text-[#C4A962] font-bold text-xl tracking-wider uppercase">The Hermetic Flight</h2>
         </div>
 
         <!-- The Bevel Card -->
@@ -138,7 +136,7 @@
                         that will be revealed on:
                     </p>
 
-                    <!-- Date Reveal Box (Styled like a mini feature) -->
+                    <!-- Date Reveal Box -->
                     <div class="bg-brand-cream border-2 border-brand-purple/20 rounded-card p-6 text-center shadow-sm">
                         <span class="block text-brand-blue font-bold text-2xl font-sans tracking-wide">
                             January 11, 2026
