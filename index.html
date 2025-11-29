@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You | The Reiki Goddess Healing</title>
+    
+    <!-- Typography: Figtree -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS (via CDN for instant styling matching the guide) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Brand Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#0205B7',
+                            cream: '#FFFBF5',
+                            purple: '#A593E0',
+                            peach: '#FFC6A5',
+                            cyan: '#63D5F9',
+                            dark: '#333333',
+                            gray: '#5E5E5E'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Figtree', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0px 42px 32.5px -13px rgba(2, 5, 183, 0.25)',
+                        'glow': '0 0 40px rgba(0, 0, 0, 0.1)',
+                        'blue-offset': '9px 10px 0px 0px #0205B7',
+                    },
+                    borderRadius: {
+                        'card': '20px',
+                        'pill': '100px',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Animations & Specific Style Guide Overrides */
+        body {
+            background-color: #FFFBF5; /* Cream Background */
+            color: #5E5E5E; /* Body Regular */
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* The Bevel Effect (Blue rectangle offset) */
+        .bevel-card-wrapper {
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* The blue shadow block behind the card */
+        .bevel-card-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px; /* Offset for bevel */
+            right: -5px;
+            bottom: -5px;
+            background-color: #0205B7;
+            border-radius: 20px;
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        /* The Gradient Divider */
+        .gradient-line {
+            height: 4px;
+            background: linear-gradient(90deg, #A593E0 0%, #FFC6A5 100%);
+            border-radius: 100px;
+            margin: 1.5rem 0;
+        }
+
+        /* Animation: Fade Up */
+        .animate-fade-up {
+            animation: fadeUp 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Interactive Focus States */
+        a:focus, button:focus {
+            outline: 2px solid #0205B7;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6 md:p-[66px]">
+
+    <!-- Main Container with Animation -->
+    <main class="w-full max-w-2xl animate-fade-up">
+        
+        <!-- Logo Area (Optional placeholder based on guide spacing) -->
+        <div class="text-center mb-8">
+            <!-- You can add your logo <img> here later -->
+            <h2 class="text-[#C4A962] font-bold text-xl tracking-wider uppercase">The Reiki Goddess Healing</h2>
+        </div>
+
+        <!-- The Bevel Card -->
+        <div class="bevel-card-wrapper">
+            <article class="bg-white rounded-card p-8 md:p-12 shadow-card relative border border-gray-100">
+                
+                <!-- Header -->
+                <h1 class="text-3xl md:text-4xl font-bold text-brand-dark mb-4 leading-tight">
+                    Your Journey Begins
+                </h1>
+                
+                <p class="text-lg text-brand-gray font-normal leading-relaxed mb-6">
+                    Thanks for completing our quiz. We are honored to guide you on this path.
+                </p>
+
+                <!-- Gradient Separator -->
+                <div class="gradient-line w-24"></div>
+
+                <!-- Main Content -->
+                <div class="space-y-6 mt-6">
+                    <p class="text-base md:text-lg leading-relaxed">
+                        As a subscriber, you'll receive an exclusive 
+                        <span class="text-brand-blue font-semibold">tarot reading with the first 5 cards</span> 
+                        that will be revealed on:
+                    </p>
+
+                    <!-- Date Reveal Box (Styled like a mini feature) -->
+                    <div class="bg-brand-cream border-2 border-brand-purple/20 rounded-card p-6 text-center shadow-sm">
+                        <span class="block text-brand-blue font-bold text-2xl font-sans tracking-wide">
+                            January 11, 2026
+                        </span>
+                        <span class="text-sm text-brand-gray mt-1 block">Mark your calendar for the reveal</span>
+                    </div>
+
+                    <p class="text-base md:text-lg leading-relaxed">
+                        You also have <span class="font-semibold text-brand-dark">early access to the Kickstarter</span>, 
+                        ensuring you can secure your print of the 
+                        <span class="text-brand-blue font-semibold">first 333 decks</span>!
+                    </p>
+
+                    <p class="text-sm text-brand-gray bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <strong>Beta Access:</strong> Your feedback helps shape our upcoming products. You have been granted beta access privileges.
+                    </p>
+                </div>
+
+                <!-- Footer / CTA -->
+                <div class="mt-10 pt-6 border-t border-gray-100 text-center">
+                    <p class="mb-6 text-brand-gray">
+                        Stay tuned for more updates from<br>
+                        <a href="mailto:contact@thehermeticflight.com" class="text-brand-blue hover:text-brand-purple font-medium transition-colors duration-300">
+                            contact@thehermeticflight.com
+                        </a>
+                    </p>
+
+                    <a href="https://www.thehermeticflight.com" 
+                       class="inline-block bg-brand-blue text-white px-8 py-3 rounded-pill font-medium text-base hover:shadow-[0_20px_40px_rgba(2,5,183,0.2)] hover:-translate-y-1 transition-all duration-300">
+                        Return Home
+                    </a>
+                </div>
+
+            </article>
+        </div>
+    </main>
+
+</body>
+</html>
