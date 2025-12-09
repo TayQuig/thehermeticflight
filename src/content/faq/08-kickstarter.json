@@ -1,0 +1,29 @@
+{
+    "title": "Kickstarter Campaign",
+    "questions": [
+      {
+        "q": "When does the Kickstarter launch?",
+        "a": "<p>January 11, 2026 - Mark your calendar! Sign up for our newsletter at thehermeticflight.com to receive launch notification and early-bird access.</p>"
+      },
+      {
+        "q": "What pledge levels will be available?",
+        "a": "<p>We're finalizing tiers, but expect:</p><ul><li>Early Bird Special - Deck + guidebook at reduced price (limited quantity)</li><li>Standard Pledge - Deck + comprehensive guidebook</li><li>Deluxe Edition - Includes premium packaging upgrades (may include gilded edges, fabric pouch, or other enhancements)</li><li>Professional Reader Bundle - Multiple decks at reduced per-deck pricing</li><li>Supporter/Collector Tiers - Signed editions, original photography prints, or other exclusive items</li></ul><p>Follow the campaign for official pricing and tier details.</p>"
+      },
+      {
+        "q": "What's your estimated delivery timeline?",
+        "a": "<p>We're committed to realistic timelines with buffer room. Current estimate: Q4 2026 (October-December 2026).</p><p>This timeline accounts for:</p><ul><li>Photography complete (already done!)</li><li>Graphic design and layout: Q1 2026</li><li>Proof review and revisions: Q2 2026</li><li>Printing and production: Q3 2026</li><li>Shipping and fulfillment: Q4 2026</li></ul><p>We'll provide monthly updates throughout the process. Delays can happen in printing/shipping, so we've built in cushion time rather than promising aggressive timelines we can't meet.</p>"
+      },
+      {
+        "q": "Will you ship internationally?",
+        "a": "<p>Yes! We plan to ship worldwide with appropriate customs declaration and tracking. International backers should expect:</p><ul><li>Additional shipping costs (calculated by region)</li><li>Potential customs duties (determined by your country, not by us)</li><li>Longer delivery windows for some regions</li></ul><p>We'll clearly communicate all costs before campaign launch so international backers can make informed decisions.</p>"
+      },
+      {
+        "q": "What if I can't afford to back right now?",
+        "a": "<p>We understand! The deck will be available for retail purchase after Kickstarter fulfillment, though likely at a higher price than campaign early-bird tiers. You can also:</p><ul><li>Follow free content on our blog and social media</li><li>Join our community Discord/Facebook group</li><li>Sign up for the newsletter for future sales and promotions</li></ul><p>The Kickstarter exclusive items (if any) will be clearly marked so you know what's limited vs. what will be available later.</p>"
+      },
+      {
+        "q": "Is this AI-generated art?",
+        "a": "<p>Absolutely not. Every image in The Hermetic Flight is human-created photography featuring real aerial performers. We believe tarot's power comes from authentic human experience and artistic intention—something AI cannot replicate.</p><p>All 21 performers were compensated fairly, credited in the guidebook, and retained rights to their images. This is a collaborative human creative project from start to finish.</p>"
+      }
+    ]
+  }

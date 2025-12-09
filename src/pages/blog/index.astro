@@ -1,0 +1,36 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import { getCollection } from 'astro:content';
+
+// Get all published blog posts and sort by date descending
+const posts = (await getCollection('blog', ({ data }) => {
+  // Filter out drafts in production mode
+  return import.meta.env.PROD ? data.draft !== true : true;
+})).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+---
+
+<Layout title="The Flight Log | The Hermetic Flight Blog">
+  <main class="relative z-10 pt-32 pb-20 px-6 sm:px-8 lg:px-12 max-w-7xl mx-auto">
+    <header class="text-center mb-16">
+      <h1 class="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">The Flight Log</h1>
+      <p class="text-lg text-indigo-200/80 max-w-2xl mx-auto leading-relaxed">
+        Exploring the intersection of aerial arts, symbolism, and the journey of creation.
+      </p>
+    </header>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+      {posts.map((post) => (
+        <BlogCard post={post} />
+      ))}
+    </section>
+    
+    {posts.length === 0 && (
+        <p class="text-center text-indigo-300 mt-10">No entries found yet. Check back soon.</p>
+    )}
+
+  </main>
+</Layout>
