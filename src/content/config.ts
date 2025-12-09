@@ -1,10 +1,11 @@
 // src/content/config.ts
 import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 
 // 1. Define the schema for Blog posts
 // This standard schema is highly compatible with external SEO tools like seobotai.
 const blogCollection = defineCollection({
-  type: 'content', // v5: 'content' for MDX/MD, 'data' for JSON/YAML
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/blog" }),
   schema: ({ image }) => z.object({
     title: z.string(),
     description: z.string(),
