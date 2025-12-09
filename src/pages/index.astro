@@ -1,21 +1,24 @@
+// src/pages/index.astro
+
 ---
 import Layout from '../layouts/Layout.astro';
-// import { Image } from 'astro:assets';
-// import logoImage from '/public/images/logo-full-white.png'; 
+import { Image } from 'astro:assets';
+// Assuming your logo file is here based on previous context, update path if incorrect
+import logoImage from '/public/images/logo-full-white.png'; 
 ---
 
-<Layout docTitle="Home">
+<Layout title="Home">
 	<!-- Added pt-28 to accommodate the fixed header -->
 	<main class="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 sm:px-8 lg:px-12 text-center pt-28 pb-20">
 		
 		<!-- Main Logo/Hero Section -->
 		<div class="mb-12 relative group">
 			<div class="absolute -inset-1 bg-gradient-to-r from-indigo-500/30 to-amber-500/30 rounded-full blur-xl opacity-75 group-hover:opacity-100 transition duration-1000 animate-pulse-slow"></div>
-			<img 
-				src="/images/logo-full-white.png" 
+			<Image 
+				src={logoImage} 
 				alt="The Hermetic Flight Aerial Tarot Deck Logo" 
-				width="600" 
-				height="400" 
+				width={600} 
+				height={400} 
 				class="relative w-full max-w-md md:max-w-xl h-auto drop-shadow-[0_0_25px_rgba(99,102,241,0.3)]"
 				loading="eager"
 			/>
@@ -54,4 +57,3 @@ import Layout from '../layouts/Layout.astro';
 		</div>
 	</main>
 </Layout>
-
