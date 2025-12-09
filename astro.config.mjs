@@ -1,10 +1,9 @@
 import { defineConfig } from 'astro/config';
 import tailwind from "@astrojs/tailwind";
-
-import sitemap from '@astrojs/sitemap';
+import sitemap from "@astrojs/sitemap"; // <--- 1. Import the library
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://www.thehermeticflight.com', 
-  integrations: [tailwind(), sitemap()]
+  site: 'https://www.thehermeticflight.com', // <--- 2. Define your domain (Required)
+  integrations: [tailwind(), sitemap()] // <--- 3. Activate the plugin
 });
