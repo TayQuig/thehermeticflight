@@ -1,0 +1,114 @@
+---
+interface Props {
+	title: string;
+	description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<!-- Google Analytics -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-R24GW4SCEY"></script>
+		<script is:inline>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+			gtag('config', 'G-R24GW4SCEY');
+		</script>
+
+		<meta charset="UTF-8" />
+		<meta name="description" content={description} />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+		<meta name="generator" content={Astro.generator} />
+		
+		<!-- Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+		<title>{title}</title>
+		
+		<!-- Global Slots for Head (like Schema) -->
+		<slot name="head" />
+	</head>
+	<body class="bg-black text-hermetic-white font-sans min-h-screen relative overflow-x-hidden selection:bg-hermetic-sulfur selection:text-black">
+		
+		<!-- GLOBAL BACKGROUND LAYERS -->
+		<div class="stars"></div>
+		<div class="fog-layer"></div>
+		<div class="noise-overlay"></div>
+		<div class="fixed top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-hermetic-gold/30 to-transparent -translate-x-1/2 z-0"></div>
+
+		<!-- PAGE CONTENT -->
+		<slot />
+		
+	</body>
+</html>
+
+<style is:global>
+	/* Global Styles for Backgrounds */
+	.stars {
+		position: fixed; top: 0; left: 0; width: 100%; height: 200%;
+		background: radial-gradient(1px 1px at 50px 200px, #C5A059, transparent),
+					radial-gradient(1px 1px at 200px 100px, #ffffff, transparent),
+					radial-gradient(2px 2px at 300px 300px, #C5A059, transparent);
+		background-size: 550px 550px;
+		opacity: 0.3;
+		animation: star-float 100s linear infinite;
+		z-index: -2;
+	}
+
+	.fog-layer {
+		position: fixed; inset: 0;
+		background: radial-gradient(circle at 50% 50%, rgba(5, 79, 46, 0.1), transparent 70%);
+		mix-blend-mode: screen;
+		z-index: -1;
+		animation: pulse-fog 10s ease-in-out infinite alternate;
+	}
+
+	.noise-overlay {
+		position: fixed; inset: 0;
+		background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+		opacity: 0.08;
+		pointer-events: none;
+		z-index: 50; 
+	}
+
+	/* Glassmorphism Utility */
+	.glass-panel {
+		background: rgba(1, 53, 41, 0.4);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		border: 1px solid rgba(197, 160, 89, 0.2);
+		box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 20px rgba(5, 79, 46, 0.2);
+		position: relative;
+		overflow: hidden;
+	}
+	.glass-panel::before {
+		content: ''; position: absolute; top: 0; left: -50%; width: 200%; height: 100%;
+		background: linear-gradient(to right, transparent, rgba(255,255,255,0.03), transparent);
+		transform: skewX(-25deg);
+		pointer-events: none;
+	}
+
+	/* Flame Button Utility */
+	.btn-flame {
+		background: linear-gradient(90deg, #E88624 0%, #D67618 100%);
+		border-radius: 9999px;
+		transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+		position: relative; overflow: hidden;
+	}
+	.btn-flame:hover {
+		box-shadow: 0 0 40px rgba(232, 134, 36, 0.8);
+		transform: scale(1.05) translateY(-2px);
+	}
+	
+	/* Scroll Reveal Utilities */
+	.reveal-up { opacity: 0; transform: translateY(40px); transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
+	.reveal-visible { opacity: 1; transform: translateY(0); }
+</style>
