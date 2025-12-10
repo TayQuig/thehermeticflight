@@ -2,9 +2,9 @@
 
 ---
 import '../styles/global.css';
-// Import directly as the filename, no aliases
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
+// CHANGE: Imports are now lowercase to match the new filenames created by git mv
+import Header from '../components/header.astro';
+import Footer from '../components/footer.astro';
 
 interface Props {
 	title?: string;
@@ -50,14 +50,12 @@ const { title } = Astro.props;
 			<div class="absolute inset-0 bg-[url('/images/fog-overlay.png')] bg-cover bg-center opacity-30 animate-drift mix-blend-screen"></div>
 		</div>
 
-		<!-- Use the simplified tag name -->
 		<Header />
 
 		<main class="flex-grow relative z-10">
 			<slot />
 		</main>
 
-		<!-- Use the simplified tag name -->
 		<Footer />
 	</body>
 </html>
