@@ -2,7 +2,7 @@
 
 ---
 import '../styles/global.css';
-// CHANGE 1: Import directly as the filename, not an alias
+// Import directly as the filename, no aliases
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 
@@ -50,76 +50,14 @@ const { title } = Astro.props;
 			<div class="absolute inset-0 bg-[url('/images/fog-overlay.png')] bg-cover bg-center opacity-30 animate-drift mix-blend-screen"></div>
 		</div>
 
-		<!-- CHANGE 2: Use the simplified tag name -->
+		<!-- Use the simplified tag name -->
 		<Header />
 
 		<main class="flex-grow relative z-10">
 			<slot />
 		</main>
 
-		<!-- CHANGE 3: Use the simplified tag name -->
-		<Footer />
-	</body>
-</html>// src/layouts/Layout.astro
-
----
-import '../styles/global.css';
-// CHANGE 1: Import directly as the filename, not an alias
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-
-interface Props {
-	title?: string;
-}
-
-const { title } = Astro.props;
----
-
-<!doctype html>
-<html lang="en" class="scroll-smooth">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="The Hermetic Flight: An Aerial Tarot Deck combining traditional tarot symbolism with professional aerial arts photography." />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="sitemap" href="/sitemap-index.xml" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{Astro.props.title ? `${Astro.props.title} | The Hermetic Flight` : "The Hermetic Flight"}</title>
-		
-		<!-- Fonts -->
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-
-		<!-- Google Tag Manager -->
-		<script is:inline>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-		new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-		j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-		'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-		})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
-		<!-- End Google Tag Manager -->
-	</head>
-	<body class="bg-[#0a0a12] text-indigo-100 font-serif overflow-x-hidden min-h-screen flex flex-col">
-		<!-- Google Tag Manager (noscript) -->
-		<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
-		height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-		<!-- End Google Tag Manager (noscript) -->
-		
-		<div class="fixed inset-0 z-0 pointer-events-none">
-			<div class="absolute inset-0 bg-[url('/images/stars-bg.png')] bg-repeat opacity-60 animate-twinkle"></div>
-			<div class="absolute inset-0 bg-gradient-radial from-indigo-950/30 via-[#0a0a12]/80 to-[#0a0a12]"></div>
-			<div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[#0a0a12] via-[#0a0a12]/50 to-transparent"></div>
-			<div class="absolute inset-0 bg-[url('/images/fog-overlay.png')] bg-cover bg-center opacity-30 animate-drift mix-blend-screen"></div>
-		</div>
-
-		<!-- CHANGE 2: Use the simplified tag name -->
-		<Header />
-
-		<main class="flex-grow relative z-10">
-			<slot />
-		</main>
-
-		<!-- CHANGE 3: Use the simplified tag name -->
+		<!-- Use the simplified tag name -->
 		<Footer />
 	</body>
 </html>
