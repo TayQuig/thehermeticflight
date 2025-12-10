@@ -1,10 +1,10 @@
 /* empty css                                  */
 import { c as createAstro, a as createComponent, m as maybeRenderHead, u as unescapeHTML, d as renderTemplate, r as renderComponent } from '../chunks/astro/server_EKTnqeOm.mjs';
 import 'piccolore';
-import { $ as $$Layout } from '../chunks/Layout_D9ms0Y64.mjs';
+import { $ as $$Layout } from '../chunks/Layout_CeRGXfYN.mjs';
 import 'clsx';
 /* empty css                               */
-import { g as getCollection } from '../chunks/_astro_content_lFdXSVev.mjs';
+import { g as getCollection } from '../chunks/_astro_content_B6aE7jDv.mjs';
 export { renderers } from '../renderers.mjs';
 
 const $$Astro = createAstro("https://www.thehermeticflight.com");

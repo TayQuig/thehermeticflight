@@ -16,18 +16,18 @@ const $$Layout = createComponent(($$result, $$props, $$slots) => {
 		'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 		})(window,document,'script','dataLayer','GTM-XXXXXXX');<\/script>
 import '../styles/global.css';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
+// CHANGE: Imports are now lowercase to match the new filenames created by git mv
+import Header from '../components/header.astro';
+import Footer from '../components/footer.astro';
 
 interface Props {
 	title?: string;
 }
 
 const { title } = Astro.props;
-<meta charset="UTF-8"> <meta name="description" content="The Hermetic Flight: An Aerial Tarot Deck combining traditional tarot symbolism with professional aerial arts photography."> <meta name="viewport" content="width=device-width"> <link rel="icon" type="image/svg+xml" href="/favicon.svg"> <link rel="sitemap" href="/sitemap-index.xml"> <meta name="generator"`, "> <title>", "\n		\n		<!-- Fonts -->\n		\n		\n		\n\n		<!-- Google Tag Manager -->\n		\n		<!-- End Google Tag Manager -->\n	\n	<!-- Added flex and min-h-screen for sticky footer layout -->\n	\n		<!-- Google Tag Manager (noscript) -->\n		", `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<meta charset="UTF-8"> <meta name="description" content="The Hermetic Flight: An Aerial Tarot Deck combining traditional tarot symbolism with professional aerial arts photography."> <meta name="viewport" content="width=device-width"> <link rel="icon" type="image/svg+xml" href="/favicon.svg"> <link rel="sitemap" href="/sitemap-index.xml"> <meta name="generator"`, "> <title>", "\n		\n		<!-- Fonts -->\n		\n		\n		\n\n		<!-- Google Tag Manager -->\n		\n		<!-- End Google Tag Manager -->\n	\n	\n		<!-- Google Tag Manager (noscript) -->\n		", `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 		<!-- End Google Tag Manager (noscript) -->
 		
-		<!-- Fixed Background Layer - Kept as is -->
 		<div class="fixed inset-0 z-0 pointer-events-none">
 			<div class="absolute inset-0 bg-[url('/images/stars-bg.png')] bg-repeat opacity-60 animate-twinkle"></div>
 			<div class="absolute inset-0 bg-gradient-radial from-indigo-950/30 via-[#0a0a12]/80 to-[#0a0a12]"></div>
@@ -35,8 +35,7 @@ const { title } = Astro.props;
 			<div class="absolute inset-0 bg-[url('/images/fog-overlay.png')] bg-cover bg-center opacity-30 animate-drift mix-blend-screen"></div>
 		</div>
 
-		<!-- Header added here -->
-		`, '\n\n		<!-- Main content wrapper to push footer down -->\n		<main class="flex-grow relative z-10">\n			', "\n		</main>\n\n		<!-- Footer added here -->\n		", "\n	\n</title>"])), addAttribute(Astro2.generator, "content"), Astro2.props.title ? `${Astro2.props.title} | The Hermetic Flight` : "The Hermetic Flight", maybeRenderHead(), renderComponent($$result, "Header", Header, {}), renderSlot($$result, $$slots["default"]), renderComponent($$result, "Footer", Footer, {}));
+		`, '\n\n		<main class="flex-grow relative z-10">\n			', "\n		</main>\n\n		", "\n	\n</title>"])), addAttribute(Astro2.generator, "content"), Astro2.props.title ? `${Astro2.props.title} | The Hermetic Flight` : "The Hermetic Flight", maybeRenderHead(), renderComponent($$result, "Header", Header, {}), renderSlot($$result, $$slots["default"]), renderComponent($$result, "Footer", Footer, {}));
 }, "/Users/taylorquigley/Documents/Directories/thehermeticflight/src/layouts/Layout.astro", void 0);
 
 export { $$Layout as $ };

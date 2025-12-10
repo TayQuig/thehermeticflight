@@ -1,9 +1,9 @@
 /* empty css                                  */
 import { c as createAstro, a as createComponent, m as maybeRenderHead, b as addAttribute, r as renderComponent, d as renderTemplate } from '../chunks/astro/server_EKTnqeOm.mjs';
 import 'piccolore';
-import { $ as $$Layout } from '../chunks/Layout_D9ms0Y64.mjs';
-import { $ as $$Image } from '../chunks/_astro_assets_D4ef42Tp.mjs';
-import { g as getCollection } from '../chunks/_astro_content_lFdXSVev.mjs';
+import { $ as $$Layout } from '../chunks/Layout_CeRGXfYN.mjs';
+import { $ as $$Image } from '../chunks/_astro_assets_w1CU3Cd8.mjs';
+import { g as getCollection } from '../chunks/_astro_content_B6aE7jDv.mjs';
 export { renderers } from '../renderers.mjs';
 
 const $$Astro = createAstro("https://www.thehermeticflight.com");
