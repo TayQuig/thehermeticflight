@@ -1,0 +1,48 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AccordionItem from '../components/AccordionItem.astro';
+import { getCollection } from 'astro:content';
+
+// Fetch all JSON files from the 'faq' directory
+// They will be sorted alphabetically by filename (e.g. 01-about, 02-beginners)
+const faqCategories = await getCollection('faq');
+---
+
+<Layout title="FAQ | The Hermetic Flight">
+  <main class="relative z-10 pt-32 pb-20 px-6 sm:px-8 lg:px-12 max-w-4xl mx-auto">
+    <header class="text-center mb-16">
+      <h1 class="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">Frequently Asked Questions</h1>
+      <p class="text-lg text-indigo-200/80 max-w-2xl mx-auto leading-relaxed">
+        Everything you need to know about The Hermetic Flight Aerial Tarot Deck, our methodology, and the upcoming Kickstarter.
+      </p>
+    </header>
+
+    <div class="space-y-16">
+      <!-- Loop through each category file found in src/content/faq/ -->
+      {faqCategories.map((category) => (
+        <section>
+          <h2 class="text-2xl font-semibold text-amber-200/90 mb-6 pb-2 border-b border-white/10">
+            {category.data.title}
+          </h2>
+          <div class="divide-y divide-white/5">
+            <!-- Loop through questions inside that category -->
+            {category.data.questions.map((qa) => (
+              <AccordionItem question={qa.q} answer={qa.a} />
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+    
+    <!-- Final call to action block from your text -->
+     <div class="mt-20 p-8 bg-indigo-950/30 border border-white/10 rounded-lg text-center">
+        <h3 class="text-2xl text-white font-semibold mb-4">Still Have Questions?</h3>
+         <p class="text-indigo-200 mb-6">
+            Connect with us on social media at <a href="https://instagram.com/thehermeticflight" class="text-amber-200 hover:underline">@thehermeticflight</a> or join our newsletter for direct updates.
+         </p>
+         <p class="italic text-indigo-300/70 font-serif">
+            "Between earth and sky, between question and answer, we find our truth in suspension."
+         </p>
+     </div>
+  </main>
+</Layout>

@@ -1,0 +1,82 @@
+---
+const navItems = [
+  { href: '/', label: 'Home' },
+  { href: '/faq', label: 'FAQ' },
+  { href: '/blog', label: 'Flight Log' },
+];
+---
+
+<header class="fixed top-0 left-0 z-50 w-full border-b border-white/10 bg-black/30 backdrop-blur-md transition-all duration-300" id="main-header">
+  <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+    <nav class="flex items-center justify-between h-16 md:h-20">
+      
+      <!-- Logo / Home Link -->
+      <div class="flex-shrink-0">
+        <a href="/" class="text-xl font-bold tracking-wider text-white hover:text-amber-200 transition-colors uppercase">
+          The Hermetic Flight
+        </a>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden md:block">
+        <ul class="flex items-center space-x-8">
+          {navItems.map(item => (
+            <li>
+              <a href={item.href} class="text-sm font-medium text-indigo-100 hover:text-amber-200 transition-colors relative group py-2">
+                {item.label}
+                <!-- Subtle underline glow effect on hover -->
+                <span class="absolute inset-x-0 bottom-0 h-0.5 bg-amber-200/70 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
+              </a>
+            </li>
+          ))}
+          <!-- Future Kickstarter CTA Button placeholder -->
+          <!-- <li><a href="#" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded text-sm font-bold transition">Notify Me</a></li> -->
+        </ul>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden">
+        <button id="mobile-menu-button" type="button" class="text-indigo-100 hover:text-amber-200 focus:outline-none" aria-controls="mobile-menu" aria-expanded="false">
+          <span class="sr-only">Open main menu</span>
+          <!-- Hamburger icon -->
+          <svg id="menu-icon-open" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+          <!-- Close icon (hidden by default) -->
+          <svg id="menu-icon-close" class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Mobile Menu Panel (Hidden by default) -->
+  <div class="md:hidden hidden bg-indigo-950/95 border-b border-white/10 backdrop-blur-xl absolute w-full left-0 top-16" id="mobile-menu">
+    <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+      {navItems.map(item => (
+        <a href={item.href} class="block px-3 py-4 text-base font-medium text-indigo-100 hover:text-amber-200 hover:bg-white/5 rounded-md transition">
+          {item.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</header>
+
+<script>
+  // Simple script to toggle mobile menu
+  const menuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const iconOpen = document.getElementById('menu-icon-open');
+  const iconClose = document.getElementById('menu-icon-close');
+
+  if (menuButton && mobileMenu && iconOpen && iconClose) {
+    menuButton.addEventListener('click', () => {
+      const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
+      menuButton.setAttribute('aria-expanded', !isExpanded ? 'true' : 'false');
+      mobileMenu.classList.toggle('hidden');
+      iconOpen.classList.toggle('hidden');
+      iconClose.classList.toggle('hidden');
+    });
+  }
+</script>
