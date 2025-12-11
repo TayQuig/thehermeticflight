@@ -1,0 +1,37 @@
+---
+const navItems = [
+  { href: '/', label: 'Home' },
+  { href: '/faq', label: 'FAQ' },
+  { href: '/blog', label: 'Flight Log' },
+];
+---
+
+<header class="fixed top-0 left-0 z-50 w-full border-b border-hermetic-gold/10 bg-black/50 backdrop-blur-md transition-all duration-500">
+  <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 h-20 flex items-center justify-between">
+    
+    <!-- Logo -->
+    <a href="/" class="text-xl md:text-2xl font-serif font-bold tracking-widest text-hermetic-gold hover:text-hermetic-sulfur transition-colors drop-shadow-[0_0_10px_rgba(197,160,89,0.3)]">
+      The Hermetic Flight
+    </a>
+
+    <!-- Desktop Nav -->
+    <nav class="hidden md:block">
+      <ul class="flex items-center space-x-10">
+        {navItems.map(item => (
+          <li>
+            <a href={item.href} class="font-serif text-sm tracking-widest text-hermetic-white hover:text-hermetic-gold transition-all duration-300 relative group py-2 uppercase">
+              {item.label}
+              <span class="absolute inset-x-0 bottom-0 h-px bg-hermetic-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out"></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <!-- Mobile Menu Button -->
+    <div class="md:hidden">
+      <a href="#footer-nav" class="text-hermetic-gold font-serif text-sm tracking-widest uppercase">Menu</a>
+    </div>
+  </div>
+</header>
+

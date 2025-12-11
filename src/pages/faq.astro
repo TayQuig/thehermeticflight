@@ -1,0 +1,77 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import AccordionItem from '../components/AccordionItem.astro';
+import { getCollection } from 'astro:content';
+
+const faqCategories = await getCollection('faq');
+---
+
+<Layout 
+  title="FAQ | The Hermetic Flight"
+  description="Frequently asked questions about The Hermetic Flight Aerial Tarot Deck."
+>
+  <Header />
+  
+  <main class="relative z-10 pt-32 pb-20 px-6 sm:px-8 lg:px-12 max-w-4xl mx-auto">
+    
+    <!-- Page Header -->
+    <header class="text-center mb-16 reveal-up">
+      <p class="font-serif text-hermetic-sulfur text-sm tracking-[0.2em] uppercase mb-4 font-bold">
+        Questions & Answers
+      </p>
+      <h1 class="font-serif text-4xl md:text-5xl text-white mb-6">
+        Frequently Asked <span class="text-hermetic-gold">Questions</span>
+      </h1>
+      <p class="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
+        Everything you need to know about The Hermetic Flight Aerial Tarot Deck, our methodology, and the upcoming Kickstarter.
+      </p>
+    </header>
+
+    <!-- FAQ Categories -->
+    <div class="space-y-12">
+      {faqCategories.map((category) => (
+        <section class="glass-panel rounded-2xl p-8 reveal-up">
+          <h2 class="text-2xl font-serif text-hermetic-gold mb-6 pb-3 border-b border-hermetic-gold/20">
+            {category.data.title}
+          </h2>
+          <div class="divide-y divide-hermetic-gold/10">
+            {category.data.questions.map((qa) => (
+              <AccordionItem question={qa.q} answer={qa.a} />
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+    
+    <!-- Final CTA Block -->
+    <div class="mt-20 glass-panel rounded-2xl p-10 text-center reveal-up border-hermetic-sulfur/30">
+      <div class="absolute -right-20 -top-20 w-64 h-64 bg-hermetic-sulfur/10 blur-[80px] rounded-full pointer-events-none"></div>
+      <h3 class="text-2xl text-white font-serif mb-4">Still Have Questions?</h3>
+      <p class="text-gray-300 mb-6">
+        Connect with us on social media at 
+        <a href="https://instagram.com/thehermeticflight" class="text-hermetic-sulfur hover:text-hermetic-gold transition-colors">@thehermeticflight</a> 
+        or join our newsletter for direct updates.
+      </p>
+      <p class="italic text-hermetic-gold/60 font-serif text-lg">
+        "Between earth and sky, between question and answer, we find our truth in suspension."
+      </p>
+    </div>
+  </main>
+
+  <Footer />
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal-visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal-up').forEach((el) => observer.observe(el));
+  </script>
+</Layout>
+

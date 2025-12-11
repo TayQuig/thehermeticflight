@@ -1,0 +1,43 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer id="footer-nav" class="relative z-10 border-t border-hermetic-gold/20 bg-hermetic-void pt-16 pb-8 px-6 text-center md:text-left">
+    
+    <!-- Gold Halo Top Glow -->
+    <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-hermetic-gold/40 to-transparent"></div>
+
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+        <!-- Brand -->
+        <div>
+            <h3 class="font-serif font-bold text-xl text-hermetic-gold mb-4 tracking-widest uppercase">The Hermetic Flight</h3>
+            <p class="font-sans text-lg text-gray-400 leading-relaxed">
+                Where symbolism meets suspension.<br>
+                <span class="text-hermetic-sulfur italic font-serif">"As above, so below."</span>
+            </p>
+        </div>
+
+        <!-- Navigation -->
+        <div>
+            <h4 class="font-serif font-bold text-sm text-hermetic-gold/60 mb-6 uppercase tracking-widest">Navigation</h4>
+            <ul class="space-y-3 font-sans text-base text-gray-300">
+                <li><a href="/" class="hover:text-hermetic-sulfur transition-colors">Home</a></li>
+                <li><a href="/faq" class="hover:text-hermetic-sulfur transition-colors">FAQ</a></li>
+                <li><a href="/blog" class="hover:text-hermetic-sulfur transition-colors">Flight Log</a></li>
+            </ul>
+        </div>
+
+        <!-- Connect -->
+        <div>
+            <h4 class="font-serif font-bold text-sm text-hermetic-gold/60 mb-6 uppercase tracking-widest">Connect</h4>
+            <a href="https://instagram.com/thehermeticflight" target="_blank" rel="noopener" class="text-hermetic-gold hover:text-hermetic-sulfur transition-colors font-serif tracking-wider text-sm">
+                @thehermeticflight
+            </a>
+        </div>
+    </div>
+    
+    <div class="text-xs font-sans text-gray-500 border-t border-hermetic-gold/10 pt-8 text-center tracking-wide">
+        &copy; {year} The Hermetic Flight. All rights reserved.
+    </div>
+</footer>
+
