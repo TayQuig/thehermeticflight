@@ -1,60 +1,73 @@
 ---
 name: "Phase 2: Style Unification Plan"
-overview: "Execute Phase 2: Unify the styling by applying the 'main' branch aesthetic (Hermetic Design System) to the 'fresh-start-faq-blog' functional structure."
+overview: Integrate SEOBotAI by setting up a Vercel-hosted webhook that automatically commits new blog posts to the repository.
 todos:
-  - id: restore-css
-    content: Restore global CSS from main into src/styles/global.css
-    status: pending
-  - id: fix-layout
-    content: Update Layout.astro to use hermetic colors and background layers
-    status: pending
+  - id: create-branch
+    content: Create feature branch feature/seobot-integration
+    status: completed
+  - id: install-deps
+    content: Install @astrojs/vercel, octokit, and slugify
+    status: completed
     dependencies:
-      - restore-css
-  - id: refactor-components
-    content: Refactor Header and Footer components to use hermetic tokens
-    status: pending
+      - create-branch
+  - id: config-astro
+    content: Configure Astro for Vercel hybrid output
+    status: completed
     dependencies:
-      - fix-layout
-  - id: fix-index
-    content: Update Index page to remove indigo/amber and use hermetic design
-    status: pending
+      - install-deps
+  - id: implement-webhook
+    content: Implement webhook endpoint at src/pages/api/webhooks/seobot.ts
+    status: completed
     dependencies:
-      - fix-layout
+      - config-astro
+  - id: test-webhook
+    content: Create a test script/instruction for the user to verify
+    status: completed
+    dependencies:
+      - implement-webhook
 ---
 
-# Phase 2: Style Unification Plan
+# Phase 4: SEOBot Integration
 
 ## Objective
 
-Merge the superior content structure of `fresh-start-faq-blog` with the established design system of `main`.
+Enable automatic publishing from SEOBotAI to the Astro blog by creating a secure webhook that commits received content directly to the GitHub repository as `.mdx` files.
 
-## 1. Restore Global Styles
+## 1. Environment Setup
 
-- **Action**: Migrate the inline `<style is:global>` from `main:src/layouts/Layout.astro` into `src/styles/global.css` on the feature branch.
-- **Files**: `src/styles/global.css`
-- **Details**: Restore `.stars`, `.fog-layer`, `.noise-overlay`, `.glass-panel`, `.btn-flame`.
+- **Branch**: Create `feature/seobot-integration` from `main`.
+- **Dependencies**: Install:
+- `@astrojs/vercel`: For server-side hosting on Vercel.
+- `@octokit/rest` (or `octokit`): To interact with the GitHub API for file creation.
+- `slugify`: To generate clean filenames from titles.
 
-## 2. Fix Layout & Configuration
+## 2. Configuration Updates
 
-- **Action**: Update `tailwind.config.mjs` if necessary (verify `font-cinzel` needs definition or replacement).
-- **Action**: Update `src/layouts/Layout.astro` in feature branch:
-- Replace `bg-[#0a0a12] `with `bg-hermetic-void`.
-- Replace `text-indigo-100` with `text-hermetic-white`.
-- Re-integrate the background layer `div`s (stars, fog, noise) from `main`.
+- **Astro Config**: Update `astro.config.mjs`:
+- Set `output: 'hybrid'` (allows static pages + dynamic API routes).
+- Add `vercel()` adapter.
+- **Environment Variables** (User Action Required later):
+- `GITHUB_TOKEN`: PAT with repo write access.
+- `SEOBOT_API_SECRET`: Secret token for webhook verification.
+- `GITHUB_OWNER`: `TayQuig`
+- `GITHUB_REPO`: `thehermeticflight`
 
-## 3. Refactor Components to Hermetic Theme
+## 3. Webhook Implementation
 
-- **Header (`src/components/header.astro`)**:
-- Replace `text-indigo-100` with `text-hermetic-white`.
-- Replace `font-cinzel` with `font-serif`.
-- **Footer (`src/components/footer.astro`)**:
-- Replace `text-indigo-*` with `text-hermetic-white/60`.
-- **Index Page (`src/pages/index.astro`)**:
-- Replace `indigo`/`amber` gradients with `hermetic-gold`/`hermetic-sulfur` gradients.
-- Replace hardcoded hex shadows with `shadow-gold-halo` or `shadow-flame-glow`.
-- Replace `font-cinzel` with `font-serif`.
+- **File**: Create `src/pages/api/webhooks/seobot.ts`
+- **Logic**:
 
-## 4. Verification
+1.  **Validate**: Check `Authorization` header against `SEOBOT_API_SECRET`.
+2.  **Parse**: valid JSON payload from SEOBot (title, body, description, image, tags).
+3.  **Transform**: Convert HTML content to Markdown/MDX (if needed) or wrap plain markdown.
+4.  **Commit**: Use Octokit to `createOrUpdateFileContents` at `src/content/blog/[slug].mdx`.
+5.  **Respond**: Return 200 OK to SEOBot.
 
-- Use `astro build` to ensure no CSS errors.
-- Visual check (if possible) or code review to ensure no `indigo` or `amber` classes remain.
+## 4. Testing
+
+- **Local Test**: Use a mock script to POST to the local endpoint.
+- **Deployment**: User merges to main and deploys to Vercel.
+
+## 5. Documentation
+
+- Provide instructions on where to paste the webhook URL in SEOBotAI dashboard.
