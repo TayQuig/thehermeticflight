@@ -1,5 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 ---
 
 <Layout 
@@ -23,8 +25,10 @@ import Layout from '../layouts/Layout.astro';
 	}
 	</script>
 
+    <Header />
+
 	<!-- Main Content -->
-	<div class="relative z-10 max-w-5xl mx-auto px-6 pt-20 pb-24 flex flex-col items-center">
+	<div class="relative z-10 max-w-5xl mx-auto px-6 pt-32 pb-24 flex flex-col items-center">
         
 		<header class="text-center mb-20 animate-levitate-slow relative">
 			<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-hermetic-gold/20 blur-[60px] rounded-full -z-10"></div>
@@ -127,12 +131,10 @@ import Layout from '../layouts/Layout.astro';
 				Start The Quiz
 				<svg class="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
 			</a>
-			
-			<footer class="mt-16 text-xs text-hermetic-gold/30 font-serif tracking-widest uppercase">
-				The Hermetic Flight &copy; 2026
-			</footer>
 		</div>
 	</div>
+
+    <Footer />
 
 	<!-- Client-side script for animations -->
 	<script>
