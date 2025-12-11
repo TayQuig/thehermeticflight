@@ -27,7 +27,7 @@ import Footer from '../components/Footer.astro';
 
     <Header />
 
-	<!-- Main Content -->
+	<!-- HERO SECTION -->
 	<div class="relative z-10 max-w-5xl mx-auto px-6 pt-32 pb-24 flex flex-col items-center">
         
 		<header class="text-center mb-20 animate-levitate-slow relative">
@@ -49,12 +49,338 @@ import Footer from '../components/Footer.astro';
 				The Hermetic Flight is the world's first <strong class="text-hermetic-sulfur font-normal">aerial tarot deck</strong>—78 cards featuring 21 real aerial performers embodying the archetypes of tarot through movement.
 			</p>
 			<p class="text-base text-gray-400 font-light leading-relaxed border-l-2 border-hermetic-gold/30 pl-6 mx-auto max-w-2xl text-left">
-				"If you've ever wanted to experience divination as something you feel in your body, not just contemplate in your mind, this deck is for you."
+				"Between earth and sky, in that suspended moment where gravity releases its hold, we find the same liminal space that tarot divination has always occupied."
 			</p>
 		</section>
 	</div>
 
-	<!-- SECTION 2: LAUNCH TRAJECTORY -->
+	<!-- NEW SECTION: THE PROBLEM -->
+	<div class="relative w-full bg-gradient-to-b from-hermetic-void via-hermetic-emerald/20 to-hermetic-void border-y border-hermetic-gold/10 backdrop-blur-sm z-10">
+		<div class="max-w-5xl mx-auto px-6 py-20 md:py-28">
+			
+			<div class="text-center mb-20 reveal-up">
+				<p class="font-serif text-hermetic-sulfur/60 text-sm tracking-[0.3em] uppercase mb-4">Five Years of Research</p>
+				<h3 class="font-serif text-3xl md:text-4xl text-white mb-6 leading-tight">The Tarot Community Has Been<br><span class="text-hermetic-gold italic">Vocal About These Frustrations</span></h3>
+				<p class="text-gray-300 max-w-2xl mx-auto text-lg font-light leading-relaxed">
+					After documenting thousands of discussions across Reddit, forums, and tarot communities, five consistent pain points emerged. <span class="text-white">We listened.</span>
+				</p>
+			</div>
+
+			<!-- Pain Point Grid -->
+			<div class="grid md:grid-cols-2 gap-6 mb-16">
+				
+				<!-- Pain 1: Overwhelm -->
+				<div class="glass-panel p-8 rounded-xl reveal-up border-l-2 border-hermetic-gold/40 hover:border-hermetic-gold transition duration-500">
+					<div class="flex items-start gap-4 mb-4">
+						<div class="flex-shrink-0 w-10 h-10 rounded-full bg-hermetic-void border border-hermetic-gold/50 flex items-center justify-center text-hermetic-gold text-xl font-serif">1</div>
+						<h4 class="font-serif text-xl text-hermetic-gold mt-1">"78 Cards Is Overwhelming"</h4>
+					</div>
+					<p class="text-gray-300 font-light leading-relaxed text-sm mb-4">
+						Beginners report memorization anxiety as the #1 barrier to starting tarot. They abandon practice before gaining confidence, believing they need to memorize keywords before pulling their first card.
+					</p>
+					<p class="text-gray-400 italic text-xs border-l-2 border-hermetic-gold/20 pl-3">
+						"78 cards to memorize? That's insane... I keep quitting before I even start." — Reddit user
+					</p>
+				</div>
+
+				<!-- Pain 2: Court Cards -->
+				<div class="glass-panel p-8 rounded-xl reveal-up border-l-2 border-hermetic-gold/40 hover:border-hermetic-gold transition duration-500">
+					<div class="flex items-start gap-4 mb-4">
+						<div class="flex-shrink-0 w-10 h-10 rounded-full bg-hermetic-void border border-hermetic-gold/50 flex items-center justify-center text-hermetic-gold text-xl font-serif">2</div>
+						<h4 class="font-serif text-xl text-hermetic-gold mt-1">"Court Cards Confuse Everyone"</h4>
+					</div>
+					<p class="text-gray-300 font-light leading-relaxed text-sm mb-4">
+						Even experienced readers struggle with the 16 court cards. Traditional decks show similar-looking figures with crowns—Pages, Knights, Queens, and Kings blur together without distinct personalities.
+					</p>
+					<p class="text-gray-400 italic text-xs border-l-2 border-hermetic-gold/20 pl-3">
+						"Most tarot decks don't show the personalities of court cards, so they're hard to tell apart." — The Simple Tarot
+					</p>
+				</div>
+
+				<!-- Pain 3: Quality -->
+				<div class="glass-panel p-8 rounded-xl reveal-up border-l-2 border-hermetic-gold/40 hover:border-hermetic-gold transition duration-500">
+					<div class="flex items-start gap-4 mb-4">
+						<div class="flex-shrink-0 w-10 h-10 rounded-full bg-hermetic-void border border-hermetic-gold/50 flex items-center justify-center text-hermetic-gold text-xl font-serif">3</div>
+						<h4 class="font-serif text-xl text-hermetic-gold mt-1">"My Decks Keep Falling Apart"</h4>
+					</div>
+					<p class="text-gray-300 font-light leading-relaxed text-sm mb-4">
+						Practitioners report consistent frustrations with card stock too thin to shuffle, oversized dimensions that hurt hands, flimsy packaging that disintegrates, and guidebooks offering only generic keywords.
+					</p>
+					<p class="text-gray-400 italic text-xs border-l-2 border-hermetic-gold/20 pl-3">
+						"The very first thing I noticed was how terribly thin and poor quality the card stock is." — Amazon review
+					</p>
+				</div>
+
+				<!-- Pain 4: Self-Reading -->
+				<div class="glass-panel p-8 rounded-xl reveal-up border-l-2 border-hermetic-gold/40 hover:border-hermetic-gold transition duration-500">
+					<div class="flex items-start gap-4 mb-4">
+						<div class="flex-shrink-0 w-10 h-10 rounded-full bg-hermetic-void border border-hermetic-gold/50 flex items-center justify-center text-hermetic-gold text-xl font-serif">4</div>
+						<h4 class="font-serif text-xl text-hermetic-gold mt-1">"I Can't Read Objectively for Myself"</h4>
+					</div>
+					<p class="text-gray-300 font-light leading-relaxed text-sm mb-4">
+						Readers can interpret brilliantly for others but struggle with self-readings. Emotional investment clouds judgment, leading to wishful thinking and "convenient but highly subjective" interpretations.
+					</p>
+					<p class="text-gray-400 italic text-xs border-l-2 border-hermetic-gold/20 pl-3">
+						"You end up with interpretations that match what you want to hear, not what you need to know." — Biddy Tarot
+					</p>
+				</div>
+
+				<!-- Pain 5: Representation -->
+				<div class="glass-panel p-8 rounded-xl reveal-up border-l-2 border-hermetic-gold/40 hover:border-hermetic-gold transition duration-500 md:col-span-2">
+					<div class="flex items-start gap-4 mb-4">
+						<div class="flex-shrink-0 w-10 h-10 rounded-full bg-hermetic-void border border-hermetic-gold/50 flex items-center justify-center text-hermetic-gold text-xl font-serif">5</div>
+						<h4 class="font-serif text-xl text-hermetic-gold mt-1">"I Don't See Myself in Traditional Decks"</h4>
+					</div>
+					<div class="md:flex gap-8 items-start">
+						<p class="text-gray-300 font-light leading-relaxed text-sm mb-4 md:mb-0 md:flex-1">
+							The RWS tradition presents homogeneous imagery—very white, very thin, very young. Practitioners actively seek decks featuring diverse body types, ages, ethnicities, abilities, and gender presentations, but finding both quality AND representation proves difficult.
+						</p>
+						<p class="text-gray-400 italic text-xs border-l-2 border-hermetic-gold/20 pl-3 md:w-80">
+							"The traditional RWS is very white, very cis, very het, very ableist, very thin." — Asali Earthwork
+						</p>
+					</div>
+				</div>
+
+			</div>
+
+			<!-- Transition Statement -->
+			<div class="text-center reveal-up">
+				<p class="text-hermetic-sulfur font-serif text-lg tracking-wide">
+					These problems have solutions.
+				</p>
+			</div>
+
+		</div>
+	</div>
+
+	<!-- NEW SECTION: THE SOLUTION -->
+	<div class="relative z-10 max-w-5xl mx-auto px-6 py-24">
+		
+		<div class="text-center mb-20 reveal-up">
+			<p class="font-serif text-hermetic-sulfur/60 text-sm tracking-[0.3em] uppercase mb-4">Embodied Solutions</p>
+			<h3 class="font-serif text-3xl md:text-5xl text-white mb-6 leading-tight">How <span class="text-hermetic-gold italic">Physical Embodiment</span><br>Solves These Challenges</h3>
+		</div>
+
+		<!-- Solutions Grid -->
+		<div class="space-y-16">
+			
+			<!-- Solution 1: Visual Storytelling -->
+			<div class="grid md:grid-cols-2 gap-12 items-center reveal-up">
+				<div class="order-2 md:order-1">
+					<div class="glass-panel p-10 rounded-xl">
+						<div class="flex items-center gap-3 mb-6">
+							<div class="w-8 h-8 rounded-full bg-hermetic-gold/20 border border-hermetic-gold flex items-center justify-center text-hermetic-gold text-sm font-serif">1</div>
+							<h4 class="font-serif text-2xl text-hermetic-gold">Visual Storytelling Replaces Memorization</h4>
+						</div>
+						<p class="text-gray-300 font-light leading-relaxed mb-6">
+							When you see a performer suspended in The Strength card's intentional trust, you don't need to memorize "inner strength, courage, patience." The image tells the story. Your brain remembers bodies in motion—not abstract keywords.
+						</p>
+						<div class="flex items-start gap-3 p-4 bg-black/40 rounded-lg border-l-2 border-hermetic-sulfur/40">
+							<svg class="w-5 h-5 text-hermetic-sulfur flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+							<p class="text-sm text-gray-400 font-light">
+								<span class="text-white font-normal">Beginner-friendly:</span> Pull your first card without panic. The imagery shows you what you need to know.
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="order-1 md:order-2 flex justify-center">
+					<div class="relative">
+						<div class="absolute inset-0 bg-hermetic-gold/20 blur-[40px] rounded-full"></div>
+						<div class="relative w-64 h-96 bg-gradient-to-b from-hermetic-emerald/30 to-hermetic-void rounded-lg border border-hermetic-gold/30 flex items-center justify-center shadow-deep-glass">
+							<p class="text-hermetic-gold/40 font-serif text-sm">[Card Preview]</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Solution 2: Court Cards -->
+			<div class="grid md:grid-cols-2 gap-12 items-center reveal-up">
+				<div class="flex justify-center">
+					<div class="relative">
+						<div class="absolute inset-0 bg-hermetic-sulfur/20 blur-[40px] rounded-full"></div>
+						<div class="relative w-64 h-96 bg-gradient-to-b from-hermetic-emerald/30 to-hermetic-void rounded-lg border border-hermetic-sulfur/30 flex items-center justify-center shadow-deep-glass">
+							<p class="text-hermetic-sulfur/40 font-serif text-sm">[Court Card Preview]</p>
+						</div>
+					</div>
+				</div>
+				<div>
+					<div class="glass-panel p-10 rounded-xl">
+						<div class="flex items-center gap-3 mb-6">
+							<div class="w-8 h-8 rounded-full bg-hermetic-gold/20 border border-hermetic-gold flex items-center justify-center text-hermetic-gold text-sm font-serif">2</div>
+							<h4 class="font-serif text-2xl text-hermetic-gold">Court Cards with Unmistakable Presence</h4>
+						</div>
+						<p class="text-gray-300 font-light leading-relaxed mb-6">
+							Knight energy literally moves with forward momentum—dynamic, risk-taking, action-oriented. Queen energy sits in grounded power—mastery, internal authority, magnetic presence. You don't guess at the difference. You see it in how bodies hold space.
+						</p>
+						<div class="flex items-start gap-3 p-4 bg-black/40 rounded-lg border-l-2 border-hermetic-sulfur/40">
+							<svg class="w-5 h-5 text-hermetic-sulfur flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+							<p class="text-sm text-gray-400 font-light">
+								<span class="text-white font-normal">Breakthrough moment:</span> After years of confusion, court cards finally click. Intermediates report mastery within 2-3 months.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Solution 3: Quality -->
+			<div class="grid md:grid-cols-2 gap-12 items-center reveal-up">
+				<div class="order-2 md:order-1">
+					<div class="glass-panel p-10 rounded-xl">
+						<div class="flex items-center gap-3 mb-6">
+							<div class="w-8 h-8 rounded-full bg-hermetic-gold/20 border border-hermetic-gold flex items-center justify-center text-hermetic-gold text-sm font-serif">3</div>
+							<h4 class="font-serif text-2xl text-hermetic-gold">Premium Materials for Daily Practice</h4>
+						</div>
+						<p class="text-gray-300 font-light leading-relaxed mb-4">
+							Your practice deserves tools that last. We addressed every documented quality complaint:
+						</p>
+						<ul class="space-y-3 mb-6">
+							<li class="flex items-start gap-3 text-gray-300 text-sm">
+								<span class="text-hermetic-sulfur mt-1">◆</span>
+								<span><strong class="text-white">300-350 GSM card stock</strong> with matte linen finish—substantial without excessive stiffness</span>
+							</li>
+							<li class="flex items-start gap-3 text-gray-300 text-sm">
+								<span class="text-hermetic-sulfur mt-1">◆</span>
+								<span><strong class="text-white">Standard 2.75" × 4.75" sizing</strong>—comfortable for all hand sizes, easy to shuffle</span>
+							</li>
+							<li class="flex items-start gap-3 text-gray-300 text-sm">
+								<span class="text-hermetic-sulfur mt-1">◆</span>
+								<span><strong class="text-white">Rigid magnetic closure box</strong>—survives years of daily openings</span>
+							</li>
+							<li class="flex items-start gap-3 text-gray-300 text-sm">
+								<span class="text-hermetic-sulfur mt-1">◆</span>
+								<span><strong class="text-white">Comprehensive guidebook</strong>—deck-specific meanings, not generic keywords</span>
+							</li>
+						</ul>
+						<div class="flex items-start gap-3 p-4 bg-black/40 rounded-lg border-l-2 border-hermetic-sulfur/40">
+							<svg class="w-5 h-5 text-hermetic-sulfur flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+							<p class="text-sm text-gray-400 font-light">
+								<span class="text-white font-normal">Built to last:</span> Daily use for years. Cards still look pristine. Packaging still secure.
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="order-1 md:order-2 flex justify-center">
+					<div class="relative">
+						<div class="absolute inset-0 bg-hermetic-gold/20 blur-[40px] rounded-full"></div>
+						<div class="relative w-64 h-96 bg-gradient-to-b from-hermetic-emerald/30 to-hermetic-void rounded-lg border border-hermetic-gold/30 flex items-center justify-center shadow-deep-glass">
+							<p class="text-hermetic-gold/40 font-serif text-sm">[Quality Detail]</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Solution 4: Grounded Imagery -->
+			<div class="grid md:grid-cols-2 gap-12 items-center reveal-up">
+				<div class="flex justify-center">
+					<div class="relative">
+						<div class="absolute inset-0 bg-hermetic-sulfur/20 blur-[40px] rounded-full"></div>
+						<div class="relative w-64 h-96 bg-gradient-to-b from-hermetic-emerald/30 to-hermetic-void rounded-lg border border-hermetic-sulfur/30 flex items-center justify-center shadow-deep-glass">
+							<p class="text-hermetic-sulfur/40 font-serif text-sm">[Self-Reading Example]</p>
+						</div>
+					</div>
+				</div>
+				<div>
+					<div class="glass-panel p-10 rounded-xl">
+						<div class="flex items-center gap-3 mb-6">
+							<div class="w-8 h-8 rounded-full bg-hermetic-gold/20 border border-hermetic-gold flex items-center justify-center text-hermetic-gold text-sm font-serif">4</div>
+							<h4 class="font-serif text-2xl text-hermetic-gold">Grounded Imagery for Self-Reading</h4>
+						</div>
+						<p class="text-gray-300 font-light leading-relaxed mb-6">
+							Clear, specific visual stories reduce projection when reading for yourself. You can't make a suspended inversion mean something it doesn't. Physical bodies anchor abstract concepts, helping you stay honest when emotions run high.
+						</p>
+						<div class="flex items-start gap-3 p-4 bg-black/40 rounded-lg border-l-2 border-hermetic-sulfur/40">
+							<svg class="w-5 h-5 text-hermetic-sulfur flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+							<p class="text-sm text-gray-400 font-light">
+								<span class="text-white font-normal">Objectivity support:</span> Guidebook includes self-reading techniques from five years of community research.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Solution 5: Representation -->
+			<div class="reveal-up">
+				<div class="glass-panel p-12 rounded-xl border-hermetic-gold/40">
+					<div class="flex items-center gap-3 mb-8 justify-center">
+						<div class="w-8 h-8 rounded-full bg-hermetic-gold/20 border border-hermetic-gold flex items-center justify-center text-hermetic-gold text-sm font-serif">5</div>
+						<h4 class="font-serif text-3xl text-hermetic-gold">Authentic Diverse Representation</h4>
+					</div>
+					<div class="max-w-3xl mx-auto">
+						<p class="text-gray-300 font-light leading-relaxed text-lg mb-8 text-center">
+							The 21 aerial performers who embody these archetypes represent the actual diversity of aerial arts communities—various body types, ages, ethnicities, and gender presentations. This isn't tokenism. This is documentation of real humans doing real aerial work.
+						</p>
+						<div class="grid md:grid-cols-3 gap-6">
+							<div class="text-center p-6 bg-black/30 rounded-lg border border-hermetic-gold/20">
+								<p class="text-hermetic-sulfur text-3xl font-serif mb-2">21</p>
+								<p class="text-gray-400 text-sm">Professional Performers</p>
+							</div>
+							<div class="text-center p-6 bg-black/30 rounded-lg border border-hermetic-gold/20">
+								<p class="text-hermetic-sulfur text-3xl font-serif mb-2">78</p>
+								<p class="text-gray-400 text-sm">Choreographed Cards</p>
+							</div>
+							<div class="text-center p-6 bg-black/30 rounded-lg border border-hermetic-gold/20">
+								<p class="text-hermetic-sulfur text-3xl font-serif mb-2">0%</p>
+								<p class="text-gray-400 text-sm">AI-Generated Art</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<!-- SECTION: WHO THIS IS FOR -->
+	<div class="relative w-full bg-gradient-to-r from-hermetic-void via-hermetic-emerald/40 to-hermetic-void border-y border-hermetic-gold/20 backdrop-blur-sm z-10">
+		<div class="max-w-5xl mx-auto px-6 py-20 reveal-up">
+			<h3 class="text-center font-serif text-3xl text-white mb-16">This Deck Is For You If...</h3>
+			
+			<div class="grid md:grid-cols-3 gap-6 mb-12">
+				<div class="glass-panel p-6 rounded-lg text-center hover:border-hermetic-gold/60 transition duration-500">
+					<p class="text-hermetic-sulfur font-serif text-4xl mb-3">✦</p>
+					<h4 class="text-white font-serif text-lg mb-3">You're Overwhelmed</h4>
+					<p class="text-gray-400 text-sm font-light">78 cards feels impossible and you need visual stories, not memorization requirements</p>
+				</div>
+				<div class="glass-panel p-6 rounded-lg text-center hover:border-hermetic-gold/60 transition duration-500">
+					<p class="text-hermetic-sulfur font-serif text-4xl mb-3">✦</p>
+					<h4 class="text-white font-serif text-lg mb-3">You're Stuck</h4>
+					<p class="text-gray-400 text-sm font-light">Court cards still confuse you after years and you need embodied imagery to break through</p>
+				</div>
+				<div class="glass-panel p-6 rounded-lg text-center hover:border-hermetic-gold/60 transition duration-500">
+					<p class="text-hermetic-sulfur font-serif text-4xl mb-3">✦</p>
+					<h4 class="text-white font-serif text-lg mb-3">You Value Quality</h4>
+					<p class="text-gray-400 text-sm font-light">You're tired of decks falling apart and want premium materials with diverse representation</p>
+				</div>
+			</div>
+
+			<div class="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+				<div class="glass-panel p-6 rounded-lg text-center hover:border-hermetic-gold/60 transition duration-500">
+					<p class="text-hermetic-sulfur font-serif text-4xl mb-3">✦</p>
+					<h4 class="text-white font-serif text-lg mb-3">You're Professional</h4>
+					<p class="text-gray-400 text-sm font-light">You need tools that justify your rates and become part of your practice identity</p>
+				</div>
+				<div class="glass-panel p-6 rounded-lg text-center hover:border-hermetic-gold/60 transition duration-500">
+					<p class="text-hermetic-sulfur font-serif text-4xl mb-3">✦</p>
+					<h4 class="text-white font-serif text-lg mb-3">You're Curious</h4>
+					<p class="text-gray-400 text-sm font-light">You want to explore tarot without pressure, expertise requirements, or mystical gatekeeping</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- TRANSITION TO QUIZ -->
+	<div class="relative z-10 max-w-5xl mx-auto px-6 py-20 text-center reveal-up">
+		<p class="font-serif text-hermetic-sulfur text-sm tracking-[0.3em] uppercase mb-4">Your Voice Matters</p>
+		<h3 class="font-serif text-3xl md:text-4xl text-white mb-8 leading-tight">Before We Launch,<br><span class="text-hermetic-gold italic">We Want to Hear From You</span></h3>
+		<p class="text-gray-300 max-w-2xl mx-auto text-lg font-light leading-relaxed mb-4">
+			This deck was created by listening to the tarot community's real frustrations. Now we're asking: <span class="text-white">What are your challenges? What would you use? What matters to you?</span>
+		</p>
+		<p class="text-gray-400 max-w-xl mx-auto font-light">
+			Take our 5-question journey. Share your insights. Help shape what we create next—and receive a complimentary reading using our first revealed cards.
+		</p>
+	</div>
+
+	<!-- SECTION: LAUNCH TRAJECTORY -->
 	<div class="relative w-full bg-gradient-to-r from-hermetic-void via-hermetic-emerald/40 to-hermetic-void border-y border-hermetic-gold/20 backdrop-blur-sm z-10 reveal-up">
 		<div class="max-w-5xl mx-auto px-6 py-20 md:py-24 text-center relative">
 			<div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-black px-4 text-hermetic-gold/40 text-2xl">❖</div>
@@ -62,12 +388,12 @@ import Footer from '../components/Footer.astro';
 			<p class="font-serif text-hermetic-sulfur text-sm tracking-[0.2em] uppercase mb-4 font-bold">Launch Trajectory</p>
 			<h3 class="font-serif text-3xl md:text-5xl text-white mb-8">Kickstarter: January 11th, 2026</h3>
 			<p class="text-gray-300 max-w-xl mx-auto leading-relaxed text-lg font-light">
-				We'd love your input before we launch. Your feedback directly influences the final product and future companion offerings. <span class="text-white border-b border-hermetic-sulfur/50 pb-0.5">We're genuinely listening.</span>
+				Your feedback directly influences the final product and future companion offerings. <span class="text-white border-b border-hermetic-sulfur/50 pb-0.5">We're genuinely listening.</span>
 			</p>
 		</div>
 	</div>
 
-	<!-- SECTION 3: THE BREAKDOWN & CTA -->
+	<!-- SECTION: THE 5-QUESTION JOURNEY -->
 	<div class="relative z-10 max-w-5xl mx-auto px-6 py-24 flex flex-col items-center">
 		
 		<div class="w-full max-w-4xl space-y-8 relative">
@@ -92,7 +418,7 @@ import Footer from '../components/Footer.astro';
 				<div>
 					<h4 class="font-serif text-2xl text-white mb-3 group-hover:text-hermetic-gold transition">Tailored Content</h4>
 					<p class="text-gray-300 font-light leading-relaxed">
-						Based on your experience level with aerial arts and tarot, we'll send you content that actually matches where you are—behind-the-scenes footage, performer interviews, and techniques designed for your practice.
+						Based on your biggest challenge with tarot right now, we'll send you content that actually addresses your needs—whether that's court card solutions, quality deck education, or beginner-friendly guidance.
 					</p>
 				</div>
 			</div>
@@ -105,8 +431,8 @@ import Footer from '../components/Footer.astro';
 					<p class="text-gray-300 font-light leading-relaxed">
 						Interested in embodiment guides? Video courses? Oracle decks? Let us know what you'd use, and you'll get beta access before anyone else.
 					</p>
-				</div>
-			</div>
+                    </div>
+                    </div>
 
 			<!-- Card 5 -->
 			<div class="glass-panel rounded-xl p-8 flex flex-col md:flex-row gap-8 items-start reveal-up border-hermetic-sulfur/60 shadow-[0_0_40px_rgba(232,134,36,0.15)] relative overflow-hidden group">
@@ -117,8 +443,8 @@ import Footer from '../components/Footer.astro';
 					<h4 class="font-serif text-2xl text-hermetic-sulfur mb-3 drop-shadow-md">The Reward</h4>
 					<p class="text-gray-200 font-light leading-relaxed">
 						Sign up and receive a <strong class="text-white">complimentary tarot reading</strong> using the first 5 cards we reveal on launch day. This reading is only available to our early community.
-					</p>
-				</div>
+                    </p>
+                </div>
 			</div>
 		</div>
 
@@ -131,8 +457,8 @@ import Footer from '../components/Footer.astro';
 				Start The Quiz
 				<svg class="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
 			</a>
-		</div>
-	</div>
+    </div>
+  </div>
 
     <Footer />
 
