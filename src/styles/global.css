@@ -60,3 +60,4 @@
 .reveal-up { opacity: 0; transform: translateY(40px); transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .reveal-visible { opacity: 1; transform: translateY(0); }
 
+

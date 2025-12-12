@@ -50,3 +50,4 @@ You can test the webhook locally using curl.
 - **401 Unauthorized**: Check that `SEOBOT_API_SECRET` matches the header.
 - **500 Internal Error**: Check Vercel logs. Usually indicates `GITHUB_TOKEN` is invalid or missing permissions.
 
+
