@@ -33,7 +33,9 @@ const formattedDate = post.data.pubDate.toLocaleDateString('en-us', {
     
     <div class="p-6 flex flex-col flex-grow">
       <div class="flex items-center gap-x-4 text-xs text-hermetic-gold/60 mb-3 font-sans">
-        <time datetime={post.data.pubDate.toISOString()}>{formattedDate}</time>
+        {!post.data.hideDate && (
+          <time datetime={post.data.pubDate.toISOString()}>{formattedDate}</time>
+        )}
         {post.data.tags && (
           <div class="flex gap-2">
             {post.data.tags.slice(0, 2).map(tag => (

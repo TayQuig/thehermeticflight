@@ -40,8 +40,12 @@ const formattedDate = post.data.pubDate.toLocaleDateString('en-us', {
       <!-- Header Area -->
       <header class="mb-12 text-center reveal-up">
         <div class="flex items-center justify-center gap-x-4 text-sm text-hermetic-gold/60 mb-4 font-sans">
-          <time datetime={post.data.pubDate.toISOString()}>{formattedDate}</time>
-          <span class="text-hermetic-gold/30">•</span>
+          {!post.data.hideDate && (
+            <>
+              <time datetime={post.data.pubDate.toISOString()}>{formattedDate}</time>
+              <span class="text-hermetic-gold/30">•</span>
+            </>
+          )}
           <span>{post.data.author}</span>
         </div>
         
