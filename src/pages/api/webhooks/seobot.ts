@@ -26,7 +26,7 @@ export const POST: APIRoute = async ({ request }) => {
     const slug = providedSlug || slugify(title, { lower: true, strict: true });
     const date = new Date().toISOString().split('T')[0];
     const safeTags = Array.isArray(tags) ? tags : [];
-    
+
     // Construct MDX Frontmatter
     const mdxContent = `---
 title: "${title.replace(/"/g, '\\"')}"
