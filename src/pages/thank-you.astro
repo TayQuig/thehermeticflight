@@ -34,18 +34,8 @@ import Layout from '../layouts/Layout.astro';
 					<div class="absolute inset-0 bg-hermetic-emerald/50 rounded-lg blur opacity-50 group-hover:opacity-75 transition duration-500"></div>
 					<div class="relative border border-hermetic-gold/50 rounded-lg p-6 bg-hermetic-void">
 						<p class="font-serif text-hermetic-gold text-sm tracking-widest uppercase mb-2">The Revelation Date</p>
-						<p class="font-serif text-3xl text-white font-bold tracking-wider mb-4">JANUARY 11, 2026</p>
+						<p class="font-serif text-3xl text-white font-bold tracking-wider mb-4">COMING SOON</p>
 						
-						<!-- Buttons -->
-						<div class="flex flex-col sm:flex-row justify-center gap-3 mt-4">
-							<a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=The+Hermetic+Flight+Tarot+Reveal&dates=20260111T170000Z/20260111T180000Z&details=Visit+www.thehermeticflight.com&location=www.thehermeticflight.com&sf=true&output=xml" target="_blank"
-							   class="text-xs font-sans tracking-widest uppercase border border-hermetic-sulfur text-hermetic-sulfur px-4 py-2 rounded hover:bg-hermetic-sulfur hover:text-black transition-colors">
-								Add to Google
-							</a>
-							<button id="ics-btn" class="text-xs font-sans tracking-widest uppercase border border-hermetic-sulfur text-hermetic-sulfur px-4 py-2 rounded hover:bg-hermetic-sulfur hover:text-black transition-colors">
-								Download .ICS
-							</button>
-						</div>
 					</div>
 				</div>
 
@@ -77,23 +67,4 @@ import Layout from '../layouts/Layout.astro';
 		</div>
 	</main>
 
-	<!-- Calendar Logic Script -->
-	<script>
-		document.getElementById('ics-btn')?.addEventListener('click', () => {
-			const title = "The Hermetic Flight: Tarot Reveal";
-			const description = "The reveal of the first 5 cards and early access to the Kickstarter (First 333 decks).";
-			const location = "www.thehermeticflight.com";
-			const start = "20260111T120000Z"; 
-			const end = "20260111T130000Z"; 
-			const icsContent = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//The Hermetic Flight//NONSGML v1.0//EN\nBEGIN:VEVENT\nUID:${Date.now()}@thehermeticflight.com\nDTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z\nDTSTART:${start}\nDTEND:${end}\nSUMMARY:${title}\nDESCRIPTION:${description}\nLOCATION:${location}\nEND:VEVENT\nEND:VCALENDAR`;
-			
-			const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-			const link = document.createElement('a');
-			link.href = window.URL.createObjectURL(blob);
-			link.setAttribute('download', 'hermetic-flight-reveal.ics');
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
-		});
-	</script>
 </Layout>
