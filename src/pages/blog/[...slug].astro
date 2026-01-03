@@ -18,6 +18,8 @@ type Props = CollectionEntry<'blog'>;
 const post = Astro.props;
 const { Content } = await post.render();
 
+const canonicalURL = new URL(post.slug, 'https://www.thehermeticflight.com/blog/').toString();
+
 const formattedDate = post.data.pubDate.toLocaleDateString('en-us', {
   year: 'numeric',
   month: 'long',
