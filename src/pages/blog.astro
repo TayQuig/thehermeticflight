@@ -7,7 +7,14 @@ import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog'))
   .filter(post => !post.data.draft)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  .sort((a, b) => {
+    // Pinned posts come first
+    if (a.data.pinned && !b.data.pinned) return -1;
+    if (!a.data.pinned && b.data.pinned) return 1;
+    
+    // Then sort by date (newest first)
+    return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+  });
 ---
 
 <Layout 

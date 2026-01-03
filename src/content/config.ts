@@ -14,6 +14,7 @@ const blogCollection = defineCollection({
     author: z.string().default('The Hermetic Flight Team'),
     draft: z.boolean().default(false),
     hideDate: z.boolean().default(false),
+    pinned: z.boolean().default(false),
   }),
 });
 
