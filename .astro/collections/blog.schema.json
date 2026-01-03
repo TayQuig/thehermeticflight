@@ -62,6 +62,10 @@
           "type": "boolean",
           "default": false
         },
+        "hideDate": {
+          "type": "boolean",
+          "default": false
+        },
         "$schema": {
           "type": "string"
         }
