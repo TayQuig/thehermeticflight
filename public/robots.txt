@@ -9,7 +9,7 @@ Allow: /
 Crawl-delay: 1
 
 # Sitemap location
-Sitemap: https://thehermeticflight.com/sitemap.xml
+Sitemap: https://www.thehermeticflight.com/sitemap.xml
 
 # Block admin areas (if applicable)
 Disallow: /admin/
