@@ -10,8 +10,15 @@ const navItems = [
   <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 h-20 flex items-center justify-between">
     
     <!-- Logo -->
-    <a href="/" class="text-xl md:text-2xl font-serif font-bold tracking-widest text-hermetic-gold hover:text-hermetic-sulfur transition-colors drop-shadow-[0_0_10px_rgba(197,160,89,0.3)]">
-      The Hermetic Flight
+    <a href="/" class="flex items-center gap-4 group">
+      <div class="inline-block border border-hermetic-gold/60 rounded-full p-1 shadow-gold-halo bg-black/40 backdrop-blur-md group-hover:scale-105 transition-transform duration-300">
+        <div class="w-8 h-8 rounded-full overflow-hidden">
+          <img src="/images/logo.png" alt="The Hermetic Flight Logo" class="w-full h-full object-cover" />
+        </div>
+      </div>
+      <span class="text-xl md:text-2xl font-serif font-bold tracking-widest text-hermetic-gold group-hover:text-hermetic-sulfur transition-colors drop-shadow-[0_0_10px_rgba(197,160,89,0.3)]">
+        The Hermetic Flight
+      </span>
     </a>
 
     <!-- Desktop Nav -->
@@ -34,5 +41,6 @@ const navItems = [
     </div>
   </div>
 </header>
+
 
 
