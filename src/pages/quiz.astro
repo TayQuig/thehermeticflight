@@ -6,9 +6,6 @@ import Layout from '../layouts/Layout.astro';
 	title="What's Your Aerial Tarot Archetype? | The Hermetic Flight"
 	description="Discover your unique tarot archetype. Twenty questions, five minutes, one revelation about how you're wired to receive wisdom through the cards."
 >
-	<!-- Tally Embed Script -->
-	<script is:inline slot="head" src="https://tally.so/widgets/embed.js" async></script>
-
 	<main class="w-full min-h-screen flex flex-col relative z-10">
 		
 		<!-- Minimal Header -->
@@ -20,30 +17,33 @@ import Layout from '../layouts/Layout.astro';
 		</header>
 
 		<!-- Quiz Embed Container -->
-		<div class="flex-1 w-full max-w-4xl mx-auto px-4 pb-8">
+		<div class="w-full max-w-4xl mx-auto px-4 pb-8">
 			<iframe 
-				data-tally-src="https://tally.so/r/aQ5Gg9?transparentBackground=1&formEventsForwarding=1" 
+				data-tally-src="https://tally.so/embed/aQ5Gg9?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" 
+				loading="lazy" 
 				width="100%" 
-				height="100%" 
+				height="566" 
 				frameborder="0" 
 				marginheight="0" 
 				marginwidth="0" 
 				title="What's Your Aerial Tarot Archetype?"
-				class="min-h-[calc(100vh-120px)]"
 			></iframe>
 		</div>
 
 	</main>
 
-	<!-- Form Submission Redirect (Diagnostic Version) -->
+	<!-- Tally Embed Script -->
+	<script is:inline>
+		var d=document,w="https://tally.so/widgets/embed.js",v=function(){"undefined"!=typeof Tally?Tally.loadEmbeds():d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach((function(e){e.src=e.dataset.tallySrc}))};if("undefined"!=typeof Tally)v();else if(d.querySelector('script[src="'+w+'"]')==null){var s=d.createElement("script");s.src=w,s.onload=v,s.onerror=v,d.body.appendChild(s);}
+	</script>
+
+	<!-- Form Submission Redirect -->
 	<script is:inline>
 		window.addEventListener('message', function(e) {
-			console.log('Full message data:', JSON.stringify(e.data));
-			if (e.data && e.data.event) {
-				console.log('Tally event type:', e.data.event);
-			}
-			if (e.data && e.data.type) {
-				console.log('Tally type:', e.data.type);
+			if (e.data && (e.data.event === 'Tally.FormSubmit' || e.data.type === 'tally.form.submit')) {
+				setTimeout(function() {
+					window.location.href = 'https://thehermeticflight.com/thank-you';
+				}, 500);
 			}
 		});
 	</script>
