@@ -35,15 +35,15 @@ import Layout from '../layouts/Layout.astro';
 
 	</main>
 
-	<!-- Form Submission Redirect -->
+	<!-- Form Submission Redirect (Diagnostic Version) -->
 	<script is:inline>
 		window.addEventListener('message', function(e) {
-			console.log('Message received:', e.data);
-			if (e.data && e.data.type === 'tally.form.submit') {
-				console.log('Tally submit detected, redirecting...');
-				setTimeout(function() {
-					window.location.href = 'https://thehermeticflight.com/thank-you';
-				}, 500);
+			console.log('Full message data:', JSON.stringify(e.data));
+			if (e.data && e.data.event) {
+				console.log('Tally event type:', e.data.event);
+			}
+			if (e.data && e.data.type) {
+				console.log('Tally type:', e.data.type);
 			}
 		});
 	</script>
