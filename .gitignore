@@ -19,5 +19,8 @@ Thumbs.db
 *.swp
 *.swo
 
+# Memory DB
+memory.db
+
 
 
