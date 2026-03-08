@@ -60,7 +60,7 @@ this file at session start and reports current state to the operator.
 | 2 | Static archetype result pages + share CTA | Share CTA | `completed` | 6 result pages at `/quiz/result/[archetype]` with share buttons (X/Facebook/copy). quiz.astro success message now shows share CTA. 261 tests pass. |
 | 3 | OG images + share event tracking | Share CTA | `completed` | 7 placeholder OG PNGs (1200x630) created. GA4 share events on quiz.astro and result pages. Build succeeds, 261 tests pass. |
 | 4 | Build verification + Playwright tests | Share CTA | `completed` | 5 Playwright E2E tests pass (OG tags, result pages, share buttons, quiz flow, canonical URL). 261 unit tests pass. 6 result pages in sitemap. Build succeeds. |
-| 5 | Harden — evaluation + remediation | Share CTA | `pending` | Hardening sprint on new share/OG code. dep: Phase 4. |
+| 5 | Harden — evaluation + remediation | Share CTA | `completed` | 4 evaluators, 9 findings (3 High, 6 Medium), 11 deferred. All 9 remediated. 341 tests pass. Verification playbook at operations/hardening-2026-03-08/. |
 | 6 | Scaffold skill directories + build audit-site | Automation | `completed` | 5 dirs created. audit-site SKILL.md written (166 lines). Verified frontmatter. |
 | 7 | Build publish-post + social-blast skills | Automation | `completed` | publish-post (161 lines) + social-blast (164 lines) written. operations/social/ dir created. |
 | 8 | Build weekly-report + launch-sequence skills | Automation | `completed` | weekly-report (195 lines) + launch-sequence (220 lines) written. operations/reports/ + launch-emails/ dirs created. |
