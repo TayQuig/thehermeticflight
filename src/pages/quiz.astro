@@ -178,6 +178,10 @@ import { archetypes } from '../lib/archetype-content';
 
     const TOTAL_QUESTIONS = questions.length;
 
+    // Module-scoped variables for archetype and scores — avoids (window as any) casts.
+    let quizArchetype: string | null = null;
+    let quizScores: ReturnType<typeof computeScores> | null = null;
+
     const state = {
       currentStep: 0,
       answers: {} as Record<string, string>,
@@ -254,8 +258,8 @@ import { archetypes } from '../lib/archetype-content';
       resultDescription.textContent = content.description;
 
       // Store for form submission
-      (window as any).__quizArchetype = archetype;
-      (window as any).__quizScores = scores;
+      quizArchetype = archetype;
+      quizScores = scores;
 
       // Trigger staggered reveal animations
       requestAnimationFrame(() => {
@@ -365,7 +369,7 @@ import { archetypes } from '../lib/archetype-content';
           if (typeof gtag === 'function') {
             gtag('event', 'generate_lead', {
               event_category: 'quiz',
-              archetype: (window as any).__quizArchetype,
+              archetype: quizArchetype,
             });
           }
         } else {

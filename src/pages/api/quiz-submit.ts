@@ -245,11 +245,23 @@ export const POST: APIRoute = async ({ request }) => {
     const scores = computeScores(validatedAnswers, questions);
     const archetype = classify(scores);
 
-    // Extract non-scored answers for segmentation
-    const experienceLevel = validatedAnswers['Q2'] || null;
-    const painPoint = validatedAnswers['Q3'] || null;
-    const cardBackPref = validatedAnswers['Q19'] || null;
-    const productInterest = validatedAnswers['Q20'] || null;
+    // Helper: look up human-readable answer text from quiz-data by question+answer ID.
+    // Returns null if the question or answer ID is not found (defensive — validation
+    // already guarantees valid IDs for answered questions).
+    function resolveAnswerText(questionId: string, answerId: string | undefined): string | null {
+      if (!answerId) return null;
+      const question = questions.find((q) => q.id === questionId);
+      if (!question) return null;
+      const answer = question.answers.find((a) => a.id === answerId);
+      return answer ? answer.text : null;
+    }
+
+    // Extract non-scored answers for segmentation — resolved to human-readable text.
+    const experienceLevel = resolveAnswerText('Q2', validatedAnswers['Q2']);
+    const painPoint = resolveAnswerText('Q3', validatedAnswers['Q3']);
+    const flowState = resolveAnswerText('Q11', validatedAnswers['Q11']);
+    const cardBackPref = resolveAnswerText('Q19', validatedAnswers['Q19']);
+    const productInterest = resolveAnswerText('Q20', validatedAnswers['Q20']);
 
     // Push to Loops.so
     const LOOPS_API_KEY = import.meta.env.LOOPS_API_KEY;
@@ -292,7 +304,7 @@ export const POST: APIRoute = async ({ request }) => {
         headers: {
           'Authorization': `Bearer ${LOOPS_API_KEY}`,
           'Content-Type': 'application/json',
-          'Idempotency-Key': `quiz_${email}_${today}`,
+          'Idempotency-Key': `quiz_${email.toLowerCase()}_${today}`,
         },
         body: JSON.stringify({
           email,
@@ -304,6 +316,7 @@ export const POST: APIRoute = async ({ request }) => {
           source: 'quiz',
           ...(experienceLevel && { experienceLevel }),
           ...(painPoint && { painPoint }),
+          ...(flowState && { flowState }),
           ...(cardBackPref && { cardBackPref }),
           ...(productInterest && { productInterest }),
 
