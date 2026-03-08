@@ -61,9 +61,9 @@ this file at session start and reports current state to the operator.
 | 3 | OG images + share event tracking | Share CTA | `completed` | 7 placeholder OG PNGs (1200x630) created. GA4 share events on quiz.astro and result pages. Build succeeds, 261 tests pass. |
 | 4 | Build verification + Playwright tests | Share CTA | `completed` | 5 Playwright E2E tests pass (OG tags, result pages, share buttons, quiz flow, canonical URL). 261 unit tests pass. 6 result pages in sitemap. Build succeeds. |
 | 5 | Harden — evaluation + remediation | Share CTA | `pending` | Hardening sprint on new share/OG code. dep: Phase 4. |
-| 6 | Scaffold skill directories + build audit-site | Automation | `pending` | Plan Tasks 1-2. Create 5 dirs in `~/.claude/skills/`, write audit-site SKILL.md. |
-| 7 | Build publish-post + social-blast skills | Automation | `pending` | Plan Tasks 3-4. Content pipeline + social amplifier. |
-| 8 | Build weekly-report + launch-sequence skills | Automation | `pending` | Plan Tasks 5-6. Analytics reporter + Kickstarter orchestrator. |
+| 6 | Scaffold skill directories + build audit-site | Automation | `completed` | 5 dirs created. audit-site SKILL.md written (166 lines). Verified frontmatter. |
+| 7 | Build publish-post + social-blast skills | Automation | `completed` | publish-post (161 lines) + social-blast (164 lines) written. operations/social/ dir created. |
+| 8 | Build weekly-report + launch-sequence skills | Automation | `completed` | weekly-report (195 lines) + launch-sequence (220 lines) written. operations/reports/ + launch-emails/ dirs created. |
 | 9 | Validate all 5 skills end-to-end | Automation | `pending` | Dry-run each skill, fix issues. dep: Phases 6-8. |
 
 **Plans:**
@@ -87,7 +87,7 @@ Sprint created 2026-03-07. Phases 1-4 (Share CTA build) completed in prior sessi
 - ~~**Quiz result-before-signup flow**~~ — FOLDED INTO ACTIVE TASK (Phase 3)
 - ~~**Kickstarter launch sequence pipeline**~~ — FOLDED INTO website automation skills (launch-sequence skill)
 - ~~**Share CTA & OG meta tags (viral loop)**~~ — PROMOTED TO ACTIVE TASK
-- **Website automation skills (5 skills)** — Build Claude Code skills to automate site management: audit-site (SEO/health), publish-post (content pipeline), social-blast (social media), weekly-report (analytics), launch-sequence (Kickstarter orchestration). Plan: `docs/plans/2026-03-07-website-automation-skills.md`. Deps: Skills 1-3 independent; Skills 4-5 benefit from marketing pipeline completion. Kickstarter launch sequence is now a mode within the launch-sequence skill. Note: Hermes Slack bot bridge (separate infra project) will enable Slack-triggered invocation of these skills via `claude -p`. No Zapier dependency — all native.
+- ~~**Website automation skills (5 skills)**~~ — PROMOTED TO ACTIVE TASK (Sprint Phase 6-9)
 - **Hermes Slack bot bridge (v1)** — LIVES IN SEPARATE REPO (hermes project). Basic Slack App (Socket Mode) + Node.js listener + `claude -p` integration. Enables @Hermes mentions in Slack to trigger Claude Code with subscription auth (no API costs). Expansion path: thread awareness → skill routing → project context detection → always-on monitoring. Blocked by: Slack App creation (operator task).
 - Clean up stale feature branches (page-quiz-embed, feature/faq-and-blog, feature/seobot-integration, etc.)
 - Add README with setup/run instructions
