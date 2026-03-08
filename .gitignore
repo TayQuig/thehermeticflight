@@ -26,5 +26,10 @@ memory.db
 .frozen-test-baseline
 .frozen-test-manifest
 
+# Harden protocol state files
+.harden-state
+.harden-remediation-status
+.protocol-phase
+
 
 
