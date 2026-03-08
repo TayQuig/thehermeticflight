@@ -56,8 +56,8 @@ this file at session start and reports current state to the operator.
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 1 | OG meta tag infrastructure + Layout.astro | `pending` | Add OG/Twitter Card meta tags to Layout, fix canonical URL to use www. Plan Tasks 1-2. Entry: `src/layouts/Layout.astro`, `src/lib/archetype-content.ts`. Pass: `grep -c 'og:title' dist/index.html` returns 1, all tests pass. |
-| 2 | Static archetype result pages + share CTA | `pending` | Create 6 result pages via getStaticPaths, add share buttons to quiz.astro post-submission. Plan Tasks 3-4. Entry: `src/pages/quiz/result/[archetype].astro`, `src/pages/quiz.astro`. Pass: 6 dirs in `dist/quiz/result/`, build succeeds, Playwright pass. dep: Phase 1. |
+| 1 | OG meta tag infrastructure + Layout.astro | `completed` | OG/Twitter Card meta tags added. Canonical URL fixed to www. 261 tests pass. `grep -c 'og:title' dist/index.html` = 1. `toUrlSlug` + `archetypeByUrlSlug` utilities added. |
+| 2 | Static archetype result pages + share CTA | `in_progress` | Create 6 result pages via getStaticPaths, add share buttons to quiz.astro post-submission. Plan Tasks 3-4. Entry: `src/pages/quiz/result/[archetype].astro`, `src/pages/quiz.astro`. Pass: 6 dirs in `dist/quiz/result/`, build succeeds, Playwright pass. dep: Phase 1. |
 | 3 | OG images + share event tracking | `pending` | Create 7 placeholder OG images (1200x630), add GA4 share events. Plan Tasks 5-6. Entry: `public/images/og/`. Pass: 7 PNGs exist, build succeeds. dep: Phase 2. |
 | 4 | Build verification + Playwright tests | `pending` | Add result page + share CTA Playwright tests, full build verification, sitemap check. Plan Tasks 7-8. Entry: `tests/quiz-flow.spec.ts`. Pass: all unit + Playwright tests pass, 6 result pages in sitemap. dep: Phase 3. |
 | 5 | Harden — evaluation + remediation | `pending` | Hardening sprint on new share/OG code. dep: Phase 4. |
