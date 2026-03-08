@@ -14,17 +14,7 @@ export const getStaticPaths: GetStaticPaths = () => {
 const { archetype } = Astro.props;
 const urlSlug = toUrlSlug(archetype.slug);
 
-// Element-to-hex mapping for OG image backgrounds (matches Tailwind theme)
-const elementColors: Record<string, string> = {
-  Air: '#93c5fd',       // blue-300
-  Earth: '#6ee7b7',     // emerald-300
-  Spirit: '#c4b5fd',    // purple-300
-  Shadow: '#fca5a5',    // red-300
-  Water: '#67e8f9',     // cyan-300
-  Mercury: '#C5A059',   // hermetic-gold
-};
-
-const accentColor = elementColors[archetype.element] || '#C5A059';
+const accentColor = archetype.accentHex;
 ---
 
 <Layout
@@ -111,8 +101,12 @@ const accentColor = elementColors[archetype.element] || '#C5A059';
     const copyText = document.getElementById('copy-text');
     if (copyBtn && copyText) {
       copyBtn.addEventListener('click', async () => {
-        await navigator.clipboard.writeText(window.location.href);
-        copyText.textContent = 'Copied!';
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          copyText.textContent = 'Copied!';
+        } catch {
+          copyText.textContent = 'Copy failed';
+        }
         setTimeout(() => { copyText.textContent = 'Copy Link'; }, 2000);
       });
     }

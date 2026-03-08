@@ -8,7 +8,8 @@ interface Props {
 }
 
 const { title, description, canonicalURL, ogImage, ogType = 'website' } = Astro.props;
-const siteUrl = 'https://www.thehermeticflight.com';
+let siteUrl = Astro.site?.origin ?? '';
+if (!siteUrl) siteUrl = 'https://www.thehermeticflight.com';
 const currentPath = Astro.url.pathname;
 const canonical = canonicalURL || `${siteUrl}${currentPath}`;
 const resolvedOgImage = ogImage

@@ -197,7 +197,8 @@ import { archetypes } from '../lib/archetype-content';
   <script>
     import { questions } from '../lib/quiz-data';
     import { classify, computeScores } from '../lib/classifier';
-    import { archetypes } from '../lib/archetype-content';
+    import type { ArchetypeSlug } from '../lib/classifier';
+    import { archetypes, toUrlSlug } from '../lib/archetype-content';
 
     const TOTAL_QUESTIONS = questions.length;
 
@@ -389,7 +390,7 @@ import { archetypes } from '../lib/archetype-content';
           emailSuccess.classList.remove('hidden');
 
           // Populate share links with archetype-specific URLs
-          const urlSlug = quizArchetype ? quizArchetype.replace(/_/g, '-') : '';
+          const urlSlug = quizArchetype ? toUrlSlug(quizArchetype as ArchetypeSlug) : '';
           const shareUrl = `https://www.thehermeticflight.com/quiz/result/${urlSlug}`;
           const content = quizArchetype ? archetypes[quizArchetype as keyof typeof archetypes] : null;
           const shareText = content
@@ -405,8 +406,12 @@ import { archetypes } from '../lib/archetype-content';
           shareFb.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
 
           shareCopy.addEventListener('click', async () => {
-            await navigator.clipboard.writeText(shareUrl);
-            shareCopyText.textContent = 'Copied!';
+            try {
+              await navigator.clipboard.writeText(shareUrl);
+              shareCopyText.textContent = 'Copied!';
+            } catch {
+              shareCopyText.textContent = 'Copy failed';
+            }
             setTimeout(() => { shareCopyText.textContent = 'Copy Link'; }, 2000);
           });
 
