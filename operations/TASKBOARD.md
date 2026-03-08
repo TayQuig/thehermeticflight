@@ -50,28 +50,7 @@ this file at session start and reports current state to the operator.
 
 ## Active Task
 
-### Sprint: Harden + Website Automation — 2 Items
-
-**Brief:** Parallel sprint. (A) Complete hardening on the share/OG viral loop code. (B) Build 5 website automation skills (audit-site, publish-post, social-blast, weekly-report, launch-sequence). Zero shared state — hardening touches repo quiz code; skills live in `~/.claude/skills/`.
-
-| # | Phase | Source | Status | Notes |
-|---|-------|--------|--------|-------|
-| 1 | OG meta tag infrastructure + Layout.astro | Share CTA | `completed` | OG/Twitter Card meta tags added. Canonical URL fixed to www. 261 tests pass. `toUrlSlug` + `archetypeByUrlSlug` utilities added. |
-| 2 | Static archetype result pages + share CTA | Share CTA | `completed` | 6 result pages at `/quiz/result/[archetype]` with share buttons (X/Facebook/copy). quiz.astro success message now shows share CTA. 261 tests pass. |
-| 3 | OG images + share event tracking | Share CTA | `completed` | 7 placeholder OG PNGs (1200x630) created. GA4 share events on quiz.astro and result pages. Build succeeds, 261 tests pass. |
-| 4 | Build verification + Playwright tests | Share CTA | `completed` | 5 Playwright E2E tests pass (OG tags, result pages, share buttons, quiz flow, canonical URL). 261 unit tests pass. 6 result pages in sitemap. Build succeeds. |
-| 5 | Harden — evaluation + remediation | Share CTA | `completed` | 4 evaluators, 9 findings (3 High, 6 Medium), 11 deferred. All 9 remediated. 341 tests pass. Verification playbook at operations/hardening-2026-03-08/. |
-| 6 | Scaffold skill directories + build audit-site | Automation | `completed` | 5 dirs created. audit-site SKILL.md written (166 lines). Verified frontmatter. |
-| 7 | Build publish-post + social-blast skills | Automation | `completed` | publish-post (161 lines) + social-blast (164 lines) written. operations/social/ dir created. |
-| 8 | Build weekly-report + launch-sequence skills | Automation | `completed` | weekly-report (195 lines) + launch-sequence (220 lines) written. operations/reports/ + launch-emails/ dirs created. |
-| 9 | Validate all 5 skills end-to-end | Automation | `completed` | 5/5 validated. audit-site: full audit (C 67/100, est. B post-merge). social-blast: drafts generated. publish-post: all checks pass. launch-sequence: first-run state correct. weekly-report: credentials present, Loops API 401 (operator needs real key). |
-
-**Plans:**
-- Share CTA: `docs/plans/2026-03-07-share-cta-og-tags.md`
-- Automation: `docs/plans/2026-03-07-website-automation-skills.md`
-
-**Handoff Context:**
-Sprint created 2026-03-07. Phases 1-5 (Share CTA) and 6-8 (skill builds) completed. Skills evaluated via 3-evaluator convergence analysis (eval-skills-2026-03-08): 35 raw findings → 12 remediated, 14 deferred. All 12 verified PASS by independent verifier. Key safety fixes: no .env Read (grep only), Loops.so broadcast → manual dashboard workflow, CONFIRM SCHEDULE gate for email scheduling, all audit-site fixes require approval, @mention tag in all Slack templates. Phase 9 (validation dry-run) is the only remaining phase.
+[Empty — sprint completed 2026-03-08. See task-archive.md.]
 
 ---
 
