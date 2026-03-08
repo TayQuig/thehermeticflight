@@ -59,3 +59,14 @@ export const archetypes: Record<ArchetypeSlug, ArchetypeContent> = {
     color: 'text-hermetic-gold',
   },
 };
+
+/** Convert an ArchetypeSlug ('air_weaver') to a URL slug ('air-weaver'). */
+export function toUrlSlug(slug: ArchetypeSlug): string {
+  return slug.replace(/_/g, '-');
+}
+
+/** Look up archetype content by URL slug ('air-weaver'). */
+export function archetypeByUrlSlug(urlSlug: string): ArchetypeContent | undefined {
+  const internalSlug = urlSlug.replace(/-/g, '_');
+  return archetypes[internalSlug as ArchetypeSlug];
+}

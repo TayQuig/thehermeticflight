@@ -1,0 +1,134 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { archetypes, archetypeByUrlSlug, toUrlSlug } from '../../../lib/archetype-content';
+import type { ArchetypeSlug } from '../../../lib/classifier';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = () => {
+  return (Object.keys(archetypes) as ArchetypeSlug[]).map((slug) => ({
+    params: { archetype: toUrlSlug(slug) },
+    props: { archetype: archetypes[slug] },
+  }));
+};
+
+const { archetype } = Astro.props;
+const urlSlug = toUrlSlug(archetype.slug);
+
+// Element-to-hex mapping for OG image backgrounds (matches Tailwind theme)
+const elementColors: Record<string, string> = {
+  Air: '#93c5fd',       // blue-300
+  Earth: '#6ee7b7',     // emerald-300
+  Spirit: '#c4b5fd',    // purple-300
+  Shadow: '#fca5a5',    // red-300
+  Water: '#67e8f9',     // cyan-300
+  Mercury: '#C5A059',   // hermetic-gold
+};
+
+const accentColor = elementColors[archetype.element] || '#C5A059';
+---
+
+<Layout
+  title={`${archetype.title} — Your Aerial Tarot Archetype | The Hermetic Flight`}
+  description={archetype.description}
+  ogImage={`/images/og/${urlSlug}.png`}
+>
+  <main class="w-full min-h-screen flex flex-col items-center relative z-10 pt-6 pb-12 px-4">
+
+    <!-- Header -->
+    <header class="w-full py-4 flex justify-center mb-4">
+      <a href="/" class="group flex items-center gap-3">
+        <img src="/images/logo.png" alt="The Hermetic Flight" class="w-10 h-10 rounded-full opacity-80 group-hover:opacity-100 transition-opacity" />
+        <span class="font-serif text-hermetic-gold/60 text-sm tracking-[0.2em] uppercase group-hover:text-hermetic-gold transition-colors">The Hermetic Flight</span>
+      </a>
+    </header>
+
+    <!-- Archetype Result -->
+    <div class="w-full max-w-2xl">
+      <div class="glass-panel p-8 md:p-12 rounded-lg text-center relative">
+        <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-hermetic-gold opacity-50"></div>
+        <div class="absolute top-2 right-2 w-3 h-3 border-t border-r border-hermetic-gold opacity-50"></div>
+        <div class="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-hermetic-gold opacity-50"></div>
+        <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-hermetic-gold opacity-50"></div>
+
+        <!-- Glow effect -->
+        <div class="absolute inset-0 rounded-lg opacity-30" style={`background: radial-gradient(circle at 50% 30%, ${accentColor}20 0%, transparent 60%);`}></div>
+
+        <div class="relative z-10">
+          <p class="text-hermetic-gold text-xs tracking-[0.3em] uppercase font-sans mb-4">Aerial Tarot Archetype</p>
+          <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/60 to-transparent mx-auto mb-6"></div>
+
+          <h1 class="font-serif text-3xl md:text-5xl text-hermetic-white mb-2 tracking-wide">{archetype.title}</h1>
+          <p class={`${archetype.color} text-xs tracking-[0.3em] uppercase font-sans mb-6`}>Element of {archetype.element}</p>
+          <p class="text-gray-300 font-light font-sans leading-relaxed mb-8 max-w-lg mx-auto">{archetype.description}</p>
+
+          <!-- Share Section -->
+          <div class="border-t border-hermetic-gold/20 pt-8 mt-4">
+            <p class="text-hermetic-gold/60 text-xs tracking-[0.2em] uppercase font-sans mb-4">Share This Archetype</p>
+            <div class="flex justify-center gap-3" id="share-buttons">
+              <a
+                href={`https://x.com/intent/tweet?text=${encodeURIComponent(`I'm ${archetype.title} — ${archetype.element} element. Discover your aerial tarot archetype:`)}&url=${encodeURIComponent(`https://www.thehermeticflight.com/quiz/result/${urlSlug}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans"
+              >
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                Post
+              </a>
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://www.thehermeticflight.com/quiz/result/${urlSlug}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans"
+              >
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                Share
+              </a>
+              <button
+                id="copy-link-btn"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans"
+              >
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                <span id="copy-text">Copy Link</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- CTA for new visitors -->
+          <div class="border-t border-hermetic-gold/20 pt-8 mt-8">
+            <p class="text-hermetic-white font-serif text-lg mb-2">Discover Your Archetype</p>
+            <p class="text-gray-400 font-sans text-sm mb-6">Twenty questions. Five minutes. One revelation about how you're wired to receive wisdom through the cards.</p>
+            <a href="/quiz" class="btn-flame inline-block px-8 py-3 text-white font-sans font-bold text-sm tracking-widest uppercase no-underline">
+              Take the Quiz
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const copyBtn = document.getElementById('copy-link-btn');
+    const copyText = document.getElementById('copy-text');
+    if (copyBtn && copyText) {
+      copyBtn.addEventListener('click', async () => {
+        await navigator.clipboard.writeText(window.location.href);
+        copyText.textContent = 'Copied!';
+        setTimeout(() => { copyText.textContent = 'Copy Link'; }, 2000);
+      });
+    }
+
+    // Track all share button clicks
+    document.getElementById('share-buttons')?.addEventListener('click', (e) => {
+      const link = (e.target as HTMLElement).closest('a, button');
+      if (!link || typeof gtag !== 'function') return;
+      const archetype = window.location.pathname.split('/').pop();
+      const platform = link.tagName === 'BUTTON' ? 'copy_link'
+        : (link as HTMLAnchorElement).href.includes('x.com') ? 'x' : 'facebook';
+      gtag('event', 'share', {
+        method: platform,
+        content_type: 'quiz_result',
+        item_id: archetype,
+      });
+    });
+  </script>
+</Layout>

@@ -19,7 +19,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { archetypes } from '../src/lib/archetype-content';
+import { archetypes, archetypeByUrlSlug, toUrlSlug } from '../src/lib/archetype-content';
 import type { ArchetypeContent } from '../src/lib/archetype-content';
 import type { ArchetypeSlug } from '../src/lib/classifier';
 
@@ -137,6 +137,44 @@ describe('SYN-10: Archetype type correctness', () => {
     for (const slug of EXPECTED_SLUGS) {
       const entry = archetypes[slug];
       expect(entry.description.length).toBeGreaterThanOrEqual(50);
+    }
+  });
+});
+
+// ===========================================================================
+// URL slug utilities (Share CTA support)
+// ===========================================================================
+
+describe('toUrlSlug', () => {
+  it('converts underscore slugs to hyphenated URL slugs', () => {
+    expect(toUrlSlug('air_weaver')).toBe('air-weaver');
+    expect(toUrlSlug('embodied_intuitive')).toBe('embodied-intuitive');
+    expect(toUrlSlug('ascending_seeker')).toBe('ascending-seeker');
+    expect(toUrlSlug('shadow_dancer')).toBe('shadow-dancer');
+    expect(toUrlSlug('flow_artist')).toBe('flow-artist');
+    expect(toUrlSlug('grounded_mystic')).toBe('grounded-mystic');
+  });
+});
+
+describe('archetypeByUrlSlug', () => {
+  it('returns the correct archetype for each URL slug', () => {
+    const result = archetypeByUrlSlug('air-weaver');
+    expect(result).toBeDefined();
+    expect(result!.slug).toBe('air_weaver');
+    expect(result!.title).toBe('The Air Weaver');
+  });
+
+  it('returns undefined for invalid slugs', () => {
+    expect(archetypeByUrlSlug('not-real')).toBeUndefined();
+  });
+
+  it('maps all 6 archetypes', () => {
+    const urlSlugs = [
+      'air-weaver', 'embodied-intuitive', 'ascending-seeker',
+      'shadow-dancer', 'flow-artist', 'grounded-mystic',
+    ];
+    for (const slug of urlSlugs) {
+      expect(archetypeByUrlSlug(slug)).toBeDefined();
     }
   });
 });
