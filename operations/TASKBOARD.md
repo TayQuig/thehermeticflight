@@ -56,14 +56,15 @@ this file at session start and reports current state to the operator.
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 1 | Test infrastructure + quiz data model | `pending` | Add vitest, create quiz-data.ts with 20 questions, data integrity tests |
-| 2 | Archetype classifier (TDD) + content data | `pending` | Port Python classifier to TypeScript, unit tests, archetype display content |
+| 1 | Test infrastructure + quiz data model | `completed` | vitest + 71 quiz-data tests + quiz-data.ts (frozen-test-file: PASS) |
+| 2 | Archetype classifier (TDD) + content data | `completed` | 67 classifier tests + classifier.ts + archetype-content.ts (frozen-test-file: PASS) |
 | 3 | Native multi-step quiz page | `pending` | Replace Tally embed with native UI, client-side scoring + results reveal |
 | 4 | Quiz submission API route | `pending` | Vercel serverless function, server-side re-classification, Loops.so integration |
 | 5 | Environment, build verification, deploy | `pending` | .env setup, build test, Loops.so dashboard config (manual), migration checklist |
+| 6 | Harden — evaluation + remediation | `pending` | evaluation-protocol (3 evaluators, orthogonal lenses) → synthesis → frozen-test-file remediation → verification playbook. dep: Phases 1-5. |
 
-**Handoff Context (2026-02-28):**
-Implementation plan written and saved to `docs/plans/2026-02-28-marketing-pipeline-implementation.md`. Plan has 7 granular tasks with full code. Scoring anomaly decisions documented (corrected Q5/Q6, fixed Q8-A/Q9 bugs, preserved Q7-E/Q8-E dual scoring). The "quiz result-before-signup" backlog item is folded into Phase 3 — native quiz shows archetype instantly, then captures email. Pre-implementation blocker: operator should confirm Q5/Q6 corrected scoring intent before Phase 1 begins (plan proceeds with corrected scoring if no response). PO Box still needed before Loops.so sends any emails (CAN-SPAM).
+**Handoff Context (2026-03-07):**
+Scoring blocker RESOLVED — operator confirmed Q5/Q6 corrections, Q9-D as Shadow Dancer +4 only, Q7-E/Q8-E as only Grounded Mystic signals. Plan doc updated with failure triage for all 7 tasks, known risks for Tasks 5-7, and blocker resolution. Plan passes plan-review quality gate (all 4 elements present on all build phases). Protocols integrated: frozen-test-file for TDD phases (1-2), harden/evaluation-protocol as Phase 6. Astro hybrid serverless confirmed working (existing seobot.ts pattern). PO Box still needed for CAN-SPAM (blocks email sending, not code deployment).
 
 ---
 
