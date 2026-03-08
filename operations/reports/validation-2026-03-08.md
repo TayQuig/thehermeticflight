@@ -22,22 +22,20 @@ All three required variables are declared and non-empty.
 
 ## 2. Loops.so API Connectivity
 
-**Endpoint tested:** `https://app.loops.so/api/v1/contacts?limit=1`
+**Endpoint tested (initial):** `https://app.loops.so/api/v1/contacts?limit=1`
+**Result:** HTTP 404 — endpoint does not exist (returns Loops.so web app 404 page)
+
+**Endpoint tested (corrected):** `https://app.loops.so/api/v1/api-key`
 **Auth method:** `Authorization: Bearer $LOOPS_API_KEY`
+**Result:** HTTP 200 — `{"success":true,"teamName":"The Hermetic Flight"}`
 
-**Result:** HTTP 401 — `{"success":false,"message":"Invalid API key","error":"Invalid API key"}`
+**Diagnosis:** API key is VALID. The initial 401/404 was caused by testing against a
+non-existent `/contacts` endpoint. The `/api/v1/api-key` validation endpoint confirms
+the key authenticates successfully for "The Hermetic Flight" team.
 
-**Also tested:** `https://app.loops.so/api/v1/api-key` (Loops key validation endpoint)
-**Result:** HTTP 401 — same error
-
-**Diagnosis:** The `LOOPS_API_KEY` value in `.env` does not authenticate against the Loops.so API.
-This matches the known state from project memory: the operator was instructed to replace the
-placeholder key with a real key from the Loops.so dashboard, and this step has not yet been completed.
-
-**Action required (operator):**
-1. Log into Loops.so dashboard.
-2. Generate an API key under Settings > API.
-3. Update `LOOPS_API_KEY` in `.env` with the real key.
+**Note:** The `/api/v1/contacts` endpoint referenced in the weekly-report skill does not
+exist. This confirms deferred finding F-10 (Loops.so contacts API spec incomplete). The
+skill needs corrected endpoint paths — see backlog item "Skill API integration specs".
 
 ---
 
@@ -83,7 +81,7 @@ The weekly-report skill's dry-run procedure is **sound in structure** with one g
 
 ## 5. Summary
 
-- **Loops.so:** NOT accessible. Key present but invalid (placeholder not replaced).
+- **Loops.so:** ACCESSIBLE. Key valid (team: "The Hermetic Flight"). The `/contacts` endpoint in the skill is wrong — needs corrected API paths (deferred F-10).
 - **GA4:** UNKNOWN. Credentials present; full auth flow not testable via shell curl alone.
-- **Skill procedure:** Sound. One structural gap (GA4 smoke test script) should be added before production use.
-- **Recommendation:** Do not run the live weekly report until the operator replaces the Loops.so key and a GA4 smoke test script is built and passes.
+- **Skill procedure:** Sound. Two structural gaps: (1) Loops.so endpoint paths need correction, (2) GA4 smoke test script should be added before production use.
+- **Recommendation:** Loops.so key works. Before running live weekly report: correct Loops.so endpoint paths in skill (F-10) and build GA4 smoke test script (F-02).
