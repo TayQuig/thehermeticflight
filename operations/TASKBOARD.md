@@ -59,7 +59,7 @@ this file at session start and reports current state to the operator.
 | 1 | OG meta tag infrastructure + Layout.astro | `completed` | OG/Twitter Card meta tags added. Canonical URL fixed to www. 261 tests pass. `grep -c 'og:title' dist/index.html` = 1. `toUrlSlug` + `archetypeByUrlSlug` utilities added. |
 | 2 | Static archetype result pages + share CTA | `completed` | 6 result pages at `/quiz/result/[archetype]` with share buttons (X/Facebook/copy). quiz.astro success message now shows share CTA. 261 tests pass. |
 | 3 | OG images + share event tracking | `completed` | 7 placeholder OG PNGs (1200x630) created. GA4 share events on quiz.astro and result pages. Build succeeds, 261 tests pass. |
-| 4 | Build verification + Playwright tests | `in_progress` | Add result page + share CTA Playwright tests, full build verification, sitemap check. Plan Tasks 7-8. Entry: `tests/quiz-flow.spec.ts`. Pass: all unit + Playwright tests pass, 6 result pages in sitemap. dep: Phase 3. |
+| 4 | Build verification + Playwright tests | `completed` | 5 Playwright E2E tests pass (OG tags, result pages, share buttons, quiz flow, canonical URL). 261 unit tests pass. 6 result pages in sitemap. Build succeeds. |
 | 5 | Harden — evaluation + remediation | `pending` | Hardening sprint on new share/OG code. dep: Phase 4. |
 
 **Handoff Context:**
