@@ -1,7 +1,9 @@
 # Marketing Pipeline Replacement — Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
+> **For Tasks 2, 3:** REQUIRED PROTOCOL: Use frozen-test-file for TDD tasks. Opus writes tests (test author), Sonnet implements (implementer). Run `record-baseline.sh` after test authorship, `verify-frozen.sh` after implementation.
 > **For Task 5:** REQUIRED SUB-SKILL: Use `frontend-design` skill for the quiz UI. This is a tarot brand — the quiz must feel like a crafted experience, not an assembled form.
+> **Post-implementation:** REQUIRED PROTOCOL: Run `/harden` (evaluation-protocol + frozen-test-file remediation) after Tasks 1-7 complete. See Task 8 below.
 
 **Goal:** Replace the Tally + Zapier + Mailchimp email pipeline with a native Astro quiz form, client-side archetype classification, and a single Vercel serverless function that pushes contacts to Loops.so.
 
@@ -32,14 +34,14 @@ These decisions apply to the native quiz implementation. The Tally form bugs are
 
 ---
 
-## Pre-Implementation: Operator Decisions Needed
+## Pre-Implementation: Operator Decisions — RESOLVED
 
-> **BLOCKER for Task 2.** Before implementing the quiz data, the operator should confirm:
+> **RESOLVED (2026-03-07).** Operator confirmed all scoring decisions:
 >
-> 1. **Q5/Q6 corrected scoring** — The plan implements surface-meaning-matches-dimension. If the original shifted pattern was intentional (anti-gaming technique), say so and the data will be adjusted.
-> 2. **Q9-D scoring** — Plan implements Shadow Dancer +4 only. If the multi-dimension scoring was partially intentional (e.g., D+4 plus one other dimension), specify the intent.
->
-> If no response, proceed with the corrected scoring as documented above.
+> 1. **Q5/Q6 corrected scoring** — CONFIRMED. Use surface-meaning-matches-dimension (A=A, B=B, C=C, D=D for both).
+> 2. **Q9-D scoring** — CONFIRMED as Shadow Dancer +4 only. The all-dimension scoring was a build error.
+> 3. **Grounded Mystic signals** — Only Q7-E and Q8-E are dual A+D scoring. Q9 is standard 1-to-1 mapping.
+> 4. **PO Box** — Still needed for CAN-SPAM. Does not block Phases 1-4; blocks Phase 5 (email sending).
 
 ---
 
@@ -86,15 +88,26 @@ git add package.json package-lock.json vitest.config.ts
 git commit -m "chore: add vitest test infrastructure"
 ```
 
+**Failure Triage:**
+- `npm install` fails with engine error → verify Node 18+ (`node -v`). Astro 5.x requires Node 18+.
+- `npm install` fails with lockfile conflict → `rm -rf node_modules package-lock.json && npm install`.
+- `npx vitest run` exits with error (not "no test files") → check `vitest.config.ts` is at project root and `test.include` path matches project structure.
+
 ---
 
 ### Task 2: Quiz Data Model
+
+> **Protocol: frozen-test-file.** Step 1 (test authorship) must be dispatched as an Opus
+> subagent. After tests are committed, run `record-baseline.sh tests/`. Step 3
+> (implementation) must be dispatched as a Sonnet subagent. After implementation,
+> run `verify-frozen.sh` before proceeding. The test author and implementer must
+> be separate agent instances with no shared context.
 
 **Files:**
 - Create: `src/lib/quiz-data.ts`
 - Create: `tests/quiz-data.test.ts`
 
-**Step 1: Write data integrity tests**
+**Step 1: Write data integrity tests (Test Author — Opus)**
 
 ```typescript
 // tests/quiz-data.test.ts
@@ -175,12 +188,19 @@ describe('quiz-data', () => {
 });
 ```
 
-**Step 2: Run tests to verify they fail**
+**Step 2: Run tests to verify they fail + freeze baseline**
 
 Run: `npx vitest run tests/quiz-data.test.ts`
 Expected: FAIL (module not found)
 
-**Step 3: Create quiz data file**
+Commit test file, then freeze:
+```bash
+git add tests/quiz-data.test.ts
+git commit -m "test: add quiz data integrity tests (frozen-test-file contract)"
+record-baseline.sh tests/
+```
+
+**Step 3: Create quiz data file (Implementer — Sonnet)**
 
 Create `src/lib/quiz-data.ts` with type definitions and all 20 questions.
 
@@ -305,27 +325,44 @@ Patterns to follow for each question type:
 },
 ```
 
-**Step 4: Run tests to verify they pass**
-
-Run: `npx vitest run tests/quiz-data.test.ts`
-Expected: All 9 tests PASS
-
-**Step 5: Commit**
+**Step 4: Verify frozen tests + run tests**
 
 ```bash
-git add src/lib/quiz-data.ts tests/quiz-data.test.ts
-git commit -m "feat: add quiz data model with 20 questions and scoring weights"
+verify-frozen.sh                              # Hard gate — must exit 0
+npx vitest run tests/quiz-data.test.ts        # All 9 tests must PASS
 ```
+
+**Step 5: Reviewer (Opus) checks for contract dilution**
+
+Reviewer verifies: no `process.env.VITEST` branching, no type widening, no snapshot
+updates, no test script modifications. Reviewer must NOT modify frozen files.
+
+**Step 6: Commit + clean baseline**
+
+```bash
+git add src/lib/quiz-data.ts
+git commit -m "feat: add quiz data model with 20 questions and scoring weights"
+record-baseline.sh --clean
+```
+
+**Failure Triage:**
+- `verify-frozen.sh` exits non-zero → implementer modified test files. Reject entirely, dispatch fresh Sonnet implementer. Do not resume contaminated agent.
+- Test "has 15 scored and 5 non-scored questions" fails → recount. 14 scored questions (Q1, Q4-Q10, Q12-Q18) + Q11 is non-scored despite having dimension-like answers. Verify the count matches extraction doc Section 1.
+- Test "standard scoring is +4 points" fails → one of the dual-scored answers (Q7-E, Q8-E) or a corrected question (Q5, Q6, Q8-A, Q9) has wrong points. Cross-reference extraction doc Section 6 + anomaly resolution table above.
+- Import path errors → tests use `../src/lib/quiz-data`; verify relative path from `tests/` directory.
 
 ---
 
 ### Task 3: Archetype Classifier (TDD)
 
+> **Protocol: frozen-test-file.** Same as Task 2. Opus writes classifier tests,
+> baseline frozen, Sonnet implements, verify-frozen before acceptance.
+
 **Files:**
 - Create: `src/lib/classifier.ts`
 - Create: `tests/classifier.test.ts`
 
-**Step 1: Write failing tests**
+**Step 1: Write failing tests (Test Author — Opus)**
 
 ```typescript
 // tests/classifier.test.ts
@@ -413,12 +450,19 @@ describe('computeScores', () => {
 });
 ```
 
-**Step 2: Run tests to verify they fail**
+**Step 2: Run tests to verify they fail + freeze baseline**
 
 Run: `npx vitest run tests/classifier.test.ts`
 Expected: FAIL (module not found)
 
-**Step 3: Implement classifier**
+Commit test file, then freeze:
+```bash
+git add tests/classifier.test.ts
+git commit -m "test: add archetype classifier tests (frozen-test-file contract)"
+record-baseline.sh tests/
+```
+
+**Step 3: Implement classifier (Implementer — Sonnet)**
 
 ```typescript
 // src/lib/classifier.ts
@@ -490,17 +534,30 @@ export function computeScores(
 }
 ```
 
-**Step 4: Run tests to verify they pass**
-
-Run: `npx vitest run tests/classifier.test.ts`
-Expected: All 15 tests PASS
-
-**Step 5: Commit**
+**Step 4: Verify frozen tests + run tests**
 
 ```bash
-git add src/lib/classifier.ts tests/classifier.test.ts
-git commit -m "feat: add archetype classifier with priority cascade logic"
+verify-frozen.sh                              # Hard gate — must exit 0
+npx vitest run tests/classifier.test.ts       # All 15 tests must PASS
 ```
+
+**Step 5: Reviewer (Opus) checks for contract dilution**
+
+Same reviewer protocol as Task 2.
+
+**Step 6: Commit + clean baseline**
+
+```bash
+git add src/lib/classifier.ts
+git commit -m "feat: add archetype classifier with priority cascade logic"
+record-baseline.sh --clean
+```
+
+**Failure Triage:**
+- `verify-frozen.sh` exits non-zero → implementer modified test files. Reject entirely, dispatch fresh Sonnet implementer.
+- Classifier returns wrong archetype → check priority cascade ORDER. Grounded Mystic (priority 1) and Flow Artist (priority 2) must be evaluated BEFORE base archetypes (3-5). The cascade uses strict `>` for combination archetypes and `>=` for base archetypes — mixing these up changes tie-breaking behavior.
+- "Ascending Seeker as fallback" test fails → verify C never wins a `>=` comparison by design. If C is tied with any other dimension, the higher-priority archetype wins. C only wins as the final `return 'ascending_seeker'` fallback.
+- `computeScores` returns wrong totals → check that dual-scored answers (Q7-E, Q8-E) iterate over the full `scoring` array, not just `scoring[0]`.
 
 ---
 
@@ -584,6 +641,10 @@ export const archetypes: Record<ArchetypeSlug, ArchetypeContent> = {
 git add src/lib/archetype-content.ts
 git commit -m "feat: add archetype display content data"
 ```
+
+**Failure Triage:**
+- TypeScript error on `ArchetypeSlug` import → verify `classifier.ts` exports the type. If using `isolatedModules`, ensure it's `export type`.
+- Missing archetype slug in record → all 6 slugs must be keys: `air_weaver`, `embodied_intuitive`, `ascending_seeker`, `shadow_dancer`, `flow_artist`, `grounded_mystic`. TypeScript will catch missing keys if the `Record<ArchetypeSlug, ArchetypeContent>` type is used.
 
 ---
 
@@ -964,6 +1025,19 @@ git add src/pages/quiz.astro src/styles/global.css
 git commit -m "feat: replace Tally embed with native multi-step quiz UI"
 ```
 
+**Known Risks:**
+- **Astro `<script>` bundling:** Astro processes `<script>` tags as modules by default — ES imports work, but the script is bundled and deduplicated. Do NOT use `is:inline` on the quiz script or imports will break.
+- **CSS class dependencies:** The template uses `glass-panel`, `btn-flame`, and `text-hermetic-*` classes. These must exist in `src/styles/global.css` and `tailwind.config.mjs`. Verify before testing.
+- **Tailwind content paths:** Astro files must be included in Tailwind's `content` array or dynamic classes (like archetype-specific colors) will be purged in production builds.
+- **`position: relative`:** The glass-panel's decorative corner `div`s use `absolute` positioning. The parent `.glass-panel` must have `position: relative` in its CSS definition or corners will float to wrong positions.
+
+**Failure Triage:**
+- Blank page / no interactivity → check browser console for JS errors. Most likely: an import path is wrong in the `<script>` tag (Astro resolves from the file's location, not from `src/`).
+- Styles missing / broken layout → verify `glass-panel` class exists in `global.css`. Run `npx astro build` and check if Tailwind purged any quiz-specific classes. If so, add them to a safelist or use full class names (not dynamic concatenation).
+- Answer click does nothing → verify `data-question` and `data-answer` attributes render in the HTML (`View Source`). Astro may lowercase attributes — check for case mismatch in the JS selectors.
+- Auto-advance fires immediately or not at all → check the `setTimeout` delay (400ms). If the `selected` class animation conflicts, increase to 600ms.
+- Progress bar doesn't update → verify `progressFill` element exists and `style.width` is being set. Check that `TOTAL_QUESTIONS` equals 20.
+
 ---
 
 ### Task 6: Quiz Submission API Route
@@ -1083,6 +1157,19 @@ git add src/pages/api/quiz-submit.ts
 git commit -m "feat: add quiz submission API route with Loops.so integration"
 ```
 
+**Known Risks:**
+- **Astro output mode:** The project uses `output: 'static'` with `@astrojs/vercel` adapter. This works — Astro 5.x supports per-route `prerender = false` in static mode when an adapter is configured. The existing `src/pages/api/webhooks/seobot.ts` confirms this pattern works in production.
+- **Loops.so rate limits:** Free tier allows 10 requests/second. Unlikely to hit during normal quiz traffic, but could be an issue during testing if curl commands are rapid-fired.
+- **`import.meta.env` scope:** Server-side API routes can access all `.env` variables. Client-side scripts can only access `PUBLIC_` prefixed variables. `LOOPS_API_KEY` is server-only — this is correct and intentional.
+- **Loops.so response format:** The plan assumes `{ success: true }` response. Verify against the Loops API reference at `operations/mastermind-marketing-pipeline-replacement/loops-api-reference.md` before implementation.
+
+**Failure Triage:**
+- 404 on `/api/quiz-submit` in dev → verify `export const prerender = false` is the FIRST export in the file (before the `APIRoute` import). Check that the file is at `src/pages/api/quiz-submit.ts` (Astro routes by file path).
+- 404 on Vercel deployment → check Vercel build output for "serverless function" entries. If missing, verify `@astrojs/vercel` adapter is in `astro.config.mjs` and `@astrojs/vercel` is in `package.json` dependencies.
+- Loops.so returns non-200 → check API key is correct (`LOOPS_API_KEY` in `.env`). Check event name matches (`quiz_completed`). Check that contact properties (archetype, etc.) are created in Loops dashboard first. Check Loops API reference for error response format.
+- CORS error from browser → should not happen (same-origin request). If it does, check Vercel config for proxy/rewrite rules that might be redirecting the API route to a different domain.
+- Request body parsing fails → verify `Content-Type: application/json` header is sent from the client-side fetch. Check that `request.json()` is awaited.
+
 ---
 
 ### Task 7: Environment Setup & Build Verification
@@ -1120,6 +1207,18 @@ Verify: All tests pass (quiz-data + classifier)
 git add -A
 git commit -m "chore: add Loops.so env placeholder and verify build"
 ```
+
+**Known Risks:**
+- **PO Box (CAN-SPAM):** Loops.so requires a physical mailing address in email footers before any emails can be sent. This blocks the automation setup but NOT the code deployment. Operator has this on their reminder list.
+- **DNS propagation:** Loops.so domain verification (SPF/DKIM records for thehermeticflight.com) can take 24-48 hours. Plan for this delay before expecting emails to work.
+- **Vercel environment variables:** `.env` values must also be set in the Vercel dashboard (Settings > Environment Variables) for production. Local `.env` only works in dev.
+- **Astro build output:** With `output: 'static'` + adapter, the build produces both static HTML and serverless functions. Verify the serverless function appears in build output.
+
+**Failure Triage:**
+- `npm run build` fails with "API routes require server output" → This shouldn't happen with Astro 5.x + adapter + `prerender = false`, but if it does: change `output: 'static'` to `output: 'server'` in `astro.config.mjs` and add `export const prerender = true` to all non-API pages. (This is the inverse approach — server-default with static opt-in.)
+- Build succeeds but API returns 404 on Vercel → check Vercel dashboard for function deployment. Verify `LOOPS_API_KEY` is set in Vercel environment variables (not just local `.env`).
+- Loops.so domain verification fails → run `dig TXT thehermeticflight.com` to check DNS records. If records are present but verification fails, wait 24h and retry. Contact Loops.so support if still failing after 48h.
+- Emails not sending after full setup → check Loops.so dashboard: Events tab should show `quiz_completed` events arriving. If events arrive but emails don't send: verify automation is published (not draft), audience filter matches the archetype value exactly (case-sensitive slug), and PO Box address is configured.
 
 ---
 
@@ -1168,3 +1267,61 @@ Add PO Box or virtual mailbox to email footer for CAN-SPAM compliance. This must
 - [ ] Once validated: remove Tally embed code, cancel Tally subscription
 - [ ] Cancel Zapier subscription (no longer needed)
 - [ ] Evaluate Mailchimp timeline (keep until Loops.so drip sequences are live)
+
+---
+
+### Task 8: Harden — Evaluation + Remediation
+
+> **Protocol:** This task follows the `harden` super-skill, which orchestrates
+> `evaluation-protocol` (Phases 1-2, 5) and `frozen-test-file` (Phase 3 remediation).
+> All agent model routing is per protocol — non-overridable for judgment roles.
+
+**Prerequisite:** Tasks 1-7 complete, all tests passing, build succeeds.
+
+**Step 1: Pre-flight**
+
+Run `harden-preflight.sh` to validate clean state and create sprint directory.
+
+**Step 2: Evaluation (3 evaluators, orthogonal lenses)**
+
+Deploy 3 Opus evaluators in parallel with these lenses:
+
+| # | Lens | Focus |
+|---|------|-------|
+| 1 | Functional completeness | All 20 questions render, scoring math is correct for all edge cases, classifier priority cascade handles all tie patterns, email capture + API submission works end-to-end |
+| 2 | Security + input validation | Honeypot/timing bot detection effectiveness, API route input sanitization, XSS via quiz answers, Loops.so API key exposure, email validation bypass |
+| 3 | UX + accessibility | Keyboard navigation through all 20 steps, screen reader compatibility, back-button state preservation, progress bar accuracy, mobile responsiveness, archetype reveal experience |
+
+**Step 3: Synthesis**
+
+Orchestrator (Opus, main thread) reads all 3 reports, deduplicates findings, produces
+convergence matrix. Run `validate-synthesis.sh`. Commit as immutable.
+
+**Step 4: Remediation cycles**
+
+For each severity group (Critical → High → Medium):
+1. Test Author (Opus) writes regression tests for findings
+2. `record-baseline.sh` freezes tests
+3. Implementer (Sonnet) fixes findings
+4. `verify-frozen.sh` + full test suite
+5. Reviewer (Opus) checks for contract dilution
+
+**Step 5: Verification**
+
+Fresh Verifier (Opus) cross-references synthesis against HEAD. Produces
+Verification Playbook at `operations/<sprint-id>/verification-playbook.md`.
+
+**Step 6: Cleanup**
+
+Clean baselines, record learnings to memory DB, archive, notify.
+
+**Pass/fail criteria:** Verifier all-pass. All tests green. Build succeeds. Verification Playbook committed.
+
+**Known Risks:**
+- Evaluator context window limits — quiz page has substantial inline `<script>`. Evaluators may need the page split into sections.
+- Remediation cycles could surface Astro-specific issues (script bundling, SSG+serverless interaction) not caught by unit tests.
+
+**Failure Triage:**
+- Evaluator produces no output → proceed with N-1 (minimum 2 required for convergence).
+- `verify-frozen.sh` fails → reject implementer, dispatch fresh implementer (max 2 retries).
+- Verification fails → route failing findings back to remediation (max 1 loop). If second verification fails, escalate to operator.

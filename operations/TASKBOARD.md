@@ -59,7 +59,7 @@ this file at session start and reports current state to the operator.
 | 1 | Test infrastructure + quiz data model | `completed` | vitest + 71 quiz-data tests + quiz-data.ts (frozen-test-file: PASS) |
 | 2 | Archetype classifier (TDD) + content data | `completed` | 67 classifier tests + classifier.ts + archetype-content.ts (frozen-test-file: PASS) |
 | 3 | Native multi-step quiz page | `completed` | Native quiz.astro with 20 questions, auto-advance, archetype reveal, email form. 10/10 Playwright tests pass. |
-| 4 | Quiz submission API route | `pending` | Vercel serverless function, server-side re-classification, Loops.so integration |
+| 4 | Quiz submission API route | `in_progress` | Vercel serverless function, server-side re-classification, Loops.so integration |
 | 5 | Environment, build verification, deploy | `pending` | .env setup, build test, Loops.so dashboard config (manual), migration checklist |
 | 6 | Harden — evaluation + remediation | `pending` | evaluation-protocol (3 evaluators, orthogonal lenses) → synthesis → frozen-test-file remediation → verification playbook. dep: Phases 1-5. |
 
