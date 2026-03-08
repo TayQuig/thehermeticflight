@@ -282,10 +282,19 @@ import { archetypes } from '../lib/archetype-content';
     // Start button
     startBtn.addEventListener('click', () => showStep(1));
 
+    // Auto-advance timer ID — stored so it can be cancelled on back navigation
+    let autoAdvanceTimer: ReturnType<typeof setTimeout> | null = null;
+
     // Answer selection — auto-advance
     document.addEventListener('click', (e) => {
       const btn = (e.target as HTMLElement).closest('.answer-btn') as HTMLElement;
       if (!btn) return;
+
+      // Cancel any pending auto-advance timer before recording a new answer
+      if (autoAdvanceTimer !== null) {
+        clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = null;
+      }
 
       const questionId = btn.dataset.question!;
       const answerId = btn.dataset.answer!;
@@ -299,7 +308,8 @@ import { archetypes } from '../lib/archetype-content';
       state.answers[questionId] = answerId;
 
       // Auto-advance after selection animation
-      setTimeout(() => {
+      autoAdvanceTimer = setTimeout(() => {
+        autoAdvanceTimer = null;
         const nextStep = state.currentStep + 1;
         showStep(nextStep <= TOTAL_QUESTIONS ? nextStep : TOTAL_QUESTIONS + 1);
       }, 500);
@@ -309,6 +319,11 @@ import { archetypes } from '../lib/archetype-content';
     document.addEventListener('click', (e) => {
       const btn = (e.target as HTMLElement).closest('.back-btn');
       if (!btn) return;
+      // Cancel any pending auto-advance timer before navigating back
+      if (autoAdvanceTimer !== null) {
+        clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = null;
+      }
       if (state.currentStep > 1) showStep(state.currentStep - 1);
     });
 
