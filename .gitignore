@@ -22,5 +22,9 @@ Thumbs.db
 # Memory DB
 memory.db
 
+# Frozen test file protocol artifacts
+.frozen-test-baseline
+.frozen-test-manifest
+
 
 
