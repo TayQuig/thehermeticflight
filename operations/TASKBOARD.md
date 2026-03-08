@@ -50,32 +50,13 @@ this file at session start and reports current state to the operator.
 
 ## Active Task
 
-### Marketing Pipeline Replacement — Implementation
-
-**Brief:** Replace Tally + Zapier + Mailchimp with native Astro quiz + Vercel serverless + Loops.so. Implementation plan: `docs/plans/2026-02-28-marketing-pipeline-implementation.md`.
-
-| # | Phase | Status | Notes |
-|---|-------|--------|-------|
-| 1 | Test infrastructure + quiz data model | `completed` | vitest + 71 quiz-data tests + quiz-data.ts (frozen-test-file: PASS) |
-| 2 | Archetype classifier (TDD) + content data | `completed` | 67 classifier tests + classifier.ts + archetype-content.ts (frozen-test-file: PASS) |
-| 3 | Native multi-step quiz page | `completed` | Native quiz.astro with 20 questions, auto-advance, archetype reveal, email form. 10/10 Playwright tests pass. |
-| 4 | Quiz submission API route | `completed` | /api/quiz-submit.ts — validates, re-classifies server-side, sends quiz_completed event to Loops.so with idempotency |
-| 5 | Environment, build verification, deploy | `completed` | .env LOOPS_API_KEY placeholder added, build succeeds (quiz SSG + API serverless), 138 tests pass. Loops dashboard setup is manual operator task. |
-| 6 | Harden — evaluation + remediation | `pending` | evaluation-protocol (3 evaluators, orthogonal lenses) → synthesis → frozen-test-file remediation → verification playbook. dep: Phases 1-5. |
-
-**Handoff Context (2026-03-07):**
-Phases 1-5 COMPLETE. Full native quiz pipeline built: quiz-data.ts (20 questions), classifier.ts (priority cascade), archetype-content.ts (6 archetypes), quiz.astro (native multi-step UI with auto-advance + archetype reveal), quiz-submit.ts (Vercel serverless API route → Loops.so). 138 unit tests + 10 Playwright browser tests pass. Build verified (SSG + serverless function). LOOPS_API_KEY placeholder in .env (operator must replace + configure Loops dashboard). PO Box still needed for CAN-SPAM. Phase 6 (Harden) is next — requires eval-protocol + frozen-test-file remediation cycles.
+[Empty — no task in progress.]
 
 ---
 
 ## Ideas
 
-- "Living Quiz" — interactive tarot reading experience instead of standard form (Daydreamer Direction 1)
-- Email content as Astro MDX collections — version-controlled drip sequences that preview in dev server (Daydreamer Direction 2)
-- Progressive archetype reveal — reveal primary dimension immediately, drip nuances over 8 weeks (Daydreamer wild card)
-- Shareable archetype cards — OG image per archetype for social sharing / viral growth
-- Supabase as headless CRM — store raw quiz scores, engagement data, Kickstarter segmentation (Phase 2 when full self-hosted)
-- Always-on agent monitoring — evaluate when/if migrating to full self-hosted stack
+[Empty — triaged on 2026-03-07. "Shareable archetype cards" folded into Share CTA backlog item. Remaining 5 ideas (Living Quiz, MDX email collections, progressive reveal, Supabase CRM, always-on monitoring) recorded to memory DB as future directions.]
 
 ---
 
@@ -83,6 +64,9 @@ Phases 1-5 COMPLETE. Full native quiz pipeline built: quiz-data.ts (20 questions
 
 - ~~**Marketing pipeline replacement**~~ — PROMOTED TO ACTIVE TASK
 - ~~**Quiz result-before-signup flow**~~ — FOLDED INTO ACTIVE TASK (Phase 3)
-- **Kickstarter launch sequence pipeline** — 4 emails sent 4 weeks before Kickstarter launch (1 per week). These are broadcast emails that go to ALL subscribers regardless of where they are in their archetype nurture drip. Requires: Loops.so broadcast/campaign capability, scheduling logic, content for all 4 emails.
+- ~~**Kickstarter launch sequence pipeline**~~ — FOLDED INTO website automation skills (launch-sequence skill)
+- **Share CTA & OG meta tags (viral loop)** — Shareable archetype result pages with OG previews + share buttons on quiz completion. Adds site-wide OG/Twitter Card infrastructure (currently zero OG tags anywhere). 6 static result pages via `getStaticPaths()`, share CTA (X/Facebook/copy-link) on post-email-submit, GA4 share tracking. Plan: `docs/plans/2026-03-07-share-cta-og-tags.md`. Deps: Hardening (Phase 6) must complete first — overlapping files. Parallelizable with website automation skills.
+- **Website automation skills (5 skills)** — Build Claude Code skills to automate site management: audit-site (SEO/health), publish-post (content pipeline), social-blast (social media), weekly-report (analytics), launch-sequence (Kickstarter orchestration). Plan: `docs/plans/2026-03-07-website-automation-skills.md`. Deps: Skills 1-3 independent; Skills 4-5 benefit from marketing pipeline completion. Kickstarter launch sequence is now a mode within the launch-sequence skill. Note: Hermes Slack bot bridge (separate infra project) will enable Slack-triggered invocation of these skills via `claude -p`. No Zapier dependency — all native.
+- **Hermes Slack bot bridge (v1)** — LIVES IN SEPARATE REPO (hermes project). Basic Slack App (Socket Mode) + Node.js listener + `claude -p` integration. Enables @Hermes mentions in Slack to trigger Claude Code with subscription auth (no API costs). Expansion path: thread awareness → skill routing → project context detection → always-on monitoring. Blocked by: Slack App creation (operator task).
 - Clean up stale feature branches (page-quiz-embed, feature/faq-and-blog, feature/seobot-integration, etc.)
 - Add README with setup/run instructions
