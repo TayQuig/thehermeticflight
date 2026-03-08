@@ -71,7 +71,7 @@ this file at session start and reports current state to the operator.
 - Automation: `docs/plans/2026-03-07-website-automation-skills.md`
 
 **Handoff Context:**
-Sprint created 2026-03-07. Phases 1-4 (Share CTA build) completed in prior sessions. Phase 5 (harden) is unblocked and may already be claimed by a parallel instance — re-read this file before claiming. Phases 6-8 (skill builds) are independent of each other and of Phase 5. Phase 9 (validation) depends on 6-8. Marketing pipeline is complete, so all 5 skills can be fully built (no scaffold-only constraint).
+Sprint created 2026-03-07. Phases 1-5 (Share CTA build + harden) completed. Phase 5 hardening sprint ran 4 independent evaluators (structural, adversarial, architectural, test coverage), synthesized 9 findings, remediated all via frozen-test-file cycles, verified independently. 341 tests pass. Stale og-meta.test.ts removed. Phases 6-8 completed in parallel session. Phase 9 (validation) is the only remaining phase — depends on 6-8 being done.
 
 ---
 
