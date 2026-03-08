@@ -60,7 +60,7 @@ this file at session start and reports current state to the operator.
 | 2 | Archetype classifier (TDD) + content data | `completed` | 67 classifier tests + classifier.ts + archetype-content.ts (frozen-test-file: PASS) |
 | 3 | Native multi-step quiz page | `completed` | Native quiz.astro with 20 questions, auto-advance, archetype reveal, email form. 10/10 Playwright tests pass. |
 | 4 | Quiz submission API route | `completed` | /api/quiz-submit.ts — validates, re-classifies server-side, sends quiz_completed event to Loops.so with idempotency |
-| 5 | Environment, build verification, deploy | `in_progress` | .env setup, build test, Loops.so dashboard config (manual), migration checklist |
+| 5 | Environment, build verification, deploy | `completed` | .env LOOPS_API_KEY placeholder added, build succeeds (quiz SSG + API serverless), 138 tests pass. Loops dashboard setup is manual operator task. |
 | 6 | Harden — evaluation + remediation | `pending` | evaluation-protocol (3 evaluators, orthogonal lenses) → synthesis → frozen-test-file remediation → verification playbook. dep: Phases 1-5. |
 
 **Handoff Context (2026-03-07):**
