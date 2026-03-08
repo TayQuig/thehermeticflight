@@ -50,7 +50,20 @@ this file at session start and reports current state to the operator.
 
 ## Active Task
 
-[Empty — no task in progress.]
+### Share CTA & OG Meta Tags (Viral Loop)
+
+**Brief:** Add shareable archetype result pages with OG previews + share buttons on quiz completion. Turns the quiz pipeline into a viral acquisition engine. Plan: `docs/plans/2026-03-07-share-cta-og-tags.md`.
+
+| # | Phase | Status | Notes |
+|---|-------|--------|-------|
+| 1 | OG meta tag infrastructure + Layout.astro | `pending` | Add OG/Twitter Card meta tags to Layout, fix canonical URL to use www. Plan Tasks 1-2. Entry: `src/layouts/Layout.astro`, `src/lib/archetype-content.ts`. Pass: `grep -c 'og:title' dist/index.html` returns 1, all tests pass. |
+| 2 | Static archetype result pages + share CTA | `pending` | Create 6 result pages via getStaticPaths, add share buttons to quiz.astro post-submission. Plan Tasks 3-4. Entry: `src/pages/quiz/result/[archetype].astro`, `src/pages/quiz.astro`. Pass: 6 dirs in `dist/quiz/result/`, build succeeds, Playwright pass. dep: Phase 1. |
+| 3 | OG images + share event tracking | `pending` | Create 7 placeholder OG images (1200x630), add GA4 share events. Plan Tasks 5-6. Entry: `public/images/og/`. Pass: 7 PNGs exist, build succeeds. dep: Phase 2. |
+| 4 | Build verification + Playwright tests | `pending` | Add result page + share CTA Playwright tests, full build verification, sitemap check. Plan Tasks 7-8. Entry: `tests/quiz-flow.spec.ts`. Pass: all unit + Playwright tests pass, 6 result pages in sitemap. dep: Phase 3. |
+| 5 | Harden — evaluation + remediation | `pending` | Hardening sprint on new share/OG code. dep: Phase 4. |
+
+**Handoff Context:**
+Auto-promoted from backlog on 2026-03-07. Plan document reviewed and updated — 5 critical bugs fixed (stale `window.__quizArchetype` ref, file overwrite, Playwright framework mismatch, port mismatch, domain inconsistency). Known risks and failure triage added to all tasks. Hardening dependency (marketing pipeline Phase 6) is complete. Plan is READY TO BUILD.
 
 ---
 
@@ -65,7 +78,7 @@ this file at session start and reports current state to the operator.
 - ~~**Marketing pipeline replacement**~~ — PROMOTED TO ACTIVE TASK
 - ~~**Quiz result-before-signup flow**~~ — FOLDED INTO ACTIVE TASK (Phase 3)
 - ~~**Kickstarter launch sequence pipeline**~~ — FOLDED INTO website automation skills (launch-sequence skill)
-- **Share CTA & OG meta tags (viral loop)** — Shareable archetype result pages with OG previews + share buttons on quiz completion. Adds site-wide OG/Twitter Card infrastructure (currently zero OG tags anywhere). 6 static result pages via `getStaticPaths()`, share CTA (X/Facebook/copy-link) on post-email-submit, GA4 share tracking. Plan: `docs/plans/2026-03-07-share-cta-og-tags.md`. Deps: Hardening (Phase 6) must complete first — overlapping files. Parallelizable with website automation skills.
+- ~~**Share CTA & OG meta tags (viral loop)**~~ — PROMOTED TO ACTIVE TASK
 - **Website automation skills (5 skills)** — Build Claude Code skills to automate site management: audit-site (SEO/health), publish-post (content pipeline), social-blast (social media), weekly-report (analytics), launch-sequence (Kickstarter orchestration). Plan: `docs/plans/2026-03-07-website-automation-skills.md`. Deps: Skills 1-3 independent; Skills 4-5 benefit from marketing pipeline completion. Kickstarter launch sequence is now a mode within the launch-sequence skill. Note: Hermes Slack bot bridge (separate infra project) will enable Slack-triggered invocation of these skills via `claude -p`. No Zapier dependency — all native.
 - **Hermes Slack bot bridge (v1)** — LIVES IN SEPARATE REPO (hermes project). Basic Slack App (Socket Mode) + Node.js listener + `claude -p` integration. Enables @Hermes mentions in Slack to trigger Claude Code with subscription auth (no API costs). Expansion path: thread awareness → skill routing → project context detection → always-on monitoring. Blocked by: Slack App creation (operator task).
 - Clean up stale feature branches (page-quiz-embed, feature/faq-and-blog, feature/seobot-integration, etc.)
