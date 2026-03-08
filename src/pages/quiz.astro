@@ -1,51 +1,371 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { questions } from '../lib/quiz-data';
+import { archetypes } from '../lib/archetype-content';
 ---
 
-<Layout 
-	title="What's Your Aerial Tarot Archetype? | The Hermetic Flight"
-	description="Discover your unique tarot archetype. Twenty questions, five minutes, one revelation about how you're wired to receive wisdom through the cards."
+<Layout
+  title="What's Your Aerial Tarot Archetype? | The Hermetic Flight"
+  description="Discover your unique tarot archetype. Twenty questions, five minutes, one revelation about how you're wired to receive wisdom through the cards."
 >
-	<main class="w-full min-h-screen flex flex-col relative z-10">
-		
-		<!-- Minimal Header -->
-		<header class="w-full py-6 px-6 flex justify-center">
-			<a href="/" class="group flex items-center gap-3">
-				<img src="/images/logo.png" alt="The Hermetic Flight" class="w-10 h-10 rounded-full opacity-80 group-hover:opacity-100 transition-opacity" />
-				<span class="font-serif text-hermetic-gold/60 text-sm tracking-[0.2em] uppercase group-hover:text-hermetic-gold transition-colors">The Hermetic Flight</span>
-			</a>
-		</header>
+  <main class="w-full min-h-screen flex flex-col items-center relative z-10 pt-6 pb-12 px-4">
 
-		<!-- Quiz Embed Container -->
-		<div class="w-full max-w-4xl mx-auto px-4 pb-8">
-			<iframe 
-				data-tally-src="https://tally.so/embed/QK7v5Y?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" 
-				loading="lazy" 
-				width="100%" 
-				height="1164" 
-				frameborder="0" 
-				marginheight="0" 
-				marginwidth="0" 
-				title="What's Your Aerial Tarot Archetype?"
-			></iframe>
-		</div>
+    <!-- Minimal Header -->
+    <header class="w-full py-4 flex justify-center mb-4">
+      <a href="/" class="group flex items-center gap-3">
+        <img src="/images/logo.png" alt="The Hermetic Flight" class="w-10 h-10 rounded-full opacity-80 group-hover:opacity-100 transition-opacity" />
+        <span class="font-serif text-hermetic-gold/60 text-sm tracking-[0.2em] uppercase group-hover:text-hermetic-gold transition-colors">The Hermetic Flight</span>
+      </a>
+    </header>
 
-	</main>
+    <!-- Progress Bar (hidden on intro and results) -->
+    <div id="progress-bar" class="w-full max-w-2xl mb-6 opacity-0 transition-opacity duration-500">
+      <div class="h-[2px] bg-hermetic-void/50 rounded-full overflow-hidden border border-hermetic-gold/10">
+        <div id="progress-fill" class="h-full bg-gradient-to-r from-hermetic-gold via-hermetic-sulfur to-hermetic-gold transition-all duration-700 ease-out relative" style="width: 0%">
+          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
+        </div>
+      </div>
+      <p id="progress-text" class="text-hermetic-gold/40 text-xs mt-2 text-center font-sans tracking-wider"></p>
+    </div>
 
-	<!-- Tally Embed Script -->
-	<script is:inline>
-		var d=document,w="https://tally.so/widgets/embed.js",v=function(){"undefined"!=typeof Tally?Tally.loadEmbeds():d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach((function(e){e.src=e.dataset.tallySrc}))};if("undefined"!=typeof Tally)v();else if(d.querySelector('script[src="'+w+'"]')==null){var s=d.createElement("script");s.src=w,s.onload=v,s.onerror=v,d.body.appendChild(s);}
-	</script>
+    <!-- Quiz Container -->
+    <div id="quiz-container" class="w-full max-w-2xl relative" style="min-height: 400px;">
 
-	<!-- Form Submission Redirect -->
-	<script is:inline>
-		window.addEventListener('message', function(e) {
-			if (e.data && (e.data.event === 'Tally.FormSubmit' || e.data.type === 'tally.form.submit')) {
-				setTimeout(function() {
-					window.location.href = 'https://thehermeticflight.com/thank-you';
-				}, 500);
-			}
-		});
-	</script>
+      <!-- Intro Screen -->
+      <section id="quiz-intro" class="quiz-step active">
+        <div class="glass-panel p-8 md:p-12 rounded-lg text-center">
+          <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-hermetic-gold opacity-50"></div>
+          <div class="absolute top-2 right-2 w-3 h-3 border-t border-r border-hermetic-gold opacity-50"></div>
+          <div class="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-hermetic-gold opacity-50"></div>
+          <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-hermetic-gold opacity-50"></div>
 
+          <div class="mb-6">
+            <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/60 to-transparent mx-auto mb-6"></div>
+            <p class="text-hermetic-gold text-xs tracking-[0.3em] uppercase font-sans">Six Archetypes Await</p>
+          </div>
+
+          <h1 class="font-serif text-2xl md:text-4xl text-hermetic-white mb-4 leading-tight tracking-wide">
+            Discover Your Aerial<br><span class="text-hermetic-gold italic">Tarot Archetype</span>
+          </h1>
+
+          <div class="w-24 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/40 to-transparent mx-auto my-6"></div>
+
+          <p class="text-gray-300 font-light font-sans mb-8 max-w-md mx-auto leading-relaxed">
+            Twenty questions. Five minutes. One revelation about how you receive wisdom through the cards.
+          </p>
+
+          <button id="start-quiz" class="btn-flame px-10 py-4 text-white font-sans font-bold text-sm tracking-widest uppercase">
+            Begin the Reading
+          </button>
+
+          <p class="text-hermetic-gold/30 text-xs font-sans mt-6 tracking-wider">No account needed</p>
+        </div>
+      </section>
+
+      <!-- Question Screens (rendered from data at build time) -->
+      {questions.map((q, i) => (
+        <section class="quiz-step" data-step={i + 1}>
+          <div class="glass-panel p-6 md:p-8 rounded-lg">
+            <div class="absolute top-2 left-2 w-2 h-2 border-t border-l border-hermetic-gold/30"></div>
+            <div class="absolute top-2 right-2 w-2 h-2 border-t border-r border-hermetic-gold/30"></div>
+            <div class="absolute bottom-2 left-2 w-2 h-2 border-b border-l border-hermetic-gold/30"></div>
+            <div class="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-hermetic-gold/30"></div>
+
+            <p class="text-hermetic-gold/50 text-xs tracking-[0.2em] uppercase mb-1 font-sans">
+              Question {q.number}
+            </p>
+            <div class="w-12 h-[1px] bg-hermetic-gold/20 mb-5"></div>
+
+            <h2 class="font-serif text-lg md:text-xl text-hermetic-white mb-6 leading-relaxed">
+              {q.text.replace(/^\d+\.\s*/, '')}
+            </h2>
+
+            <div class="space-y-3">
+              {q.answers.map((a) => (
+                <button
+                  class="answer-btn w-full text-left p-4 border border-hermetic-gold/10 rounded-lg font-sans text-gray-300 font-light leading-relaxed transition-all duration-300 hover:border-hermetic-gold/40 hover:bg-hermetic-emerald/30 hover:text-hermetic-white hover:pl-5 group"
+                  data-question={q.id}
+                  data-answer={a.id}
+                >
+                  <span class="inline-block w-0 group-hover:w-2 transition-all duration-300 overflow-hidden text-hermetic-gold/50">&#x2022;</span>
+                  {a.text}
+                </button>
+              ))}
+            </div>
+
+            {i > 0 && (
+              <button class="back-btn mt-6 text-hermetic-gold/30 text-sm font-sans hover:text-hermetic-gold/60 transition-colors duration-300 flex items-center gap-2">
+                <span class="text-xs">&larr;</span> Previous
+              </button>
+            )}
+          </div>
+        </section>
+      ))}
+
+      <!-- Results Screen -->
+      <section id="quiz-results" class="quiz-step">
+        <div class="glass-panel p-8 md:p-12 rounded-lg text-center overflow-visible">
+          <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-hermetic-gold opacity-50"></div>
+          <div class="absolute top-2 right-2 w-3 h-3 border-t border-r border-hermetic-gold opacity-50"></div>
+          <div class="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-hermetic-gold opacity-50"></div>
+          <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-hermetic-gold opacity-50"></div>
+
+          <!-- Gold pulse behind title -->
+          <div id="result-glow" class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full opacity-0 blur-[80px] transition-opacity duration-[2000ms]" style="background: radial-gradient(circle, rgba(197,160,89,0.4), transparent 70%);"></div>
+
+          <div class="relative">
+            <p id="result-label" class="text-hermetic-gold text-xs tracking-[0.3em] uppercase mb-2 font-sans opacity-0 translate-y-4 transition-all duration-700">Your Archetype Revealed</p>
+
+            <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/60 to-transparent mx-auto mb-6 opacity-0 scale-x-0 transition-all duration-700 delay-300" id="result-divider"></div>
+
+            <h2 id="result-title" class="font-serif text-3xl md:text-5xl text-hermetic-white mb-2 tracking-wide opacity-0 translate-y-4 transition-all duration-700 delay-500"></h2>
+
+            <p id="result-element" class="text-hermetic-gold/60 text-xs tracking-[0.3em] uppercase font-sans mb-6 opacity-0 transition-opacity duration-700 delay-700"></p>
+
+            <p id="result-description" class="text-gray-300 font-light font-sans leading-relaxed mb-8 max-w-lg mx-auto opacity-0 translate-y-4 transition-all duration-700 delay-[900ms]"></p>
+          </div>
+
+          <!-- Email Capture -->
+          <div id="email-section" class="border-t border-hermetic-gold/20 pt-8 mt-8 opacity-0 translate-y-4 transition-all duration-700 delay-[1200ms]">
+            <p class="text-hermetic-white font-serif text-lg mb-2">Begin Your Archetype Journey</p>
+            <p class="text-gray-400 font-sans text-sm mb-6">Enter your email to receive your personalized archetype reading and early Kickstarter access.</p>
+            <form id="email-form" class="space-y-3 max-w-sm mx-auto">
+              <!-- Honeypot -->
+              <div style="position:absolute;left:-9999px;" aria-hidden="true">
+                <input type="text" name="website" tabindex="-1" autocomplete="off" />
+              </div>
+              <input
+                type="text"
+                name="firstName"
+                placeholder="First Name"
+                class="w-full p-3 bg-hermetic-void/80 border border-hermetic-gold/20 rounded-lg text-hermetic-white font-sans placeholder:text-gray-500 focus:border-hermetic-gold/50 focus:outline-none transition-colors duration-300"
+              />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                required
+                class="w-full p-3 bg-hermetic-void/80 border border-hermetic-gold/20 rounded-lg text-hermetic-white font-sans placeholder:text-gray-500 focus:border-hermetic-gold/50 focus:outline-none transition-colors duration-300"
+              />
+              <button type="submit" id="submit-btn" class="btn-flame w-full py-3 text-white font-sans font-bold text-sm tracking-widest uppercase">
+                Unlock My Reading
+              </button>
+            </form>
+          </div>
+
+          <!-- Success Message -->
+          <div id="email-success" class="hidden border-t border-hermetic-gold/20 pt-8 mt-8">
+            <div class="w-12 h-12 rounded-full border border-hermetic-gold/50 mx-auto mb-4 flex items-center justify-center">
+              <span class="text-hermetic-gold text-xl">&#x2713;</span>
+            </div>
+            <p class="text-hermetic-gold font-serif text-xl mb-2">The Path is Revealed</p>
+            <p class="text-gray-300 font-sans font-light">Check your inbox — your archetype journey begins now.</p>
+            <a href="/" class="btn-flame inline-block mt-6 px-8 py-3 text-white font-sans font-bold text-sm tracking-widest uppercase no-underline">
+              Return Home
+            </a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Quiz Logic -->
+  <script>
+    import { questions } from '../lib/quiz-data';
+    import { classify, computeScores } from '../lib/classifier';
+    import { archetypes } from '../lib/archetype-content';
+
+    const TOTAL_QUESTIONS = questions.length;
+
+    const state = {
+      currentStep: 0,
+      answers: {} as Record<string, string>,
+      startTime: Date.now(),
+    };
+
+    // DOM refs
+    const allSteps = document.querySelectorAll<HTMLElement>('.quiz-step');
+    const progressBar = document.getElementById('progress-bar')!;
+    const progressFill = document.getElementById('progress-fill')!;
+    const progressText = document.getElementById('progress-text')!;
+    const startBtn = document.getElementById('start-quiz')!;
+    const resultTitle = document.getElementById('result-title')!;
+    const resultElement = document.getElementById('result-element')!;
+    const resultDescription = document.getElementById('result-description')!;
+    const resultLabel = document.getElementById('result-label')!;
+    const resultDivider = document.getElementById('result-divider')!;
+    const resultGlow = document.getElementById('result-glow')!;
+    const emailSection = document.getElementById('email-section')!;
+    const emailForm = document.getElementById('email-form') as HTMLFormElement;
+    const emailSuccess = document.getElementById('email-success')!;
+    const submitBtn = document.getElementById('submit-btn')!;
+
+    function showStep(step: number) {
+      state.currentStep = step;
+
+      // Fade out current, then show next
+      allSteps.forEach(el => {
+        if (el.classList.contains('active')) {
+          el.classList.add('exiting');
+          el.classList.remove('active');
+        }
+      });
+
+      // Small delay for exit animation
+      setTimeout(() => {
+        allSteps.forEach(el => el.classList.remove('exiting'));
+
+        if (step === 0) {
+          allSteps[0].classList.add('active');
+          progressBar.style.opacity = '0';
+        } else if (step <= TOTAL_QUESTIONS) {
+          const stepEl = document.querySelector<HTMLElement>(`[data-step="${step}"]`);
+          if (stepEl) {
+            stepEl.classList.add('active');
+            // Restore selected state
+            const qId = questions[step - 1].id;
+            if (state.answers[qId]) {
+              const btn = stepEl.querySelector(`[data-answer="${state.answers[qId]}"]`);
+              if (btn) btn.classList.add('selected');
+            }
+          }
+          progressBar.style.opacity = '1';
+          const pct = ((step - 1) / TOTAL_QUESTIONS) * 100;
+          progressFill.style.width = `${pct}%`;
+          progressText.textContent = `${step} of ${TOTAL_QUESTIONS}`;
+        } else {
+          // Results
+          progressBar.style.opacity = '0';
+          const resultsEl = document.getElementById('quiz-results')!;
+          resultsEl.classList.add('active');
+          revealResults();
+        }
+      }, 250);
+    }
+
+    function revealResults() {
+      const scores = computeScores(state.answers, questions);
+      const archetype = classify(scores);
+      const content = archetypes[archetype];
+
+      resultTitle.textContent = content.title;
+      resultElement.textContent = `Element of ${content.element}`;
+      resultDescription.textContent = content.description;
+
+      // Store for form submission
+      (window as any).__quizArchetype = archetype;
+      (window as any).__quizScores = scores;
+
+      // Trigger staggered reveal animations
+      requestAnimationFrame(() => {
+        resultGlow.style.opacity = '1';
+        resultLabel.style.opacity = '1';
+        resultLabel.style.transform = 'translateY(0)';
+        resultDivider.style.opacity = '1';
+        resultDivider.style.transform = 'scaleX(1)';
+        resultTitle.style.opacity = '1';
+        resultTitle.style.transform = 'translateY(0)';
+        resultElement.style.opacity = '1';
+        resultDescription.style.opacity = '1';
+        resultDescription.style.transform = 'translateY(0)';
+        emailSection.style.opacity = '1';
+        emailSection.style.transform = 'translateY(0)';
+      });
+
+      // Analytics
+      if (typeof gtag === 'function') {
+        gtag('event', 'quiz_completed', { archetype });
+      }
+    }
+
+    // Start button
+    startBtn.addEventListener('click', () => showStep(1));
+
+    // Answer selection — auto-advance
+    document.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest('.answer-btn') as HTMLElement;
+      if (!btn) return;
+
+      const questionId = btn.dataset.question!;
+      const answerId = btn.dataset.answer!;
+
+      // Visual feedback
+      const parent = btn.closest('.quiz-step')!;
+      parent.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+
+      // Record
+      state.answers[questionId] = answerId;
+
+      // Auto-advance after selection animation
+      setTimeout(() => {
+        const nextStep = state.currentStep + 1;
+        showStep(nextStep <= TOTAL_QUESTIONS ? nextStep : TOTAL_QUESTIONS + 1);
+      }, 500);
+    });
+
+    // Back button
+    document.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest('.back-btn');
+      if (!btn) return;
+      if (state.currentStep > 1) showStep(state.currentStep - 1);
+    });
+
+    // Email form
+    emailForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(emailForm);
+
+      // Honeypot check
+      if (formData.get('website')) return;
+
+      // Timing check (< 10s = bot)
+      const elapsed = (Date.now() - state.startTime) / 1000;
+      if (elapsed < 10) return;
+
+      const email = formData.get('email') as string;
+      const firstName = formData.get('firstName') as string;
+
+      submitBtn.textContent = 'Sending...';
+      submitBtn.setAttribute('disabled', 'true');
+      submitBtn.style.opacity = '0.6';
+
+      try {
+        const res = await fetch('/api/quiz-submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            firstName,
+            answers: state.answers,
+          }),
+        });
+
+        if (res.ok) {
+          emailSection.style.display = 'none';
+          emailSuccess.classList.remove('hidden');
+
+          if (typeof fbq === 'function') fbq('track', 'Lead');
+          if (typeof gtag === 'function') {
+            gtag('event', 'generate_lead', {
+              event_category: 'quiz',
+              archetype: (window as any).__quizArchetype,
+            });
+          }
+        } else {
+          submitBtn.textContent = 'Something went wrong — try again';
+          submitBtn.removeAttribute('disabled');
+          submitBtn.style.opacity = '1';
+        }
+      } catch {
+        submitBtn.textContent = 'Something went wrong — try again';
+        submitBtn.removeAttribute('disabled');
+        submitBtn.style.opacity = '1';
+      }
+    });
+
+    // Initialize
+    showStep(0);
+  </script>
 </Layout>
