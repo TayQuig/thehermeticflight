@@ -50,20 +50,28 @@ this file at session start and reports current state to the operator.
 
 ## Active Task
 
-### Share CTA & OG Meta Tags (Viral Loop)
+### Sprint: Harden + Website Automation — 2 Items
 
-**Brief:** Add shareable archetype result pages with OG previews + share buttons on quiz completion. Turns the quiz pipeline into a viral acquisition engine. Plan: `docs/plans/2026-03-07-share-cta-og-tags.md`.
+**Brief:** Parallel sprint. (A) Complete hardening on the share/OG viral loop code. (B) Build 5 website automation skills (audit-site, publish-post, social-blast, weekly-report, launch-sequence). Zero shared state — hardening touches repo quiz code; skills live in `~/.claude/skills/`.
 
-| # | Phase | Status | Notes |
-|---|-------|--------|-------|
-| 1 | OG meta tag infrastructure + Layout.astro | `completed` | OG/Twitter Card meta tags added. Canonical URL fixed to www. 261 tests pass. `grep -c 'og:title' dist/index.html` = 1. `toUrlSlug` + `archetypeByUrlSlug` utilities added. |
-| 2 | Static archetype result pages + share CTA | `completed` | 6 result pages at `/quiz/result/[archetype]` with share buttons (X/Facebook/copy). quiz.astro success message now shows share CTA. 261 tests pass. |
-| 3 | OG images + share event tracking | `completed` | 7 placeholder OG PNGs (1200x630) created. GA4 share events on quiz.astro and result pages. Build succeeds, 261 tests pass. |
-| 4 | Build verification + Playwright tests | `completed` | 5 Playwright E2E tests pass (OG tags, result pages, share buttons, quiz flow, canonical URL). 261 unit tests pass. 6 result pages in sitemap. Build succeeds. |
-| 5 | Harden — evaluation + remediation | `pending` | Hardening sprint on new share/OG code. dep: Phase 4. |
+| # | Phase | Source | Status | Notes |
+|---|-------|--------|--------|-------|
+| 1 | OG meta tag infrastructure + Layout.astro | Share CTA | `completed` | OG/Twitter Card meta tags added. Canonical URL fixed to www. 261 tests pass. `toUrlSlug` + `archetypeByUrlSlug` utilities added. |
+| 2 | Static archetype result pages + share CTA | Share CTA | `completed` | 6 result pages at `/quiz/result/[archetype]` with share buttons (X/Facebook/copy). quiz.astro success message now shows share CTA. 261 tests pass. |
+| 3 | OG images + share event tracking | Share CTA | `completed` | 7 placeholder OG PNGs (1200x630) created. GA4 share events on quiz.astro and result pages. Build succeeds, 261 tests pass. |
+| 4 | Build verification + Playwright tests | Share CTA | `completed` | 5 Playwright E2E tests pass (OG tags, result pages, share buttons, quiz flow, canonical URL). 261 unit tests pass. 6 result pages in sitemap. Build succeeds. |
+| 5 | Harden — evaluation + remediation | Share CTA | `pending` | Hardening sprint on new share/OG code. dep: Phase 4. |
+| 6 | Scaffold skill directories + build audit-site | Automation | `pending` | Plan Tasks 1-2. Create 5 dirs in `~/.claude/skills/`, write audit-site SKILL.md. |
+| 7 | Build publish-post + social-blast skills | Automation | `pending` | Plan Tasks 3-4. Content pipeline + social amplifier. |
+| 8 | Build weekly-report + launch-sequence skills | Automation | `pending` | Plan Tasks 5-6. Analytics reporter + Kickstarter orchestrator. |
+| 9 | Validate all 5 skills end-to-end | Automation | `pending` | Dry-run each skill, fix issues. dep: Phases 6-8. |
+
+**Plans:**
+- Share CTA: `docs/plans/2026-03-07-share-cta-og-tags.md`
+- Automation: `docs/plans/2026-03-07-website-automation-skills.md`
 
 **Handoff Context:**
-Auto-promoted from backlog on 2026-03-07. Plan document reviewed and updated — 5 critical bugs fixed (stale `window.__quizArchetype` ref, file overwrite, Playwright framework mismatch, port mismatch, domain inconsistency). Known risks and failure triage added to all tasks. Hardening dependency (marketing pipeline Phase 6) is complete. Plan is READY TO BUILD.
+Sprint created 2026-03-07. Phases 1-4 (Share CTA build) completed in prior sessions. Phase 5 (harden) is unblocked and may already be claimed by a parallel instance — re-read this file before claiming. Phases 6-8 (skill builds) are independent of each other and of Phase 5. Phase 9 (validation) depends on 6-8. Marketing pipeline is complete, so all 5 skills can be fully built (no scaffold-only constraint).
 
 ---
 
