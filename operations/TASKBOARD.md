@@ -63,7 +63,7 @@ and 4 API reference guides are written. Ready for execution.
 | 1 | Write sprint roadmap + organize backlog into 6 sprints | `completed` | `docs/plans/2026-03-09-sprint-roadmap.md` |
 | 2 | Scrape API references (PageSpeed, Supabase, Playwright, Vercel GH Actions) | `completed` | 4 guides in `operations/*-reference.md` |
 | 3 | Write 8 detailed plan docs with FTF/eval/harden gates | `completed` | All at `docs/plans/2026-03-09-*.md` |
-| 4 | Execute Sprint 1: Foundation & Quick Wins (3 parallel tracks) | `pending` | 1A: thank-you redirect, 1B: infra hardening, 1C: housekeeping |
+| 4 | Execute Sprint 1: Foundation & Quick Wins (3 parallel tracks) | `completed` | All 3 tracks merged, 381/381 tests pass, build clean |
 | 5 | Execute Sprint 2: Growth Features (3 parallel tracks) | `pending` | 2A: journey pages, 2B: countdown, 2C: daily draw |
 | 6 | Execute Sprint 3: Operational Visibility (4 parallel tracks) | `pending` | Skills: site-monitor, perf-audit, funnel analytics, WCAG |
 | 7 | Execute Sprint 4: Code Quality & Skill Hardening (2 tracks) | `pending` | 4A: quiz refactoring, 4B: skill polish |
