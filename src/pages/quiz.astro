@@ -183,7 +183,15 @@ import { archetypes } from '../lib/archetype-content';
               </div>
             </div>
 
-            <a href="/" class="btn-flame inline-block mt-6 px-8 py-3 text-white font-sans font-bold text-sm tracking-widest uppercase no-underline">
+            <!-- Primary CTA: archetype profile (href populated by JS below) -->
+            <a id="result-profile-link" href="/quiz"
+              class="btn-flame inline-block mt-6 px-8 py-3 text-white font-sans font-bold text-sm tracking-widest uppercase no-underline">
+              View Your Archetype Profile
+            </a>
+
+            <!-- Secondary: return home -->
+            <a href="/"
+              class="block mt-3 text-hermetic-gold/50 hover:text-hermetic-gold text-xs font-sans tracking-widest uppercase transition-colors">
               Return Home
             </a>
           </div>
@@ -428,6 +436,12 @@ import { archetypes } from '../lib/archetype-content';
               }
             });
           });
+
+          // Point "View Your Archetype Profile" at the correct result page
+          const profileLink = document.getElementById('result-profile-link') as HTMLAnchorElement;
+          if (profileLink && urlSlug) {
+            profileLink.href = `/quiz/result/${urlSlug}`;
+          }
 
           if (typeof fbq === 'function') fbq('track', 'Lead');
           if (typeof gtag === 'function') {
