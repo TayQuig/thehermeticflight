@@ -50,25 +50,13 @@ this file at session start and reports current state to the operator.
 
 ## Active Task
 
-### GA4 Data API Research + Skill Alignment
-
-**Brief:** Scrape the GA4 Data API documentation, produce a comprehensive reference guide (like loops-api-reference.md), build a smoke-test script for the service account JWT auth flow, and align the weekly-report skill against verified specs. Resolves deferred finding F-02.
-
-| # | Phase | Status | Notes |
-|---|-------|--------|-------|
-| 1 | Scrape GA4 Data API docs + write reference guide | `completed` | 30+ pages scraped, 1270-line reference + 1084-line schema companion. PDF on Desktop. |
-| 2 | Build GA4 auth smoke-test script | `completed` | `scripts/ga4-smoke-test.mjs`. Auth flow validated (JWT→token exchange works). Blocked on wrong GA4_PROPERTY_ID — see Phase 4. |
-| 3 | Align weekly-report skill against verified specs | `completed` | Fixed: `/thank-you`→`/quiz/result/*`, added concrete curl auth procedure, added GA4 API reference cross-ref. |
-| 4 | Validate smoke-test with live credentials | `completed` | GA4_PROPERTY_ID corrected to `514560510` (extracted from Analytics URL). Full end-to-end pass: JWT→token→runReport returns data (21 users, 3 countries). |
-
-**Handoff Context:**
-Updated 2026-03-09. All 4 phases complete. Task ready for completion flow.
+[Empty — no task in progress.]
 
 ---
 
 ## Ideas
 
-[Empty — triaged on 2026-03-07. "Shareable archetype cards" folded into Share CTA backlog item. Remaining 5 ideas (Living Quiz, MDX email collections, progressive reveal, Supabase CRM, always-on monitoring) recorded to memory DB as future directions.]
+[Empty]
 
 ---
 
