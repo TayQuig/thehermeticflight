@@ -60,6 +60,50 @@
 .reveal-up { opacity: 0; transform: translateY(40px); transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .reveal-visible { opacity: 1; transform: translateY(0); }
 
+/* Quiz Step Transitions */
+.quiz-step {
+    display: none;
+    opacity: 0;
+    transform: translateY(16px);
+}
+.quiz-step.active {
+    display: block;
+    animation: quiz-step-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+.quiz-step.exiting {
+    display: block;
+    animation: quiz-step-out 0.25s ease-in forwards;
+}
+
+@keyframes quiz-step-in {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes quiz-step-out {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-8px); }
+}
+
+/* Quiz Answer States */
+.answer-btn.selected {
+    border-color: rgba(197, 160, 89, 0.6) !important;
+    background: rgba(1, 53, 41, 0.6) !important;
+    color: #FBFBFB !important;
+    box-shadow: 0 0 20px rgba(197, 160, 89, 0.12), inset 0 0 12px rgba(5, 79, 46, 0.3);
+}
+.answer-btn:active {
+    transform: scale(0.99);
+}
+
+/* Progress Bar Shimmer */
+@keyframes shimmer {
+    0%   { transform: translateX(-200%); }
+    100% { transform: translateX(200%); }
+}
+.animate-shimmer {
+    animation: shimmer 2s ease-in-out infinite;
+}
+
 
 
 

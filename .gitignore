@@ -19,5 +19,17 @@ Thumbs.db
 *.swp
 *.swo
 
+# Memory DB
+memory.db
+
+# Frozen test file protocol artifacts
+.frozen-test-baseline
+.frozen-test-manifest
+
+# Harden protocol state files
+.harden-state
+.harden-remediation-status
+.protocol-phase
+
 
 

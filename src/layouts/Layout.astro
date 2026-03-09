@@ -3,11 +3,18 @@ interface Props {
 	title: string;
 	description: string;
 	canonicalURL?: string;
+	ogImage?: string;
+	ogType?: string;
 }
 
-const { title, description, canonicalURL } = Astro.props;
+const { title, description, canonicalURL, ogImage, ogType = 'website' } = Astro.props;
+let siteUrl = Astro.site?.origin ?? '';
+if (!siteUrl) siteUrl = 'https://www.thehermeticflight.com';
 const currentPath = Astro.url.pathname;
-const canonical = canonicalURL || `https://thehermeticflight.com${currentPath}`;
+const canonical = canonicalURL || `${siteUrl}${currentPath}`;
+const resolvedOgImage = ogImage
+	? (ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`)
+	: `${siteUrl}/images/og/default.png`;
 import '../styles/global.css';
 ---
 
@@ -65,7 +72,21 @@ import '../styles/global.css';
 		<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 
 		<title>{title}</title>
-		
+
+		<!-- Open Graph -->
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={resolvedOgImage} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:type" content={ogType} />
+		<meta property="og:site_name" content="The Hermetic Flight" />
+
+		<!-- Twitter Card -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={resolvedOgImage} />
+
 		<!-- Global Slots for Head (like Schema) -->
 		<slot name="head" />
 	</head>
