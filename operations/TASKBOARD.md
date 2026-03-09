@@ -50,7 +50,19 @@ this file at session start and reports current state to the operator.
 
 ## Active Task
 
-[Empty — sprint completed 2026-03-08. See task-archive.md.]
+### GA4 Data API Research + Skill Alignment
+
+**Brief:** Scrape the GA4 Data API documentation, produce a comprehensive reference guide (like loops-api-reference.md), build a smoke-test script for the service account JWT auth flow, and align the weekly-report skill against verified specs. Resolves deferred finding F-02.
+
+| # | Phase | Status | Notes |
+|---|-------|--------|-------|
+| 1 | Scrape GA4 Data API docs + write reference guide | `pending` | deep-research skill. Target: `operations/ga4-api-reference.md` |
+| 2 | Build GA4 auth smoke-test script | `pending` | Node script: JWT construction → OAuth2 token exchange → minimal runReport call. dep: Phase 1 |
+| 3 | Align weekly-report skill against verified specs | `pending` | Fix any incorrect GA4 references, add correct auth procedure. dep: Phase 1 |
+| 4 | Validate smoke-test with live credentials | `pending` | Run script against operator's GA4 property. dep: Phase 2 |
+
+**Handoff Context:**
+Task created 2026-03-08. GA4 credentials already in .env (GA4_PROPERTY_ID, GA4_SERVICE_ACCOUNT_KEY as base64). Loops.so reference guide complete and aligned — this is the same pattern for the remaining API dependency.
 
 ---
 
@@ -70,8 +82,9 @@ this file at session start and reports current state to the operator.
 - **Hermes Slack bot bridge (v1)** — LIVES IN SEPARATE REPO (hermes project). Basic Slack App (Socket Mode) + Node.js listener + `claude -p` integration. Enables @Hermes mentions in Slack to trigger Claude Code with subscription auth (no API costs). Expansion path: thread awareness → skill routing → project context detection → always-on monitoring. Blocked by: Slack App creation (operator task).
 - **Infrastructure hardening** — Playwright CI integration (ARCH-03): migrate to `@playwright/test`, add `playwright.config.ts`, add `e2e` npm script so E2E tests run in CI. Content Security Policy (ADV-01): add CSP headers via `vercel.json`, start with report-only mode, monitor 2 weeks before enforcing. Both are High-severity deferred findings from hardening-2026-03-08.
 - **Quiz code quality refactoring** — Extract quiz.astro script block into modules (ARCH-04): share CTA logic → `src/lib/share-utils.ts`. Reduce `as` casts with null-safe DOM helpers (ARCH-08). Extract shared ShareButtons.astro component (ARCH-09). Add GA4 share event contract tests with gtag mock (TCF-03, High priority). Improve test coverage: slug edge cases (TCF-06), condition-based E2E waits (TCF-07), multi-page canonical checks (TCF-08), all-archetype structural checks (TCF-09), clipboard feedback test (TCF-10). All deferred from hardening-2026-03-08.
-- **Skill API integration specs** — Research and document GA4 Data API auth flow (F-02: JWT construction, OAuth2 token exchange, curl commands) and Loops.so contacts API (F-10: auth header, query params, filtering by archetype, period-based metrics). Both are Critical/High but deferred because they have manual fallbacks. Do when operator configures credentials. Deferred from eval-skills-2026-03-08.
+- **Skill API integration specs** — ~~Loops.so (F-10): COMPLETED 2026-03-08~~ — reference guide at `operations/loops-api-reference.md`, 3 skills aligned. Remaining: GA4 Data API (F-02) — PROMOTED TO ACTIVE TASK.
 - **Skill suite consistency pass** — Standardize conventions across all 5 automation skills. Git operations in approval gates (F-14), failure handling pattern for external deps (F-16), mkdir -p before writes (F-20), procedure structure convention (F-21), emoji usage in Slack templates (F-22), output path conventions (F-23), "(standard)" commit gate wording (F-25), remove local file paths from Slack messages (F-26). 8 Medium findings from eval-skills-2026-03-08.
 - **Skill content polish** — Individual skill improvements: add quiz result pages to audit-site site map (F-17), add procedure branches for all 5 content source types in social-blast (F-18), specify launch banner design in launch-sequence Page Update Mode (F-19), cross-reference brand voice between publish-post and social-blast (F-24). 4 Medium findings from eval-skills-2026-03-08.
 - Clean up stale feature branches (page-quiz-embed, feature/faq-and-blog, feature/seobot-integration, etc.)
+- **Skill outputs dashboard** — Authenticated subdomain (e.g., `ops.thehermeticflight.com`) with login that surfaces outputs from all 5 automation skills: SEO audit scores + history, published blog posts, social media draft queue, weekly report KPIs, and launch sequence checklist/countdown. Allows operator to confirm skill outputs without digging through `operations/` files. Tech TBD (Astro SSR + Vercel auth, or lightweight admin framework).
 - Add README with setup/run instructions
