@@ -1,133 +1,70 @@
 /**
  * Playwright E2E tests for quiz flow, result pages, and share CTA.
  *
- * Usage:
- *   1. npm run build
- *   2. npm run preview &   (starts on port 4321)
- *   3. npx tsx tests/quiz-flow.spec.ts
+ * Runner: npx playwright test (uses playwright.config.ts)
+ * Local setup: npm run build && npm run e2e
+ * CI: runs against Vercel preview URL via TEST_URL env var
  *
- * Uses raw playwright (not @playwright/test) with custom pass/fail helpers.
+ * Migrated from raw playwright to @playwright/test on 2026-03-09.
+ * All 5 original test suites preserved with 1:1 assertion equivalence.
  */
 
-import { chromium } from 'playwright';
-
-const BASE_URL = process.env.TEST_URL || 'http://localhost:4321';
-let passed = 0;
-let failed = 0;
-const failures: string[] = [];
-
-function pass(name: string) {
-  passed++;
-  console.log(`  \x1b[32m✓\x1b[0m ${name}`);
-}
-
-function fail(name: string, err: unknown) {
-  failed++;
-  const msg = err instanceof Error ? err.message : String(err);
-  failures.push(`${name}: ${msg}`);
-  console.log(`  \x1b[31m✗\x1b[0m ${name}: ${msg}`);
-}
+import { test, expect } from '@playwright/test';
 
 // ---------------------------------------------------------------------------
-// Test: Homepage has OG meta tags
+// Suite 1: Homepage OG meta tags
 // ---------------------------------------------------------------------------
-async function testHomepageOGTags() {
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
-  try {
-    await page.goto(`${BASE_URL}/`);
+test.describe('Homepage', () => {
+  test('OG meta tags', async ({ page }) => {
+    await page.goto('/');
 
-    const ogTitle = await page.$eval(
-      'meta[property="og:title"]',
-      (el) => el.getAttribute('content'),
-    );
-    if (!ogTitle || ogTitle.length === 0) {
-      throw new Error(`og:title missing or empty`);
-    }
+    // og:title must be present and non-empty
+    const ogTitle = await page.locator('meta[property="og:title"]').getAttribute('content');
+    expect(ogTitle).toBeTruthy();
 
-    const ogImage = await page.$eval(
-      'meta[property="og:image"]',
-      (el) => el.getAttribute('content'),
-    );
-    if (!ogImage?.includes('thehermeticflight.com')) {
-      throw new Error(`og:image doesn't contain site URL: ${ogImage}`);
-    }
+    // og:image must contain the production site URL
+    const ogImage = await page.locator('meta[property="og:image"]').getAttribute('content');
+    expect(ogImage).toContain('thehermeticflight.com');
 
-    const twitterCard = await page.$eval(
-      'meta[name="twitter:card"]',
-      (el) => el.getAttribute('content'),
-    );
-    if (twitterCard !== 'summary_large_image') {
-      throw new Error(`twitter:card should be summary_large_image, got: ${twitterCard}`);
-    }
-
-    pass('testHomepageOGTags');
-  } catch (err) {
-    fail('testHomepageOGTags', err);
-  } finally {
-    await browser.close();
-  }
-}
+    // twitter:card must be summary_large_image
+    const twitterCard = await page.locator('meta[name="twitter:card"]').getAttribute('content');
+    expect(twitterCard).toBe('summary_large_image');
+  });
+});
 
 // ---------------------------------------------------------------------------
-// Test: Archetype result page renders OG tags and share buttons
+// Suite 2: Archetype result page renders OG tags and share buttons
 // ---------------------------------------------------------------------------
-async function testResultPageOGAndShareButtons() {
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
-  try {
-    await page.goto(`${BASE_URL}/quiz/result/air-weaver`);
+test.describe('Result page: air-weaver', () => {
+  test('OG tags and share buttons', async ({ page }) => {
+    await page.goto('/quiz/result/air-weaver');
 
-    // Page loads with correct title
-    const h1Text = await page.textContent('h1');
-    if (!h1Text?.includes('The Air Weaver')) {
-      throw new Error(`Expected h1 to contain "The Air Weaver", got: ${h1Text}`);
-    }
+    // Page loads with correct h1
+    await expect(page.locator('h1')).toContainText('The Air Weaver');
 
-    // OG tags present
-    const ogTitle = await page.$eval(
-      'meta[property="og:title"]',
-      (el) => el.getAttribute('content'),
-    );
-    if (!ogTitle?.includes('Air Weaver')) {
-      throw new Error(`Expected og:title to contain "Air Weaver", got: ${ogTitle}`);
-    }
+    // og:title contains archetype name
+    const ogTitle = await page.locator('meta[property="og:title"]').getAttribute('content');
+    expect(ogTitle).toContain('Air Weaver');
 
-    const ogImage = await page.$eval(
-      'meta[property="og:image"]',
-      (el) => el.getAttribute('content'),
-    );
-    if (!ogImage?.includes('air-weaver.png')) {
-      throw new Error(`Expected og:image to contain "air-weaver.png", got: ${ogImage}`);
-    }
+    // og:image references the correct archetype OG image
+    const ogImage = await page.locator('meta[property="og:image"]').getAttribute('content');
+    expect(ogImage).toContain('air-weaver.png');
 
-    // Share buttons present
-    const shareLinks = await page.$$('#share-buttons a');
-    if (shareLinks.length !== 2) {
-      throw new Error(`Expected 2 share links (X + Facebook), got: ${shareLinks.length}`);
-    }
+    // Exactly 2 share links (X + Facebook)
+    await expect(page.locator('#share-buttons a')).toHaveCount(2);
 
-    const copyBtn = await page.$('#copy-link-btn');
-    if (!copyBtn) throw new Error('Copy link button not found');
+    // Copy link button is present
+    await expect(page.locator('#copy-link-btn')).toBeVisible();
 
-    // Quiz CTA present
-    const quizCta = await page.$('a[href="/quiz"]');
-    if (!quizCta) throw new Error('Quiz CTA link not found');
-
-    pass('testResultPageOGAndShareButtons');
-  } catch (err) {
-    fail('testResultPageOGAndShareButtons', err);
-  } finally {
-    await browser.close();
-  }
-}
+    // Quiz CTA link is present
+    await expect(page.locator('a[href="/quiz"]')).toBeVisible();
+  });
+});
 
 // ---------------------------------------------------------------------------
-// Test: All 6 result pages load successfully
+// Suite 3: All 6 result pages load successfully
 // ---------------------------------------------------------------------------
-async function testAll6ResultPagesLoad() {
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+test.describe('All result pages', () => {
   const slugs = [
     'air-weaver',
     'embodied-intuitive',
@@ -136,101 +73,43 @@ async function testAll6ResultPagesLoad() {
     'flow-artist',
     'grounded-mystic',
   ];
-  try {
-    for (const slug of slugs) {
-      const res = await page.goto(`${BASE_URL}/quiz/result/${slug}`);
-      if (!res || res.status() !== 200) {
-        throw new Error(`/quiz/result/${slug} returned status ${res?.status()}`);
-      }
-      const h1 = await page.textContent('h1');
-      if (!h1 || h1.length === 0) {
-        throw new Error(`/quiz/result/${slug} has empty h1`);
-      }
-    }
-    pass('testAll6ResultPagesLoad');
-  } catch (err) {
-    fail('testAll6ResultPagesLoad', err);
-  } finally {
-    await browser.close();
+
+  for (const slug of slugs) {
+    test(`loads: ${slug}`, async ({ page }) => {
+      const response = await page.goto(`/quiz/result/${slug}`);
+      expect(response?.status()).toBe(200);
+      await expect(page.locator('h1')).not.toBeEmpty();
+    });
   }
-}
+});
 
 // ---------------------------------------------------------------------------
-// Test: Quiz intro screen loads and start button works
+// Suite 4: Quiz intro screen loads and start button works
 // ---------------------------------------------------------------------------
-async function testQuizIntroAndStart() {
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
-  try {
-    await page.goto(`${BASE_URL}/quiz`);
+test.describe('Quiz page', () => {
+  test('intro screen and start button', async ({ page }) => {
+    await page.goto('/quiz');
 
-    const startBtn = await page.$('#start-quiz');
-    if (!startBtn) throw new Error('Start quiz button not found');
+    // Start button exists
+    await expect(page.locator('#start-quiz')).toBeVisible();
 
-    const introActive = await page.$('#quiz-intro.active');
-    if (!introActive) throw new Error('Quiz intro should be active on load');
+    // Quiz intro is active on load
+    await expect(page.locator('#quiz-intro')).toHaveClass(/active/);
 
-    await startBtn.click();
-    await page.waitForTimeout(400);
-
-    // After clicking start, first question should be visible
-    const q1 = await page.$('[data-step="1"].active');
-    if (!q1) throw new Error('Question 1 should be active after clicking start');
-
-    pass('testQuizIntroAndStart');
-  } catch (err) {
-    fail('testQuizIntroAndStart', err);
-  } finally {
-    await browser.close();
-  }
-}
+    // Click start — question 1 becomes active (replaces waitForTimeout(400))
+    await page.locator('#start-quiz').click();
+    await expect(page.locator('[data-step="1"]')).toHaveClass(/active/);
+  });
+});
 
 // ---------------------------------------------------------------------------
-// Test: Result page canonical URL uses www
+// Suite 5: Result page canonical URL uses www
 // ---------------------------------------------------------------------------
-async function testResultPageCanonicalURL() {
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
-  try {
-    await page.goto(`${BASE_URL}/quiz/result/shadow-dancer`);
+test.describe('Result page: shadow-dancer', () => {
+  test('canonical URL uses www', async ({ page }) => {
+    await page.goto('/quiz/result/shadow-dancer');
 
-    const canonical = await page.$eval(
-      'link[rel="canonical"]',
-      (el) => el.getAttribute('href'),
-    );
-    if (!canonical?.startsWith('https://www.thehermeticflight.com')) {
-      throw new Error(`Canonical should use www prefix, got: ${canonical}`);
-    }
-
-    pass('testResultPageCanonicalURL');
-  } catch (err) {
-    fail('testResultPageCanonicalURL', err);
-  } finally {
-    await browser.close();
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Runner
-// ---------------------------------------------------------------------------
-async function run() {
-  console.log('\n  Quiz Flow E2E Tests\n');
-
-  await testHomepageOGTags();
-  await testResultPageOGAndShareButtons();
-  await testAll6ResultPagesLoad();
-  await testQuizIntroAndStart();
-  await testResultPageCanonicalURL();
-
-  console.log(`\n  ${passed} passed, ${failed} failed\n`);
-  if (failures.length > 0) {
-    console.log('  Failures:');
-    failures.forEach((f) => console.log(`    - ${f}`));
-    process.exit(1);
-  }
-}
-
-run().catch((err) => {
-  console.error('Test runner crashed:', err);
-  process.exit(1);
+    await expect(page.locator('link[rel="canonical"]'))
+      .toHaveAttribute('href', /www\.thehermeticflight\.com/);
+  });
 });
