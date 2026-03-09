@@ -56,7 +56,7 @@ this file at session start and reports current state to the operator.
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 1 | Scrape GA4 Data API docs + write reference guide | `pending` | deep-research skill. Target: `operations/ga4-api-reference.md` |
+| 1 | Scrape GA4 Data API docs + write reference guide | `completed` | 30+ pages scraped, 1270-line reference + 1084-line schema companion. PDF on Desktop. |
 | 2 | Build GA4 auth smoke-test script | `pending` | Node script: JWT construction → OAuth2 token exchange → minimal runReport call. dep: Phase 1 |
 | 3 | Align weekly-report skill against verified specs | `pending` | Fix any incorrect GA4 references, add correct auth procedure. dep: Phase 1 |
 | 4 | Validate smoke-test with live credentials | `pending` | Run script against operator's GA4 property. dep: Phase 2 |
