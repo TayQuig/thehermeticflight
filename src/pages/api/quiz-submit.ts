@@ -264,7 +264,7 @@ export const POST: APIRoute = async ({ request }) => {
     const productInterest = resolveAnswerText('Q20', validatedAnswers['Q20']);
 
     // Push to Loops.so
-    const LOOPS_API_KEY = import.meta.env.LOOPS_API_KEY;
+    const LOOPS_API_KEY = import.meta.env.LOOPS_API_KEY || process.env.LOOPS_API_KEY;
     if (!LOOPS_API_KEY) {
       console.error('LOOPS_API_KEY not configured');
       return new Response(
