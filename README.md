@@ -37,10 +37,14 @@ Copy `.env.example` to `.env` (or create `.env`) and set:
 
 ```
 LOOPS_API_KEY=your_loops_api_key_here
+TALLY_API_KEY=your_tally_api_key_here
+GA4_SERVICE_ACCOUNT_KEY=your_ga4_service_account_key_here
+GA4_PROPERTY_ID=your_ga4_property_id_here
+SEOBOT_API_SECRET=your_seobot_api_secret_here
 ```
 
-`LOOPS_API_KEY` is required for the quiz submission API route (`/api/quiz-submit`) to forward
-archetype results to Loops.so for email onboarding sequences.
+`LOOPS_API_KEY` is required for the quiz submission API route (`/api/quiz-submit`).
+Other keys are used by automation skills and optional for local development.
 
 ## Key Features
 

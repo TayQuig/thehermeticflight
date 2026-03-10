@@ -70,13 +70,17 @@ and 4 API reference guides are written. Ready for execution.
 | 8 | Execute Sprint 5: Externally-Blocked Features (staggered) | `pending` | 5A: gallery (art ~May), 5B: waitlist (Supabase), 5C: content calendar (~June) |
 | 9 | Execute Sprint 6: Platform Expansion | `pending` | Hermes bot (separate repo), skill dashboard (tech TBD) |
 
-**Handoff Context (2026-03-09):** All planning work is complete. 8 plan docs
-cover Sprints 1A, 1B, 2A, 2B, 2C, 4A, 5A, 5B with TDD steps, exact code,
-quality gates (FTF + eval-protocol + harden). Sprints 3, 4B, 5C, 6 are skill
-authoring or blocked — no plan docs needed. Operator is working on 4 content
-provisions: archetype report PDFs (Google Docs export), 78-card tarot data,
-pledge tier content, card art schedule. Sprint 1 has zero content dependencies
-and is ready to execute immediately with 3 parallel worktrees.
+**Handoff Context (2026-03-09):** Sprint 1 complete. 3 tracks merged into
+feature/native-quiz-pipeline (381/381 Vitest, build clean). Deliverables:
+1A — thank-you.astro archetype CTA + quiz.astro profile link + 10 new tests.
+1B — env.d.ts (5 vars), @playwright/test migration, playwright.config.ts,
+vercel.json CSP report-only, .github/workflows/preview-e2e.yaml CI pipeline,
+35 new tests. 1C — 13 stale branches cleaned, README.md added.
+Operator action needed: set GitHub secrets (VERCEL_TOKEN, VERCEL_ORG_ID,
+VERCEL_PROJECT_ID) for CI workflow. Monitor CSP violations 2 weeks before
+enforcing. Sprint 2 blocked on content provisions (archetype PDFs, tarot data,
+pledge tiers). Next unblocked phase: Sprint 3 (skill authoring) or Sprint 4
+(quiz refactoring, skill polish).
 
 ---
 
