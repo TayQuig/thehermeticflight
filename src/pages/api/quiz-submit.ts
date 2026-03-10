@@ -264,6 +264,8 @@ export const POST: APIRoute = async ({ request }) => {
     const productInterest = resolveAnswerText('Q20', validatedAnswers['Q20']);
 
     // Push to Loops.so
+    // import.meta.env works in Vitest; Vite transforms it to process.env for
+    // SSR builds. Explicit process.env fallback covers Vercel runtime.
     const LOOPS_API_KEY = import.meta.env.LOOPS_API_KEY || process.env.LOOPS_API_KEY;
     if (!LOOPS_API_KEY) {
       console.error('LOOPS_API_KEY not configured');

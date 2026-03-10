@@ -74,24 +74,12 @@ and 4 API reference guides are written. Ready for execution.
 feature/native-quiz-pipeline (381/381 Vitest, build clean). PR #4 open against
 main: https://github.com/TayQuig/thehermeticflight/pull/4
 
-**BLOCKER — quiz email submission 500 on Vercel preview.** Vercel function logs
-show "LOOPS_API_KEY not configured" despite the key being set in Vercel env
-vars (All Environments). Attempted fix: added `process.env.LOOPS_API_KEY`
-fallback alongside `import.meta.env.LOOPS_API_KEY` in quiz-submit.ts:267 —
-still failing after redeploy. Root cause is likely Astro + Vercel adapter not
-passing env vars to the serverless function runtime. Next steps to debug:
-1. Check Astro Vercel adapter docs for env var handling in server endpoints
-2. Try `process.env` alone (remove `import.meta.env` entirely)
-3. Check if `astro.config.mjs` needs env var forwarding config
-4. Inspect the built serverless function in `.vercel/output/` to see if the
-   env var reference was replaced or preserved
-
-**Operator tasks completed this session:**
-- Bizbounce added as collaborator to TayQuig/thehermeticflight repo
-- Loops.so: created `quiz_completed` event + contact properties (archetype,
-  source, experienceLevel, painPoint, flowState, cardBackPref, productInterest)
-- LOOPS_API_KEY already set in Vercel env vars (All Environments)
-- Mailchimp launch sequence tagger archived to operations/archive/
+**LOOPS_API_KEY blocker RESOLVED.** Quiz flow verified end-to-end on Vercel
+preview (Grounded Mystic archetype reveal + Loops.so event firing). Root cause
+was Vercel env var configuration — the code was correct (`import.meta.env`
+compiles to `process.env` via Vite SSR transform; explicit `process.env`
+fallback added). Comment in quiz-submit.ts:266-268 documents the pattern.
+Temporary `env-check.ts` diagnostic endpoint created and removed after fix.
 
 **CSP monitoring (report-only, not blocking):** Console shows violations for
 `capi-automation.s3.us-east-2.amazonaws.com` (Meta CAPI script-src),
@@ -99,10 +87,15 @@ passing env vars to the serverless function runtime. Next steps to debug:
 connect-src and frame-src gaps. All expected — catalog for CSP update before
 enforcing mode.
 
+**Meta Pixel custom events:** `fbevents.js` warns about non-standard event
+names (`quiz_completed`, `form_start`, `form_submit`, `scroll`) — should use
+`trackCustom()` instead of `track()`. Not blocking but affects Meta Ads
+conversion tracking accuracy.
+
+**Minor:** Favicon 404s for `favicon-32x32.png` and `favicon-16x16.png`.
+
 **Still needed before merge:**
-- Fix the LOOPS_API_KEY env var issue (blocker)
 - GitHub secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID (for CI)
-- Verify full quiz flow end-to-end on preview
 
 Sprint 2 blocked on content provisions. Next unblocked: Sprint 3 (skill
 authoring) or Sprint 4 (quiz refactoring, skill polish).
