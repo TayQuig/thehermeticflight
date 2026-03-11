@@ -66,6 +66,10 @@
           "type": "boolean",
           "default": false
         },
+        "pinned": {
+          "type": "boolean",
+          "default": false
+        },
         "$schema": {
           "type": "string"
         }
