@@ -83,13 +83,27 @@ const accentColor = archetype.accentHex;
             </div>
           </div>
 
-          <!-- CTA for new visitors -->
-          <div class="border-t border-hermetic-gold/20 pt-8 mt-8">
-            <p class="text-hermetic-white font-serif text-lg mb-2">Discover Your Archetype</p>
-            <p class="text-gray-400 font-sans text-sm mb-6">Twenty questions. Five minutes. One revelation about how you're wired to receive wisdom through the cards.</p>
-            <a href="/quiz" class="btn-flame inline-block px-8 py-3 text-white font-sans font-bold text-sm tracking-widest uppercase no-underline">
-              Take the Quiz
-            </a>
+          <!-- Journey CTA + new visitor CTA -->
+          <div class="border-t border-hermetic-gold/20 pt-8 mt-8 space-y-6">
+            <!-- Journey page link — primary CTA for quiz-takers -->
+            <div>
+              <p class="text-hermetic-white font-serif text-lg mb-2">Explore Your Archetype Journey</p>
+              <p class="text-gray-400 font-sans text-sm mb-4">Affiliated cards, custom spreads, journaling prompts, and curated reading guides for the {archetype.title}.</p>
+              <a
+                href={`/archetype/${urlSlug}`}
+                id="journey-cta"
+                class="inline-block px-8 py-3 border border-hermetic-gold/40 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/70 transition-colors font-sans font-bold text-sm tracking-widest uppercase no-underline"
+              >
+                Go Deeper
+              </a>
+            </div>
+            <!-- Secondary CTA for new visitors who arrived via share -->
+            <div class="border-t border-hermetic-gold/10 pt-6">
+              <p class="text-gray-500 font-sans text-sm mb-4">Not your archetype? Discover yours — twenty questions, five minutes.</p>
+              <a href="/quiz" class="btn-flame inline-block px-8 py-3 text-white font-sans font-bold text-sm tracking-widest uppercase no-underline">
+                Take the Quiz
+              </a>
+            </div>
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 // src/content/config.ts
 import { defineCollection, z } from 'astro:content';
+import { file } from 'astro/loaders';
 
 const blogCollection = defineCollection({
   type: 'content',
@@ -31,7 +32,38 @@ const faqCollection = defineCollection({
   }),
 });
 
+const archetypeJourneysCollection = defineCollection({
+  loader: file('src/data/archetype-journeys.json'),
+  schema: z.object({
+    id: z.string(),
+    description_extended: z.string(),
+    affiliated_cards: z.array(
+      z.object({
+        name: z.string(),
+        position: z.string(),
+        relevance: z.string(),
+      })
+    ),
+    recommended_spreads: z.array(
+      z.object({
+        name: z.string(),
+        positions: z.array(z.string()).min(2),
+        description: z.string(),
+      })
+    ),
+    journaling_prompts: z.array(z.string()).min(3),
+    blog_links: z.array(
+      z.object({
+        title: z.string(),
+        slug: z.string(),
+        relevance: z.string(),
+      })
+    ),
+  }),
+});
+
 export const collections = {
   'blog': blogCollection,
   'faq': faqCollection,
+  'archetypeJourneys': archetypeJourneysCollection,
 };
