@@ -83,6 +83,18 @@ const pageDescription = `Explore the ${archetypeData.name} archetype in depth: a
           <h1 class="font-serif text-3xl md:text-5xl text-hermetic-white mb-2 tracking-wide">{archetypeData.title}</h1>
           <p class={`${archetypeData.color} text-xs tracking-[0.3em] uppercase font-sans mb-6`}>Element of {archetypeData.element}</p>
 
+          <!-- Archetype image -->
+          <div class="mb-8">
+            <img
+              src={`/images/archetypes/${urlSlug}.jpg`}
+              alt={`${archetypeData.title} archetype illustration`}
+              class="w-full max-w-md mx-auto rounded-lg border border-hermetic-gold/20"
+              width="800"
+              height="436"
+              loading="eager"
+            />
+          </div>
+
           <!-- Short description (from archetype-content.ts) -->
           <p class="text-gray-300 font-light font-sans leading-relaxed mb-6 max-w-xl mx-auto">{archetypeData.description}</p>
 
