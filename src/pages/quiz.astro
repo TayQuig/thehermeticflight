@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import ShareButtons from '../components/ShareButtons.astro';
 import { questions } from '../lib/quiz-data';
 import { archetypes } from '../lib/archetype-content';
 ---
@@ -176,6 +177,8 @@ import { archetypes } from '../lib/archetype-content';
     import { classify, computeScores } from '../lib/classifier';
     import type { ArchetypeSlug } from '../lib/classifier';
     import { archetypes, toUrlSlug } from '../lib/archetype-content';
+    import { requireEl } from '../lib/dom-helpers';
+    import { trackShare } from '../lib/share-utils';
 
     const TOTAL_QUESTIONS = questions.length;
 
@@ -191,16 +194,16 @@ import { archetypes } from '../lib/archetype-content';
 
     // DOM refs
     const allSteps = document.querySelectorAll<HTMLElement>('.quiz-step');
-    const progressBar = document.getElementById('progress-bar')!;
-    const progressFill = document.getElementById('progress-fill')!;
-    const progressText = document.getElementById('progress-text')!;
-    const startBtn = document.getElementById('start-quiz')!;
-    const resultTitle = document.getElementById('result-title')!;
-    const resultElement = document.getElementById('result-element')!;
-    const resultDescription = document.getElementById('result-description')!;
-    const resultLabel = document.getElementById('result-label')!;
-    const resultDivider = document.getElementById('result-divider')!;
-    const resultGlow = document.getElementById('result-glow')!;
+    const progressBar = requireEl('progress-bar');
+    const progressFill = requireEl('progress-fill');
+    const progressText = requireEl('progress-text');
+    const startBtn = requireEl('start-quiz');
+    const resultTitle = requireEl('result-title');
+    const resultElement = requireEl('result-element');
+    const resultDescription = requireEl('result-description');
+    const resultLabel = requireEl('result-label');
+    const resultDivider = requireEl('result-divider');
+    const resultGlow = requireEl('result-glow');
 
     function showStep(step: number) {
       state.currentStep = step;
@@ -238,7 +241,7 @@ import { archetypes } from '../lib/archetype-content';
         } else {
           // Results
           progressBar.style.opacity = '0';
-          const resultsEl = document.getElementById('quiz-results')!;
+          const resultsEl = requireEl('quiz-results');
           resultsEl.classList.add('active');
           revealResults();
         }
@@ -275,6 +278,10 @@ import { archetypes } from '../lib/archetype-content';
       // Analytics — retargetable quiz completion event
       if (typeof gtag === 'function') {
         gtag('event', 'quiz_completed', { archetype });
+        gtag('event', 'generate_lead', {
+          event_category: 'quiz',
+          archetype,
+        });
       }
       if (typeof fbq === 'function') {
         fbq('trackCustom', 'QuizCompleted', { archetype });
@@ -287,11 +294,11 @@ import { archetypes } from '../lib/archetype-content';
         ? `I'm ${content.title} — ${content.element} element. Discover your aerial tarot archetype:`
         : 'Discover your aerial tarot archetype:';
 
-      const shareX = document.getElementById('share-x') as HTMLAnchorElement;
-      const shareFb = document.getElementById('share-fb') as HTMLAnchorElement;
-      const shareCopy = document.getElementById('share-copy')!;
-      const shareCopyText = document.getElementById('share-copy-text')!;
-      const shareSection = document.getElementById('share-section')!;
+      const shareX = requireEl<HTMLAnchorElement>('share-x');
+      const shareFb = requireEl<HTMLAnchorElement>('share-fb');
+      const shareCopy = requireEl('share-copy');
+      const shareCopyText = requireEl('share-copy-text');
+      const shareSection = requireEl('share-section');
 
       shareX.href = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
       shareFb.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
@@ -300,6 +307,7 @@ import { archetypes } from '../lib/archetype-content';
         try {
           await navigator.clipboard.writeText(shareUrl);
           shareCopyText.textContent = 'Copied!';
+          trackShare('copy_link', 'quiz_result', quizArchetype ?? '');
         } catch {
           shareCopyText.textContent = 'Copy failed';
         }
@@ -307,22 +315,12 @@ import { archetypes } from '../lib/archetype-content';
       });
 
       // Track share clicks
-      [shareX, shareFb, shareCopy].forEach((btn) => {
-        btn.addEventListener('click', () => {
-          if (typeof gtag === 'function') {
-            const platform = btn === shareX ? 'x' : btn === shareFb ? 'facebook' : 'copy_link';
-            gtag('event', 'share', {
-              method: platform,
-              content_type: 'quiz_result',
-              item_id: quizArchetype,
-            });
-          }
-        });
-      });
+      shareX.addEventListener('click', () => trackShare('x', 'quiz_result', quizArchetype ?? ''));
+      shareFb.addEventListener('click', () => trackShare('facebook', 'quiz_result', quizArchetype ?? ''));
 
       // Set CTA hrefs
-      const journeyCta = document.getElementById('journey-cta') as HTMLAnchorElement;
-      const profileLink = document.getElementById('result-profile-link') as HTMLAnchorElement;
+      const journeyCta = requireEl<HTMLAnchorElement>('journey-cta');
+      const profileLink = requireEl<HTMLAnchorElement>('result-profile-link');
       if (journeyCta && urlSlug) journeyCta.href = `/archetype/${urlSlug}`;
       if (profileLink && urlSlug) profileLink.href = `/quiz/result/${urlSlug}`;
 

@@ -178,3 +178,48 @@ describe('archetypeByUrlSlug', () => {
     }
   });
 });
+
+// ===========================================================================
+// TCF-06: Slug function edge cases
+// ===========================================================================
+
+describe('TCF-06: toUrlSlug edge cases', () => {
+  it('handles a slug with no underscores (single word)', () => {
+    // Type cast required since single-word slugs are not valid ArchetypeSlug values,
+    // but the function should still work gracefully on any string.
+    expect(toUrlSlug('air' as ArchetypeSlug)).toBe('air');
+  });
+
+  it('converts multiple consecutive underscores correctly', () => {
+    // Defensive: toUrlSlug replaces all _ globally
+    expect(toUrlSlug('air__weaver' as ArchetypeSlug)).toBe('air--weaver');
+  });
+
+  it('does not mutate the input string', () => {
+    const input = 'air_weaver' as ArchetypeSlug;
+    toUrlSlug(input);
+    expect(input).toBe('air_weaver');
+  });
+});
+
+describe('TCF-06: archetypeByUrlSlug edge cases', () => {
+  it('returns undefined for an empty string', () => {
+    expect(archetypeByUrlSlug('')).toBeUndefined();
+  });
+
+  it('returns undefined for a slug with wrong separator (underscore instead of hyphen)', () => {
+    expect(archetypeByUrlSlug('air_weaver')).toBeUndefined();
+  });
+
+  it('returns undefined for a partial match', () => {
+    expect(archetypeByUrlSlug('air')).toBeUndefined();
+  });
+
+  it('returns undefined for a slug with trailing hyphen', () => {
+    expect(archetypeByUrlSlug('air-weaver-')).toBeUndefined();
+  });
+
+  it('is case-sensitive — uppercase does not match', () => {
+    expect(archetypeByUrlSlug('Air-Weaver')).toBeUndefined();
+  });
+});

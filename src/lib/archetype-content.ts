@@ -74,6 +74,13 @@ export function toUrlSlug(slug: ArchetypeSlug): string {
 
 /** Look up archetype content by URL slug ('air-weaver'). */
 export function archetypeByUrlSlug(urlSlug: string): ArchetypeContent | undefined {
+  // Validate that the input is a well-formed URL slug:
+  // - Non-empty
+  // - Uses hyphens, not underscores
+  // - Does not start or end with a hyphen
+  if (!urlSlug || urlSlug.includes('_') || urlSlug.startsWith('-') || urlSlug.endsWith('-')) {
+    return undefined;
+  }
   const internalSlug = urlSlug.replace(/-/g, '_');
   return archetypes[internalSlug as ArchetypeSlug];
 }
