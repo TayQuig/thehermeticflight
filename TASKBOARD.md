@@ -65,22 +65,20 @@ and 4 API reference guides are written. Ready for execution.
 | 3 | Write 8 detailed plan docs with FTF/eval/harden gates | `completed` | All at `docs/plans/2026-03-09-*.md` |
 | 4 | Execute Sprint 1: Foundation & Quick Wins (3 parallel tracks) | `completed` | All 3 tracks merged, 381/381 tests pass, build clean |
 | 5 | Execute Sprint 2: Growth Features (3 parallel tracks) | `completed` | 2A: journey pages (merged), 2B: countdown (complete), 2C: daily draw (committed) |
-| 6 | Execute Sprint 3+4 in parallel (3 tracks) | `in_progress` | Plan: `docs/plans/2026-03-14-sprint-3-4-parallel.md`. Track A: quiz refactor, Track B: eval harness, Track C: skill creation ×8 |
+| 6 | Execute Sprint 3+4 in parallel (3 tracks) | `in_progress` | FTF-redo plan: `docs/plans/2026-03-14-sprint-3-4-ftf-redo.md`. Track C: skills ×8 DONE. Tracks A+B: redoing with proper FTF discipline. |
 | 7 | Execute Sprint 5: Externally-Blocked Features (staggered) | `pending` | 5A: gallery (art ~May), 5B: waitlist (Supabase), 5C: content calendar (~June) |
 | 8 | Execute Sprint 6: Platform Expansion + Autoresearch Loops | `pending` | Hermes bot, skill dashboard, 4 autoresearch loops (ads, email subjects, quiz intro, journey CTA) |
 
-**Handoff Context (2026-03-14):** Sprint 2 complete. All three tracks merged:
-- 2A: Archetype journey pages (merged earlier)
-- 2B: Kickstarter countdown `/launch` page with real tier data from
-  `kickstarter-tier-strategy.docx.md`, countdown timer utility, launch-notify
-  API route (Loops.so `launch_notify` event), FAQ updated with real tiers.
-  474/474 Vitest pass, build clean.
-- 2C: Daily card draw (committed this session)
+**Handoff Context (2026-03-14):** Sprint 3+4 execution in progress.
+- Track C (skills ×8): DONE — 8 skills created and verified at `~/.claude/skills/`
+- Tracks A+B: First attempt violated FTF protocol (single agent wrote tests +
+  implementation). Work stashed (`git stash`). Baseline restored to 474/474.
+  Rewrote plan with explicit FTF phases: `docs/plans/2026-03-14-sprint-3-4-ftf-redo.md`.
+  Plan passed review (attempt 2). Executing Phase 0 → Phase 6.
+- Stale worktrees from first attempt need cleanup (Phase 0).
 
 **Journaling prompts are AI-generated placeholders** — operator approved for now,
 review before launch. See header comment in `src/lib/card-data.ts`.
-
-**Next:** Sprint 3 (Operational Visibility) or Sprint 4 (Code Quality).
 
 **Carried from prior handoff:** CSP violations (report-only), Meta Pixel
 custom event warnings, favicon 404s, GitHub CI secrets needed.
