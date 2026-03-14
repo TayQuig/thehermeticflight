@@ -31,5 +31,5 @@ memory.db
 .harden-remediation-status
 .protocol-phase
 
-
-
+# Eval harness runtime data
+data/eval/
