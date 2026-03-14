@@ -65,10 +65,9 @@ and 4 API reference guides are written. Ready for execution.
 | 3 | Write 8 detailed plan docs with FTF/eval/harden gates | `completed` | All at `docs/plans/2026-03-09-*.md` |
 | 4 | Execute Sprint 1: Foundation & Quick Wins (3 parallel tracks) | `completed` | All 3 tracks merged, 381/381 tests pass, build clean |
 | 5 | Execute Sprint 2: Growth Features (3 parallel tracks) | `completed` | 2A: journey pages (merged), 2B: countdown (complete), 2C: daily draw (committed) |
-| 6 | Execute Sprint 3: Operational Visibility (5 parallel tracks) | `pending` | Email drip testing, eval harness, site-monitor, perf-audit/CWV, funnel analytics, WCAG |
-| 7 | Execute Sprint 4: Code Quality & Skill Hardening (2 tracks) | `pending` | 4A: quiz refactoring, 4B: skill polish |
-| 8 | Execute Sprint 5: Externally-Blocked Features (staggered) | `pending` | 5A: gallery (art ~May), 5B: waitlist (Supabase), 5C: content calendar (~June) |
-| 9 | Execute Sprint 6: Platform Expansion + Autoresearch Loops | `pending` | Hermes bot, skill dashboard, 4 autoresearch loops (ads, email subjects, quiz intro, journey CTA) |
+| 6 | Execute Sprint 3+4 in parallel (3 tracks) | `in_progress` | Plan: `docs/plans/2026-03-14-sprint-3-4-parallel.md`. Track A: quiz refactor, Track B: eval harness, Track C: skill creation ×8 |
+| 7 | Execute Sprint 5: Externally-Blocked Features (staggered) | `pending` | 5A: gallery (art ~May), 5B: waitlist (Supabase), 5C: content calendar (~June) |
+| 8 | Execute Sprint 6: Platform Expansion + Autoresearch Loops | `pending` | Hermes bot, skill dashboard, 4 autoresearch loops (ads, email subjects, quiz intro, journey CTA) |
 
 **Handoff Context (2026-03-14):** Sprint 2 complete. All three tracks merged:
 - 2A: Archetype journey pages (merged earlier)
@@ -136,7 +135,7 @@ custom event warnings, favicon 404s, GitHub CI secrets needed.
 
 ### Sprint 3 — Operational Visibility (April–May)
 
-- **Email Drip Sequence Testing (6 archetypes)** — Plan doc needed. Operator provides email content → verify each archetype triggers correct Loops.so sequence, emails deliver with correct content/timing, edge cases (resubmission, multiple archetypes) handled. Content source: `src/data/email-sequences.json`. UNBLOCKED — operator has email content.
+- **Email Drip Sequence Testing (6 archetypes)** — Plan doc needed. Operator provides email content → verify each archetype triggers correct Loops.so sequence, emails deliver with correct content/timing, edge cases (resubmission, multiple archetypes) handled. Content source: `src/data/email-sequences.json`. BLOCKED — file not yet created on disk.
 - **Autoresearch Eval Harness** — Plan doc needed. Build reusable GA4 metric-pulling scripts (quiz_started rate, journey_subscribe rate, share rate) and Loops.so webhook-based open/click tracking (local SQLite counters, since Loops.so lacks bulk analytics API). Foundation for all optimization loops in Sprint 6+. Ref: `operations/ga4-api-reference.md`.
 - **Site Uptime & Deploy Monitoring** — No plan doc (skill authoring). New `site-monitor` skill.
 - **Performance Budget / Core Web Vitals** — No plan doc (skill authoring). Ref: `operations/pagespeed-api-reference.md`. Note: CWV scores via PageSpeed API have instant feedback — candidate for autoresearch loop (artifact: page layout/asset config, metric: LCP/CLS/FID, ~100 iterations overnight).

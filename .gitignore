@@ -22,6 +22,9 @@ Thumbs.db
 # Memory DB
 memory.db
 
+# Eval harness runtime data
+data/eval/
+
 # Frozen test file protocol artifacts
 .frozen-test-baseline
 .frozen-test-manifest
