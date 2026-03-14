@@ -65,7 +65,7 @@ and 4 API reference guides are written. Ready for execution.
 | 3 | Write 8 detailed plan docs with FTF/eval/harden gates | `completed` | All at `docs/plans/2026-03-09-*.md` |
 | 4 | Execute Sprint 1: Foundation & Quick Wins (3 parallel tracks) | `completed` | All 3 tracks merged, 381/381 tests pass, build clean |
 | 5 | Execute Sprint 2: Growth Features (3 parallel tracks) | `completed` | 2A: journey pages (merged), 2B: countdown (complete), 2C: daily draw (committed) |
-| 6 | Execute Sprint 3+4 in parallel (3 tracks) | `in_progress` | FTF-redo plan: `docs/plans/2026-03-14-sprint-3-4-ftf-redo.md`. Track C: skills ×8 DONE. Tracks A+B: redoing with proper FTF discipline. |
+| 6 | Execute Sprint 3+4 in parallel (3 tracks) | `completed` | FTF-redo: 557/557 tests, build clean. Eval-protocol: 3 evaluators, 1 Critical fixed (double-tracking S-02), remaining High/Medium → backlog. |
 | 7 | Execute Sprint 5: Externally-Blocked Features (staggered) | `pending` | 5A: gallery (art ~May), 5B: waitlist (Supabase), 5C: content calendar (~June) |
 | 8 | Execute Sprint 6: Platform Expansion + Autoresearch Loops | `pending` | Hermes bot, skill dashboard, 4 autoresearch loops (ads, email subjects, quiz intro, journey CTA) |
 
