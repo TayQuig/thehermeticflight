@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import ShareButtons from '../components/ShareButtons.astro';
 import { questions } from '../lib/quiz-data';
 import { archetypes } from '../lib/archetype-content';
 ---
@@ -207,6 +208,8 @@ import { archetypes } from '../lib/archetype-content';
     import { classify, computeScores } from '../lib/classifier';
     import type { ArchetypeSlug } from '../lib/classifier';
     import { archetypes, toUrlSlug } from '../lib/archetype-content';
+    import { requireEl } from '../lib/dom-helpers';
+    import { trackShare } from '../lib/share-utils';
 
     const TOTAL_QUESTIONS = questions.length;
 
@@ -222,20 +225,20 @@ import { archetypes } from '../lib/archetype-content';
 
     // DOM refs
     const allSteps = document.querySelectorAll<HTMLElement>('.quiz-step');
-    const progressBar = document.getElementById('progress-bar')!;
-    const progressFill = document.getElementById('progress-fill')!;
-    const progressText = document.getElementById('progress-text')!;
-    const startBtn = document.getElementById('start-quiz')!;
-    const resultTitle = document.getElementById('result-title')!;
-    const resultElement = document.getElementById('result-element')!;
-    const resultDescription = document.getElementById('result-description')!;
-    const resultLabel = document.getElementById('result-label')!;
-    const resultDivider = document.getElementById('result-divider')!;
-    const resultGlow = document.getElementById('result-glow')!;
-    const emailSection = document.getElementById('email-section')!;
-    const emailForm = document.getElementById('email-form') as HTMLFormElement;
-    const emailSuccess = document.getElementById('email-success')!;
-    const submitBtn = document.getElementById('submit-btn')!;
+    const progressBar = requireEl('progress-bar');
+    const progressFill = requireEl('progress-fill');
+    const progressText = requireEl('progress-text');
+    const startBtn = requireEl('start-quiz');
+    const resultTitle = requireEl('result-title');
+    const resultElement = requireEl('result-element');
+    const resultDescription = requireEl('result-description');
+    const resultLabel = requireEl('result-label');
+    const resultDivider = requireEl('result-divider');
+    const resultGlow = requireEl('result-glow');
+    const emailSection = requireEl('email-section');
+    const emailForm = requireEl<HTMLFormElement>('email-form');
+    const emailSuccess = requireEl('email-success');
+    const submitBtn = requireEl('submit-btn');
 
     function showStep(step: number) {
       state.currentStep = step;
@@ -405,10 +408,10 @@ import { archetypes } from '../lib/archetype-content';
             ? `I'm ${content.title} — ${content.element} element. Discover your aerial tarot archetype:`
             : 'Discover your aerial tarot archetype:';
 
-          const shareX = document.getElementById('share-x') as HTMLAnchorElement;
-          const shareFb = document.getElementById('share-fb') as HTMLAnchorElement;
-          const shareCopy = document.getElementById('share-copy')!;
-          const shareCopyText = document.getElementById('share-copy-text')!;
+          const shareX = requireEl<HTMLAnchorElement>('share-x');
+          const shareFb = requireEl<HTMLAnchorElement>('share-fb');
+          const shareCopy = requireEl('share-copy');
+          const shareCopyText = requireEl('share-copy-text');
 
           shareX.href = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
           shareFb.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
@@ -417,6 +420,7 @@ import { archetypes } from '../lib/archetype-content';
             try {
               await navigator.clipboard.writeText(shareUrl);
               shareCopyText.textContent = 'Copied!';
+              trackShare('copy_link', 'quiz_result', quizArchetype ?? '');
             } catch {
               shareCopyText.textContent = 'Copy failed';
             }
@@ -424,18 +428,8 @@ import { archetypes } from '../lib/archetype-content';
           });
 
           // Track share clicks
-          [shareX, shareFb, shareCopy].forEach((btn) => {
-            btn.addEventListener('click', () => {
-              if (typeof gtag === 'function') {
-                const platform = btn === shareX ? 'x' : btn === shareFb ? 'facebook' : 'copy_link';
-                gtag('event', 'share', {
-                  method: platform,
-                  content_type: 'quiz_result',
-                  item_id: quizArchetype,
-                });
-              }
-            });
-          });
+          shareX.addEventListener('click', () => trackShare('x', 'quiz_result', quizArchetype ?? ''));
+          shareFb.addEventListener('click', () => trackShare('facebook', 'quiz_result', quizArchetype ?? ''));
 
           // Point "View Your Archetype Profile" at the correct result page
           const profileLink = document.getElementById('result-profile-link') as HTMLAnchorElement;

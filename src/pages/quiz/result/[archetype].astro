@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import ShareButtons from '../../../components/ShareButtons.astro';
 import { archetypes, archetypeByUrlSlug, toUrlSlug } from '../../../lib/archetype-content';
 import type { ArchetypeSlug } from '../../../lib/classifier';
 import type { GetStaticPaths } from 'astro';
@@ -111,6 +112,8 @@ const accentColor = archetype.accentHex;
   </main>
 
   <script>
+    import { trackShare } from '../../../lib/share-utils';
+
     const copyBtn = document.getElementById('copy-link-btn');
     const copyText = document.getElementById('copy-text');
     if (copyBtn && copyText) {
@@ -118,6 +121,7 @@ const accentColor = archetype.accentHex;
         try {
           await navigator.clipboard.writeText(window.location.href);
           copyText.textContent = 'Copied!';
+          trackShare('copy_link', 'quiz_result', window.location.pathname.split('/').pop() ?? '');
         } catch {
           copyText.textContent = 'Copy failed';
         }
@@ -125,18 +129,14 @@ const accentColor = archetype.accentHex;
       });
     }
 
-    // Track all share button clicks
+    // Track X and Facebook share button clicks
     document.getElementById('share-buttons')?.addEventListener('click', (e) => {
       const link = (e.target as HTMLElement).closest('a, button');
-      if (!link || typeof gtag !== 'function') return;
-      const archetype = window.location.pathname.split('/').pop();
+      if (!link) return;
+      const archetype = window.location.pathname.split('/').pop() ?? '';
       const platform = link.tagName === 'BUTTON' ? 'copy_link'
         : (link as HTMLAnchorElement).href.includes('x.com') ? 'x' : 'facebook';
-      gtag('event', 'share', {
-        method: platform,
-        content_type: 'quiz_result',
-        item_id: archetype,
-      });
+      trackShare(platform, 'quiz_result', archetype);
     });
   </script>
 </Layout>
