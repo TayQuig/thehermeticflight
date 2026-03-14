@@ -129,13 +129,12 @@ const accentColor = archetype.accentHex;
       });
     }
 
-    // Track X and Facebook share button clicks
+    // Track X and Facebook share button clicks (copy_link is handled above)
     document.getElementById('share-buttons')?.addEventListener('click', (e) => {
-      const link = (e.target as HTMLElement).closest('a, button');
+      const link = (e.target as HTMLElement).closest('a');
       if (!link) return;
       const archetype = window.location.pathname.split('/').pop() ?? '';
-      const platform = link.tagName === 'BUTTON' ? 'copy_link'
-        : (link as HTMLAnchorElement).href.includes('x.com') ? 'x' : 'facebook';
+      const platform = link.href.includes('x.com') ? 'x' : 'facebook';
       trackShare(platform, 'quiz_result', archetype);
     });
   </script>
