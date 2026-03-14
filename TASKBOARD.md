@@ -64,7 +64,7 @@ and 4 API reference guides are written. Ready for execution.
 | 2 | Scrape API references (PageSpeed, Supabase, Playwright, Vercel GH Actions) | `completed` | 4 guides in `operations/*-reference.md` |
 | 3 | Write 8 detailed plan docs with FTF/eval/harden gates | `completed` | All at `docs/plans/2026-03-09-*.md` |
 | 4 | Execute Sprint 1: Foundation & Quick Wins (3 parallel tracks) | `completed` | All 3 tracks merged, 381/381 tests pass, build clean |
-| 5 | Execute Sprint 2: Growth Features (3 parallel tracks) | `in_progress` | 2A: journey pages (merged), 2B: countdown (blocked—pledge tiers), 2C: daily draw (`in_progress`, plan: `docs/plans/2026-03-13-daily-card-draw.md`) |
+| 5 | Execute Sprint 2: Growth Features (3 parallel tracks) | `completed` | 2A: journey pages (merged), 2B: countdown (complete), 2C: daily draw (committed) |
 | 6 | Execute Sprint 3: Operational Visibility (5 parallel tracks) | `pending` | Email drip testing, eval harness, site-monitor, perf-audit/CWV, funnel analytics, WCAG |
 | 7 | Execute Sprint 4: Code Quality & Skill Hardening (2 tracks) | `pending` | 4A: quiz refactoring, 4B: skill polish |
 | 8 | Execute Sprint 5: Externally-Blocked Features (staggered) | `pending` | 5A: gallery (art ~May), 5B: waitlist (Supabase), 5C: content calendar (~June) |
