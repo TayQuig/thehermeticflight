@@ -64,47 +64,59 @@ and 4 API reference guides are written. Ready for execution.
 | 2 | Scrape API references (PageSpeed, Supabase, Playwright, Vercel GH Actions) | `completed` | 4 guides in `operations/*-reference.md` |
 | 3 | Write 8 detailed plan docs with FTF/eval/harden gates | `completed` | All at `docs/plans/2026-03-09-*.md` |
 | 4 | Execute Sprint 1: Foundation & Quick Wins (3 parallel tracks) | `completed` | All 3 tracks merged, 381/381 tests pass, build clean |
-| 5 | Execute Sprint 2: Growth Features (3 parallel tracks) | `in_progress` | 2A: journey pages (active), 2B: countdown (blocked), 2C: daily draw (blocked) |
-| 6 | Execute Sprint 3: Operational Visibility (4 parallel tracks) | `pending` | Skills: site-monitor, perf-audit, funnel analytics, WCAG |
+| 5 | Execute Sprint 2: Growth Features (3 parallel tracks) | `in_progress` | 2A: journey pages (merged), 2B: countdown (blocked—pledge tiers), 2C: daily draw (`in_progress`, plan: `docs/plans/2026-03-13-daily-card-draw.md`) |
+| 6 | Execute Sprint 3: Operational Visibility (5 parallel tracks) | `pending` | Email drip testing, eval harness, site-monitor, perf-audit/CWV, funnel analytics, WCAG |
 | 7 | Execute Sprint 4: Code Quality & Skill Hardening (2 tracks) | `pending` | 4A: quiz refactoring, 4B: skill polish |
 | 8 | Execute Sprint 5: Externally-Blocked Features (staggered) | `pending` | 5A: gallery (art ~May), 5B: waitlist (Supabase), 5C: content calendar (~June) |
-| 9 | Execute Sprint 6: Platform Expansion | `pending` | Hermes bot (separate repo), skill dashboard (tech TBD) |
+| 9 | Execute Sprint 6: Platform Expansion + Autoresearch Loops | `pending` | Hermes bot, skill dashboard, 4 autoresearch loops (ads, email subjects, quiz intro, journey CTA) |
 
-**Handoff Context (2026-03-09):** Sprint 1 code complete. 3 tracks merged into
-feature/native-quiz-pipeline (381/381 Vitest, build clean). PR #4 open against
-main: https://github.com/TayQuig/thehermeticflight/pull/4
+**Handoff Context (2026-03-13):** Sprint 2C (Daily Card Draw) code complete.
+78-card data module parsed from operator CSV, deterministic PRNG utility,
+`/daily` page with card flip animation, share buttons, GA4 tracking, and
+pre/post-reveal modes. REVEAL_DATE set to 2026-06-07. 440/440 Vitest pass,
+build clean. 3-evaluator review passed (correctness, UX patterns, test
+contract). Frozen test file verified. Not yet committed — awaiting operator
+review.
 
-**LOOPS_API_KEY blocker RESOLVED.** Quiz flow verified end-to-end on Vercel
-preview (Grounded Mystic archetype reveal + Loops.so event firing). Root cause
-was Vercel env var configuration — the code was correct (`import.meta.env`
-compiles to `process.env` via Vite SSR transform; explicit `process.env`
-fallback added). Comment in quiz-submit.ts:266-268 documents the pattern.
-Temporary `env-check.ts` diagnostic endpoint created and removed after fix.
+Plan: `docs/plans/2026-03-13-daily-card-draw.md` (supersedes 2026-03-09 plan).
 
-**CSP monitoring (report-only, not blocking):** Console shows violations for
-`capi-automation.s3.us-east-2.amazonaws.com` (Meta CAPI script-src),
-`form-action` for facebook.com/tr/ and googletagmanager.com, additional
-connect-src and frame-src gaps. All expected — catalog for CSP update before
-enforcing mode.
+**Journaling prompts are AI-generated placeholders** — operator review
+recommended before launch. See header comment in `src/lib/card-data.ts`.
 
-**Meta Pixel custom events:** `fbevents.js` warns about non-standard event
-names (`quiz_completed`, `form_start`, `form_submit`, `scroll`) — should use
-`trackCustom()` instead of `track()`. Not blocking but affects Meta Ads
-conversion tracking accuracy.
+**Sprint 2 status:** 2A journey pages merged, 2B countdown blocked (pledge
+tiers), 2C daily draw complete (uncommitted). Next: commit 2C, then Sprint 3
+or Sprint 4.
 
-**Minor:** Favicon 404s for `favicon-32x32.png` and `favicon-16x16.png`.
-
-**Still needed before merge:**
-- GitHub secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID (for CI)
-
-Sprint 2 blocked on content provisions. Next unblocked: Sprint 3 (skill
-authoring) or Sprint 4 (quiz refactoring, skill polish).
+**Carried from prior handoff:** CSP violations (report-only), Meta Pixel
+custom event warnings, favicon 404s, GitHub CI secrets needed.
 
 ---
 
 ## Ideas
 
-[Empty]
+- **Retargeting campaigns for quiz completers who didn't subscribe.** The `QuizCompleted` custom event (GA4 + Meta pixel) creates an audience of high-intent non-converters. Test alternate offers:
+  - *Deck-forward:* "Your archetype is waiting" → Kickstarter/deck page (skip the email series pitch)
+  - *Content pull:* Serve archetype-matched blog post as ad creative (blog_links data already maps these per archetype)
+  - *Social proof:* "X people discovered they're a [archetype]" → quiz link for cold, journey link for returners
+  - The `archetype` param in the pixel event enables per-archetype creative segmentation once audience is large enough
+
+- **Core Web Vitals autoresearch loop.** PageSpeed API gives instant feedback (seconds, not days) — the only loop that can run 100+ iterations overnight like the original autoresearch. Artifact: page layout, asset loading strategy, image config. Metric: LCP/CLS/FID scores. Could be folded into Sprint 3 Performance Budget item or run standalone.
+
+- **Daily card draw engagement optimization (autoresearch).** Test share CTA copy, card reveal animation timing, journaling prompt framing on `/daily`. Metric: `share_rate` (shares / daily_visits, GA4). Traffic-gated — needs daily visitor volume.
+
+- **OG image variant testing (autoresearch).** Test different social card images per archetype to optimize click-through from social shares. Metric: referral traffic from shared links (GA4 referral source). Slow feedback — needs share volume.
+
+- **Blog title / meta description SEO loop (autoresearch).** Artifact: title tags and meta descriptions. Metric: organic CTR from Google Search Console API. Very slow feedback (weeks). Low leverage pre-launch, high leverage post-launch with organic traffic.
+
+- **Email send timing optimization (autoresearch).** Which day of week / hour gets best open rates per archetype. Artifact: Loops.so send schedule config. Metric: open rate by send time. Needs cohort accumulation over weeks.
+
+- **Quiz question wording optimization (autoresearch).** Test question text and answer option phrasing. Metric: `quiz_completed / quiz_started`. **Requires guardrail:** archetype distribution shift > ±5% → auto-discard (prevents confounding completion rate with classification accuracy). Higher risk loop.
+
+- **Archetype result page copy optimization (autoresearch).** Test the reveal page messaging and layout on `/quiz/result/[archetype]`. Metric: share_rate + journey_subscribe_rate from result pages (GA4). Medium leverage — sits at the funnel's conversion-to-advocacy pivot point.
+
+- **Kickstarter page copy optimization (autoresearch).** Once live. Artifact: pledge page headline, tier descriptions, stretch goal framing. Metric: pledge conversion rate. High leverage but post-launch only.
+
+- **Journaling prompt quality loop (autoresearch).** Currently AI-generated placeholders in `card-data.ts`. Optimize for daily card draw return rate. Metric: 7-day return visitor rate. Very slow feedback, low leverage pre-launch.
 
 ---
 
@@ -124,13 +136,15 @@ authoring) or Sprint 4 (quiz refactoring, skill polish).
 
 - **Archetype Journey Pages** — Plan: `docs/plans/2026-03-09-archetype-journey-pages.md` (7 tasks). Astro Content Collections, 6 deep-dive pages. Blocked on: archetype report PDFs from operator.
 - **Kickstarter Countdown Page** — Plan: `docs/plans/2026-03-09-kickstarter-countdown.md` (5 tasks). `/launch` page, Loops.so notify CTA. Blocked on: pledge tier content from operator.
-- **Daily Card Draw** — Plan: `docs/plans/2026-03-09-daily-card-draw.md` (5 tasks). Client-side deterministic draw. Blocked on: 78-card tarot data from operator.
+- **Daily Card Draw** — Plan: `docs/plans/2026-03-13-daily-card-draw.md` (5 tasks). Client-side deterministic draw. UNBLOCKED — 78-card CSV delivered 2026-03-13. Supersedes prior plan `2026-03-09-daily-card-draw.md`.
 
 ### Sprint 3 — Operational Visibility (April–May)
 
+- **Email Drip Sequence Testing (6 archetypes)** — Plan doc needed. Operator provides email content → verify each archetype triggers correct Loops.so sequence, emails deliver with correct content/timing, edge cases (resubmission, multiple archetypes) handled. Content source: `src/data/email-sequences.json`. UNBLOCKED — operator has email content.
+- **Autoresearch Eval Harness** — Plan doc needed. Build reusable GA4 metric-pulling scripts (quiz_started rate, journey_subscribe rate, share rate) and Loops.so webhook-based open/click tracking (local SQLite counters, since Loops.so lacks bulk analytics API). Foundation for all optimization loops in Sprint 6+. Ref: `operations/ga4-api-reference.md`.
 - **Site Uptime & Deploy Monitoring** — No plan doc (skill authoring). New `site-monitor` skill.
-- **Performance Budget / Core Web Vitals** — No plan doc (skill authoring). Ref: `operations/pagespeed-api-reference.md`.
-- **Subscriber Funnel Analytics** — No plan doc (skill enhancement). Note: Loops.so has no bulk contact API — needs local counter approach.
+- **Performance Budget / Core Web Vitals** — No plan doc (skill authoring). Ref: `operations/pagespeed-api-reference.md`. Note: CWV scores via PageSpeed API have instant feedback — candidate for autoresearch loop (artifact: page layout/asset config, metric: LCP/CLS/FID, ~100 iterations overnight).
+- **Subscriber Funnel Analytics** — No plan doc (skill enhancement). Note: Loops.so has no bulk contact API — needs local counter approach (shared with eval harness above).
 - **Accessibility Audit (WCAG)** — No plan doc (skill extension to audit-site).
 
 ### Sprint 4 — Code Quality & Skill Hardening (May)
@@ -147,7 +161,11 @@ authoring) or Sprint 4 (quiz refactoring, skill polish).
 ### Sprint 6 — Platform Expansion (June–July)
 
 - **Hermes Slack bot bridge (v1)** — Separate repo. Blocked on: Slack App creation (operator).
-- **Skill outputs dashboard** — Tech TBD. Lowest priority.
+- **Skill outputs dashboard** — Tech TBD. Needs its own backlog once tech is chosen. Will surface data from all cron-driven workflows below.
+- **A/B Creative Testing Pipeline (autoresearch pattern)** — Reframed as Karpathy autoresearch loop. Artifact: `creative-variants.json` (headline, body, image, CTA, target archetype). Eval harness: Meta Marketing API → CTR or cost-per-quiz-start. `creative-program.md` enforces single-variable-per-iteration constraint. Git ratchet → SQLite creative state. Claude + cron + Meta Marketing API. 3 cron jobs: (1) Claude generates creative variants from archetype data → Telegram approval, (2) shell script deploys approved ads via Meta API, (3) daily metrics pull → Claude judges pause/promote → Slack digest. Dashboard integration required. Blocked on: Meta Marketing API access token, dashboard tech decision. Ref: [karpathy/autoresearch](https://github.com/karpathy/autoresearch).
+- **Email Subject Line Optimization Loop (autoresearch)** — Per-archetype hill-climbing on drip sequence subject lines + preview text. 6 archetypes = 6 parallel loops. Artifact: subject line config per archetype. Eval: open rate via Loops.so webhook counters (from eval harness). Winning patterns in one archetype become hypotheses for others. ~2-3 iterations/week/archetype. Depends on: eval harness (Sprint 3), email drip sequences live (Sprint 3).
+- **Quiz Intro Copy Optimization Loop (autoresearch)** — Hill-climbing on quiz landing page headline, subheadline, CTA button text. Artifact: intro copy section of `/quiz`. Eval: `quiz_started / page_sessions` (GA4). Constraint: modify only intro copy, nothing downstream. Traffic-gated — needs minimum sessions threshold per test window. Depends on: eval harness (Sprint 3).
+- **Journey Page CTA Optimization Loop (autoresearch)** — Per-archetype CTA copy testing on `/archetype/[slug]` pages. Artifact: CTA section copy. Eval: `journey_subscribe` conversion rate (GA4). Can run 6 parallel per-archetype variants. Depends on: eval harness (Sprint 3).
 
 ### Completed / Absorbed
 

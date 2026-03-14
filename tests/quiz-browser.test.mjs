@@ -62,9 +62,9 @@ try {
   const desc = await page.locator('#result-description').textContent();
   (desc && desc.length > 20) ? pass('Description populated') : fail('Description', 'too short or empty');
 
-  // 9. Email form visible
-  const emailFormVisible = await page.locator('#email-form').isVisible();
-  emailFormVisible ? pass('Email form visible') : fail('Email form', 'not visible');
+  // 9. Share section visible after results
+  const shareSectionVisible = await page.locator('#share-section').isVisible();
+  shareSectionVisible ? pass('Share section visible') : fail('Share section', 'not visible');
 
   // 10. Back buttons exist on Q2-Q20
   pass('Back buttons rendered on Q2-Q20');

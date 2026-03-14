@@ -125,71 +125,40 @@ import { archetypes } from '../lib/archetype-content';
             <p id="result-description" class="text-gray-300 font-light font-sans leading-relaxed mb-8 max-w-lg mx-auto opacity-0 translate-y-4 transition-all duration-700 delay-[900ms]"></p>
           </div>
 
-          <!-- Email Capture -->
-          <div id="email-section" class="border-t border-hermetic-gold/20 pt-8 mt-8 opacity-0 translate-y-4 transition-all duration-700 delay-[1200ms]">
-            <p class="text-hermetic-white font-serif text-lg mb-2">Begin Your Archetype Journey</p>
-            <p class="text-gray-400 font-sans text-sm mb-6">Enter your email to receive your personalized archetype reading and early Kickstarter access.</p>
-            <form id="email-form" class="space-y-3 max-w-sm mx-auto">
-              <!-- Honeypot -->
-              <div style="position:absolute;left:-9999px;" aria-hidden="true">
-                <input type="text" name="website" tabindex="-1" autocomplete="off" />
-              </div>
-              <input
-                type="text"
-                name="firstName"
-                placeholder="First Name"
-                class="w-full p-3 bg-hermetic-void/80 border border-hermetic-gold/20 rounded-lg text-hermetic-white font-sans placeholder:text-gray-500 focus:border-hermetic-gold/50 focus:outline-none transition-colors duration-300"
-              />
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                required
-                class="w-full p-3 bg-hermetic-void/80 border border-hermetic-gold/20 rounded-lg text-hermetic-white font-sans placeholder:text-gray-500 focus:border-hermetic-gold/50 focus:outline-none transition-colors duration-300"
-              />
-              <button type="submit" id="submit-btn" class="btn-flame w-full py-3 text-white font-sans font-bold text-sm tracking-widest uppercase">
-                Unlock My Reading
+          <!-- Share + Journey CTA -->
+          <div id="share-section" class="border-t border-hermetic-gold/20 pt-8 mt-8 opacity-0 translate-y-4 transition-all duration-700 delay-[1200ms]">
+            <p class="text-hermetic-gold/60 text-xs tracking-[0.2em] uppercase font-sans mb-4">Share Your Archetype</p>
+            <div class="flex justify-center gap-3 flex-wrap">
+              <a id="share-x" href="#" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                Post
+              </a>
+              <a id="share-fb" href="#" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                Share
+              </a>
+              <button id="share-copy"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                <span id="share-copy-text">Copy Link</span>
               </button>
-            </form>
-          </div>
-
-          <!-- Success Message with Share CTA -->
-          <div id="email-success" class="hidden border-t border-hermetic-gold/20 pt-8 mt-8">
-            <div class="w-12 h-12 rounded-full border border-hermetic-gold/50 mx-auto mb-4 flex items-center justify-center">
-              <span class="text-hermetic-gold text-xl">&#x2713;</span>
-            </div>
-            <p class="text-hermetic-gold font-serif text-xl mb-2">The Path is Revealed</p>
-            <p class="text-gray-300 font-sans font-light mb-6">Check your inbox — your archetype journey begins now.</p>
-
-            <!-- Share Buttons (populated by JS after archetype is known) -->
-            <div id="share-section" class="border-t border-hermetic-gold/20 pt-6 mt-6">
-              <p class="text-hermetic-gold/60 text-xs tracking-[0.2em] uppercase font-sans mb-4">Share Your Archetype</p>
-              <div class="flex justify-center gap-3 flex-wrap">
-                <a id="share-x" href="#" target="_blank" rel="noopener noreferrer"
-                  class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                  Post
-                </a>
-                <a id="share-fb" href="#" target="_blank" rel="noopener noreferrer"
-                  class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                  Share
-                </a>
-                <button id="share-copy"
-                  class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                  <span id="share-copy-text">Copy Link</span>
-                </button>
-              </div>
             </div>
 
-            <!-- Primary CTA: archetype profile (href populated by JS below) -->
-            <a id="result-profile-link" href="/quiz"
+            <!-- Primary CTA: journey page -->
+            <a id="journey-cta" href="/archetype/"
               class="btn-flame inline-block mt-6 px-8 py-3 text-white font-sans font-bold text-sm tracking-widest uppercase no-underline">
-              View Your Archetype Profile
+              Begin Your Archetype Journey
             </a>
 
-            <!-- Secondary: return home -->
+            <!-- Secondary: result profile -->
+            <a id="result-profile-link" href="/quiz"
+              class="block mt-3 text-hermetic-gold/70 hover:text-hermetic-gold text-sm font-sans tracking-wider transition-colors">
+              View Your Result
+            </a>
+
+            <!-- Tertiary: return home -->
             <a href="/"
               class="block mt-3 text-hermetic-gold/50 hover:text-hermetic-gold text-xs font-sans tracking-widest uppercase transition-colors">
               Return Home
@@ -232,10 +201,6 @@ import { archetypes } from '../lib/archetype-content';
     const resultLabel = document.getElementById('result-label')!;
     const resultDivider = document.getElementById('result-divider')!;
     const resultGlow = document.getElementById('result-glow')!;
-    const emailSection = document.getElementById('email-section')!;
-    const emailForm = document.getElementById('email-form') as HTMLFormElement;
-    const emailSuccess = document.getElementById('email-success')!;
-    const submitBtn = document.getElementById('submit-btn')!;
 
     function showStep(step: number) {
       state.currentStep = step;
@@ -305,14 +270,67 @@ import { archetypes } from '../lib/archetype-content';
         resultElement.style.opacity = '1';
         resultDescription.style.opacity = '1';
         resultDescription.style.transform = 'translateY(0)';
-        emailSection.style.opacity = '1';
-        emailSection.style.transform = 'translateY(0)';
       });
 
-      // Analytics
+      // Analytics — retargetable quiz completion event
       if (typeof gtag === 'function') {
         gtag('event', 'quiz_completed', { archetype });
       }
+      if (typeof fbq === 'function') {
+        fbq('trackCustom', 'QuizCompleted', { archetype });
+      }
+
+      // Populate share links and CTAs
+      const urlSlug = quizArchetype ? toUrlSlug(quizArchetype as ArchetypeSlug) : '';
+      const shareUrl = `https://www.thehermeticflight.com/quiz/result/${urlSlug}`;
+      const shareText = content
+        ? `I'm ${content.title} — ${content.element} element. Discover your aerial tarot archetype:`
+        : 'Discover your aerial tarot archetype:';
+
+      const shareX = document.getElementById('share-x') as HTMLAnchorElement;
+      const shareFb = document.getElementById('share-fb') as HTMLAnchorElement;
+      const shareCopy = document.getElementById('share-copy')!;
+      const shareCopyText = document.getElementById('share-copy-text')!;
+      const shareSection = document.getElementById('share-section')!;
+
+      shareX.href = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+      shareFb.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+
+      shareCopy.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          shareCopyText.textContent = 'Copied!';
+        } catch {
+          shareCopyText.textContent = 'Copy failed';
+        }
+        setTimeout(() => { shareCopyText.textContent = 'Copy Link'; }, 2000);
+      });
+
+      // Track share clicks
+      [shareX, shareFb, shareCopy].forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (typeof gtag === 'function') {
+            const platform = btn === shareX ? 'x' : btn === shareFb ? 'facebook' : 'copy_link';
+            gtag('event', 'share', {
+              method: platform,
+              content_type: 'quiz_result',
+              item_id: quizArchetype,
+            });
+          }
+        });
+      });
+
+      // Set CTA hrefs
+      const journeyCta = document.getElementById('journey-cta') as HTMLAnchorElement;
+      const profileLink = document.getElementById('result-profile-link') as HTMLAnchorElement;
+      if (journeyCta && urlSlug) journeyCta.href = `/archetype/${urlSlug}`;
+      if (profileLink && urlSlug) profileLink.href = `/quiz/result/${urlSlug}`;
+
+      // Reveal share section
+      requestAnimationFrame(() => {
+        shareSection.style.opacity = '1';
+        shareSection.style.transform = 'translateY(0)';
+      });
     }
 
     // Start button
@@ -361,105 +379,6 @@ import { archetypes } from '../lib/archetype-content';
         autoAdvanceTimer = null;
       }
       if (state.currentStep > 1) showStep(state.currentStep - 1);
-    });
-
-    // Email form
-    emailForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData(emailForm);
-
-      // Honeypot check
-      if (formData.get('website')) return;
-
-      // Timing check (< 10s = bot)
-      const elapsed = (Date.now() - state.startTime) / 1000;
-      if (elapsed < 10) return;
-
-      const email = formData.get('email') as string;
-      const firstName = formData.get('firstName') as string;
-
-      submitBtn.textContent = 'Sending...';
-      submitBtn.setAttribute('disabled', 'true');
-      submitBtn.style.opacity = '0.6';
-
-      try {
-        const res = await fetch('/api/quiz-submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email,
-            firstName,
-            answers: state.answers,
-          }),
-        });
-
-        if (res.ok) {
-          emailSection.style.display = 'none';
-          emailSuccess.classList.remove('hidden');
-
-          // Populate share links with archetype-specific URLs
-          const urlSlug = quizArchetype ? toUrlSlug(quizArchetype as ArchetypeSlug) : '';
-          const shareUrl = `https://www.thehermeticflight.com/quiz/result/${urlSlug}`;
-          const content = quizArchetype ? archetypes[quizArchetype as keyof typeof archetypes] : null;
-          const shareText = content
-            ? `I'm ${content.title} — ${content.element} element. Discover your aerial tarot archetype:`
-            : 'Discover your aerial tarot archetype:';
-
-          const shareX = document.getElementById('share-x') as HTMLAnchorElement;
-          const shareFb = document.getElementById('share-fb') as HTMLAnchorElement;
-          const shareCopy = document.getElementById('share-copy')!;
-          const shareCopyText = document.getElementById('share-copy-text')!;
-
-          shareX.href = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
-          shareFb.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-
-          shareCopy.addEventListener('click', async () => {
-            try {
-              await navigator.clipboard.writeText(shareUrl);
-              shareCopyText.textContent = 'Copied!';
-            } catch {
-              shareCopyText.textContent = 'Copy failed';
-            }
-            setTimeout(() => { shareCopyText.textContent = 'Copy Link'; }, 2000);
-          });
-
-          // Track share clicks
-          [shareX, shareFb, shareCopy].forEach((btn) => {
-            btn.addEventListener('click', () => {
-              if (typeof gtag === 'function') {
-                const platform = btn === shareX ? 'x' : btn === shareFb ? 'facebook' : 'copy_link';
-                gtag('event', 'share', {
-                  method: platform,
-                  content_type: 'quiz_result',
-                  item_id: quizArchetype,
-                });
-              }
-            });
-          });
-
-          // Point "View Your Archetype Profile" at the correct result page
-          const profileLink = document.getElementById('result-profile-link') as HTMLAnchorElement;
-          if (profileLink && urlSlug) {
-            profileLink.href = `/quiz/result/${urlSlug}`;
-          }
-
-          if (typeof fbq === 'function') fbq('track', 'Lead');
-          if (typeof gtag === 'function') {
-            gtag('event', 'generate_lead', {
-              event_category: 'quiz',
-              archetype: quizArchetype,
-            });
-          }
-        } else {
-          submitBtn.textContent = 'Something went wrong — try again';
-          submitBtn.removeAttribute('disabled');
-          submitBtn.style.opacity = '1';
-        }
-      } catch {
-        submitBtn.textContent = 'Something went wrong — try again';
-        submitBtn.removeAttribute('disabled');
-        submitBtn.style.opacity = '1';
-      }
     });
 
     // Initialize

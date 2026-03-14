@@ -259,28 +259,28 @@ describe('F-03: Quiz share CTA — static source contracts', () => {
       ).toBe(true);
     });
 
-    it('share section is inside the email-success container', () => {
-      // The share section must only be visible after email submission succeeds.
-      // Verify that #share-section is a descendant of #email-success.
-      const emailSuccessBlock = quizSource.match(
-        /id=["']email-success["'][\s\S]*?(?=<\/section>|<section\s)/,
+    it('share section is rendered directly in quiz results (not gated behind email)', () => {
+      // Share buttons are shown immediately after results reveal — no email gate.
+      const shareSection = quizSource.match(
+        /id=["']share-section["']/,
       );
       expect(
-        emailSuccessBlock,
-        '#email-success element must exist in quiz.astro',
+        shareSection,
+        '#share-section element must exist in quiz.astro',
       ).not.toBeNull();
+      // Must NOT be inside a hidden container
       expect(
-        emailSuccessBlock![0].includes('share-section'),
-        '#share-section must be inside the #email-success container',
-      ).toBe(true);
+        quizSource.includes('email-success'),
+        '#email-success should not exist — share section is shown directly',
+      ).toBe(false);
     });
 
-    it('email-success section is initially hidden', () => {
-      // The success section must start hidden and only show after form submission
-      const hiddenPattern = /id=["']email-success["'][^>]*class=["'][^"']*hidden/;
+    it('share section has staggered reveal animation', () => {
+      // The share section uses CSS transition for reveal animation
+      const hasTransition = /id=["']share-section["'][^>]*class=["'][^"']*transition/.test(quizSource);
       expect(
-        hiddenPattern.test(quizSource),
-        '#email-success must have "hidden" class initially',
+        hasTransition,
+        '#share-section must have transition classes for reveal animation',
       ).toBe(true);
     });
   });

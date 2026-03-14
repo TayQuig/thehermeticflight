@@ -176,6 +176,49 @@ const pageDescription = `Explore the ${archetypeData.name} archetype in depth: a
         </ol>
       </section>
 
+      <!-- ===== EMAIL SERIES SIGNUP ===== -->
+      <section aria-label="Email series signup" class="glass-panel p-8 rounded-lg relative">
+        <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-hermetic-gold opacity-30"></div>
+        <div class="absolute top-2 right-2 w-3 h-3 border-t border-r border-hermetic-gold opacity-30"></div>
+
+        <h2 class="font-serif text-xl md:text-2xl text-hermetic-gold mb-1 tracking-wide">Continue the Path</h2>
+        <p class="text-gray-400 font-sans text-sm leading-relaxed mb-6">
+          Receive an 8-week email series tailored to the {archetypeData.name} archetype — one reflection per week, designed for where you are now.
+        </p>
+
+        <form id="journey-email-form" class="space-y-3 max-w-sm mx-auto">
+          <!-- Honeypot -->
+          <div style="position:absolute;left:-9999px;" aria-hidden="true">
+            <input type="text" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+          <input
+            type="text"
+            name="firstName"
+            placeholder="First Name"
+            class="w-full p-3 bg-hermetic-void/80 border border-hermetic-gold/20 rounded-lg text-hermetic-white font-sans placeholder:text-gray-500 focus:border-hermetic-gold/50 focus:outline-none transition-colors duration-300"
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email Address"
+            required
+            class="w-full p-3 bg-hermetic-void/80 border border-hermetic-gold/20 rounded-lg text-hermetic-white font-sans placeholder:text-gray-500 focus:border-hermetic-gold/50 focus:outline-none transition-colors duration-300"
+          />
+          <button type="submit" id="journey-submit-btn" class="btn-flame w-full py-3 text-white font-sans font-bold text-sm tracking-widest uppercase">
+            Begin the Series
+          </button>
+        </form>
+
+        <!-- Success state (hidden by default) -->
+        <div id="journey-email-success" class="hidden text-center">
+          <div class="w-12 h-12 rounded-full border border-hermetic-gold/50 mx-auto mb-4 flex items-center justify-center">
+            <span class="text-hermetic-gold text-xl">&#x2713;</span>
+          </div>
+          <p class="text-hermetic-gold font-serif text-xl mb-2">You're In</p>
+          <p class="text-gray-300 font-sans font-light">Check your inbox — your first reflection arrives this week.</p>
+        </div>
+      </section>
+
       <!-- ===== BLOG LINKS (conditional — only if blog_links non-empty) ===== -->
       {journey.data.blog_links.length > 0 && (
         <section aria-label="Recommended reading" class="glass-panel p-8 rounded-lg relative">
@@ -229,6 +272,66 @@ const pageDescription = `Explore the ${archetypeData.name} archetype in depth: a
       gtag('event', 'journey_page_view', {
         archetype: slug,
         content_type: 'archetype_journey',
+      });
+    }
+
+    // Email series signup form
+    const journeyForm = document.getElementById('journey-email-form') as HTMLFormElement | null;
+    const journeySubmitBtn = document.getElementById('journey-submit-btn') as HTMLButtonElement | null;
+    const journeySuccess = document.getElementById('journey-email-success');
+    const formRenderTime = Date.now();
+
+    if (journeyForm && journeySubmitBtn) {
+      journeyForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(journeyForm);
+
+        // Honeypot check
+        if (formData.get('website')) return;
+
+        // Timing check: form must have been on screen > 3 seconds
+        if (Date.now() - formRenderTime < 3000) return;
+
+        const email = formData.get('email') as string;
+        const firstName = formData.get('firstName') as string;
+
+        // Extract archetype slug from URL
+        const urlSlug = window.location.pathname.split('/').pop() || '';
+
+        journeySubmitBtn.textContent = 'Sending...';
+        journeySubmitBtn.disabled = true;
+        journeySubmitBtn.style.opacity = '0.6';
+
+        try {
+          const res = await fetch('/api/journey-subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, firstName, archetype: urlSlug }),
+          });
+
+          if (res.ok) {
+            // Hide form, show success
+            journeyForm.style.display = 'none';
+            if (journeySuccess) journeySuccess.classList.remove('hidden');
+
+            // Analytics
+            if (typeof gtag === 'function') {
+              gtag('event', 'generate_lead', {
+                event_category: 'journey',
+                archetype: urlSlug,
+              });
+            }
+            if (typeof fbq === 'function') fbq('track', 'Lead');
+          } else {
+            journeySubmitBtn.textContent = 'Something went wrong — try again';
+            journeySubmitBtn.disabled = false;
+            journeySubmitBtn.style.opacity = '1';
+          }
+        } catch {
+          journeySubmitBtn.textContent = 'Something went wrong — try again';
+          journeySubmitBtn.disabled = false;
+          journeySubmitBtn.style.opacity = '1';
+        }
       });
     }
   </script>
