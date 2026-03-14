@@ -1,0 +1,485 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pledgeTiers = [
+  {
+    id: 'first-flight',
+    name: 'The First Flight',
+    price: '$55',
+    badge: 'Early Bird — Limited to 222',
+    perks: [
+      '78-card deck, 350gsm premium card stock, matte finish',
+      'Standard tarot size (2.75" × 4.75"), reversible card back',
+      'Custom rigid box with full-color print',
+      'Downloadable PDF guidebook + printable spread templates',
+      'Name listed in backer credits',
+      '100% human-created aerial photography',
+    ],
+    highlight: false,
+  },
+  {
+    id: 'hermetic-flight',
+    name: 'The Hermetic Flight',
+    price: '$70',
+    badge: 'Most Popular',
+    perks: [
+      'Everything in The First Flight',
+      'Non-limited — available throughout campaign',
+    ],
+    highlight: true,
+  },
+  {
+    id: 'complete-reading',
+    name: 'The Complete Reading',
+    price: '$95',
+    badge: 'Deck + Guidebook',
+    perks: [
+      'Everything in The Hermetic Flight',
+      'Printed 200+ page guidebook with deck-specific interpretations',
+      'Set of 5 exclusive major arcana art bookmarks',
+      'Digital spread template pack',
+    ],
+    highlight: false,
+  },
+  {
+    id: 'collectors-edition',
+    name: "The Collector's Edition",
+    price: '$140',
+    badge: 'Premium',
+    perks: [
+      'Everything in The Complete Reading',
+      'Gold gilded card edges',
+      'Exclusive holographic foil major arcana card',
+      'Behind-the-scenes digital content',
+      'Upgraded magnetic book box packaging',
+      'Signed and numbered certificate of authenticity',
+    ],
+    highlight: false,
+  },
+];
+---
+
+<Layout
+  title="The Hermetic Flight — Aerial Tarot Deck | Launching August 8, 2026"
+  description="An aerial photography tarot deck that transforms flight into divination. Six archetypes. Twenty-two major cards. One Kickstarter launching August 8, 2026."
+  canonicalURL="https://www.thehermeticflight.com/launch"
+  ogImage="/images/og/launch.png"
+>
+  <main class="w-full min-h-screen flex flex-col items-center relative z-10 pt-6 pb-16 px-4">
+
+    <!-- Minimal Header -->
+    <header class="w-full py-4 flex justify-center mb-8">
+      <a href="/" class="group flex items-center gap-3">
+        <img src="/images/logo.png" alt="The Hermetic Flight" class="w-10 h-10 rounded-full opacity-80 group-hover:opacity-100 transition-opacity" />
+        <span class="font-serif text-hermetic-gold/60 text-sm tracking-[0.2em] uppercase group-hover:text-hermetic-gold transition-colors">The Hermetic Flight</span>
+      </a>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="w-full max-w-3xl text-center mb-12 reveal-up">
+      <div class="mb-6">
+        <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/60 to-transparent mx-auto mb-6"></div>
+        <p class="text-hermetic-gold text-xs tracking-[0.3em] uppercase font-sans">Kickstarter Launch</p>
+      </div>
+
+      <h1 class="font-serif text-3xl md:text-5xl text-hermetic-white mb-4 leading-tight tracking-wide">
+        The Hermetic Flight<br>
+        <span class="text-hermetic-gold italic">Takes Flight</span>
+      </h1>
+
+      <div class="w-24 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/40 to-transparent mx-auto my-6"></div>
+
+      <p class="text-gray-300 font-light font-sans text-lg leading-relaxed max-w-xl mx-auto">
+        78 cards. 21 aerial performers. One Kickstarter launching<br>
+        <span class="text-hermetic-sulfur font-normal">August 8, 2026.</span>
+      </p>
+    </section>
+
+    <!-- Countdown Timer -->
+    <section class="w-full max-w-2xl mb-14 reveal-up">
+      <div class="glass-panel rounded-xl p-8 md:p-10 text-center">
+        <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-hermetic-gold opacity-50"></div>
+        <div class="absolute top-2 right-2 w-3 h-3 border-t border-r border-hermetic-gold opacity-50"></div>
+        <div class="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-hermetic-gold opacity-50"></div>
+        <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-hermetic-gold opacity-50"></div>
+
+        <p class="text-hermetic-gold text-xs tracking-[0.3em] uppercase font-sans mb-6">Time Until Launch</p>
+
+        <!-- Countdown Display -->
+        <div id="countdown-display" class="grid grid-cols-4 gap-4 md:gap-8">
+          <div class="flex flex-col items-center">
+            <span id="cd-days" class="font-serif text-4xl md:text-6xl text-hermetic-white leading-none">--</span>
+            <span class="text-hermetic-gold/50 text-xs tracking-[0.2em] uppercase font-sans mt-2">Days</span>
+          </div>
+          <div class="flex flex-col items-center">
+            <span id="cd-hours" class="font-serif text-4xl md:text-6xl text-hermetic-white leading-none">--</span>
+            <span class="text-hermetic-gold/50 text-xs tracking-[0.2em] uppercase font-sans mt-2">Hours</span>
+          </div>
+          <div class="flex flex-col items-center">
+            <span id="cd-minutes" class="font-serif text-4xl md:text-6xl text-hermetic-white leading-none">--</span>
+            <span class="text-hermetic-gold/50 text-xs tracking-[0.2em] uppercase font-sans mt-2">Minutes</span>
+          </div>
+          <div class="flex flex-col items-center">
+            <span id="cd-seconds" class="font-serif text-4xl md:text-6xl text-hermetic-white leading-none">--</span>
+            <span class="text-hermetic-gold/50 text-xs tracking-[0.2em] uppercase font-sans mt-2">Seconds</span>
+          </div>
+        </div>
+
+        <!-- Post-Launch State (hidden until launch) -->
+        <div id="countdown-launched" class="hidden">
+          <div class="w-12 h-12 rounded-full border border-hermetic-gold/50 mx-auto mb-4 flex items-center justify-center">
+            <span class="text-hermetic-gold text-xl">&#x2605;</span>
+          </div>
+          <p class="font-serif text-3xl text-hermetic-gold mb-2">We Have Liftoff</p>
+          <p class="text-gray-300 font-sans font-light text-sm">The Kickstarter campaign is now live.</p>
+        </div>
+
+        <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/30 to-transparent mx-auto mt-8"></div>
+        <p class="text-hermetic-gold/40 text-xs font-sans tracking-widest uppercase mt-4">August 8, 2026</p>
+      </div>
+    </section>
+
+    <!-- Why This Deck Section -->
+    <section class="w-full max-w-2xl mb-14 reveal-up">
+      <div class="glass-panel rounded-xl p-8 md:p-10">
+        <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-hermetic-gold opacity-50"></div>
+        <div class="absolute top-2 right-2 w-3 h-3 border-t border-r border-hermetic-gold opacity-50"></div>
+        <div class="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-hermetic-gold opacity-50"></div>
+        <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-hermetic-gold opacity-50"></div>
+
+        <div class="text-center mb-6">
+          <p class="text-hermetic-gold text-xs tracking-[0.3em] uppercase font-sans mb-2">The Vision</p>
+          <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/60 to-transparent mx-auto"></div>
+        </div>
+
+        <h2 class="font-serif text-2xl text-hermetic-white text-center mb-6 leading-snug">
+          Why This Deck Is Different
+        </h2>
+
+        <p class="text-gray-300 font-light font-sans leading-relaxed mb-5">
+          The Hermetic Flight is the world's first tarot deck built entirely from aerial photography. Each of the 78 cards captures a real aerial performer — silks, lyra, trapeze, straps — embodying a tarot archetype through the language of flight.
+        </p>
+
+        <p class="text-gray-300 font-light font-sans leading-relaxed mb-5">
+          Between earth and sky exists a liminal space where gravity loosens its hold. That suspended moment — that deliberate leap of trust — is the same threshold tarot has always occupied. We've made it visible.
+        </p>
+
+        <p class="text-gray-400 font-light font-sans leading-relaxed text-sm border-l-2 border-hermetic-gold/30 pl-4 mb-7 italic">
+          21 professional performers. 350gsm premium card stock. Zero AI-generated art. Every card a photograph, every meaning embodied.
+        </p>
+
+        <div class="text-center">
+          <a href="/quiz" class="inline-flex items-center gap-2 text-hermetic-gold/70 hover:text-hermetic-gold font-sans text-sm tracking-[0.2em] uppercase transition-colors duration-300 group">
+            Discover your archetype
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pledge Tier Cards -->
+    <section class="w-full max-w-5xl mb-14">
+      <div class="text-center mb-8 reveal-up">
+        <p class="text-hermetic-gold text-xs tracking-[0.3em] uppercase font-sans mb-2">Kickstarter Pledge Tiers</p>
+        <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/60 to-transparent mx-auto mb-4"></div>
+        <h2 class="font-serif text-2xl md:text-3xl text-hermetic-white leading-tight">
+          Choose Your <span class="text-hermetic-gold italic">Flight Path</span>
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        {pledgeTiers.map((tier) => (
+          <div
+            class={`glass-panel rounded-xl p-6 flex flex-col reveal-up ${
+              tier.highlight
+                ? 'border-hermetic-gold shadow-[0_0_20px_rgba(197,160,89,0.3)]'
+                : ''
+            }`}
+          >
+            <div class="absolute top-2 left-2 w-2 h-2 border-t border-l border-hermetic-gold/30"></div>
+            <div class="absolute top-2 right-2 w-2 h-2 border-t border-r border-hermetic-gold/30"></div>
+            <div class="absolute bottom-2 left-2 w-2 h-2 border-b border-l border-hermetic-gold/30"></div>
+            <div class="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-hermetic-gold/30"></div>
+
+            {tier.highlight && (
+              <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span class="bg-hermetic-gold text-black text-xs font-sans font-bold tracking-wider px-3 py-1 rounded-full uppercase">
+                  Most Popular
+                </span>
+              </div>
+            )}
+
+            <div class="mb-4">
+              <span class={`text-xs font-sans tracking-[0.15em] uppercase ${tier.highlight ? 'text-hermetic-sulfur' : 'text-hermetic-gold/60'}`}>
+                {tier.badge}
+              </span>
+            </div>
+
+            <h3 class="font-serif text-lg text-hermetic-white mb-2 leading-snug">{tier.name}</h3>
+
+            <div class="mb-5">
+              <span class="font-serif text-3xl text-hermetic-gold">{tier.price}</span>
+            </div>
+
+            <div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/40 to-transparent mb-5"></div>
+
+            <ul class="space-y-2 flex-1">
+              {tier.perks.map((perk) => (
+                <li class="flex items-start gap-2 text-gray-300 text-xs font-sans font-light leading-relaxed">
+                  <span class="text-hermetic-gold/60 mt-0.5 flex-shrink-0">&#x25C6;</span>
+                  <span>{perk}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <p class="text-center text-hermetic-gold/40 text-xs font-sans tracking-wider uppercase mt-6 reveal-up">
+        Tiers available when campaign launches August 8, 2026
+      </p>
+    </section>
+
+    <!-- Notify Me Form -->
+    <section class="w-full max-w-xl mb-14 reveal-up">
+      <div class="glass-panel rounded-xl p-8 md:p-10">
+        <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-hermetic-gold opacity-50"></div>
+        <div class="absolute top-2 right-2 w-3 h-3 border-t border-r border-hermetic-gold opacity-50"></div>
+        <div class="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-hermetic-gold opacity-50"></div>
+        <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-hermetic-gold opacity-50"></div>
+
+        <!-- Form State -->
+        <div id="notify-form-wrapper">
+          <div class="text-center mb-7">
+            <p class="text-hermetic-gold text-xs tracking-[0.3em] uppercase font-sans mb-2">Get Notified at Launch</p>
+            <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/60 to-transparent mx-auto mb-5"></div>
+            <h2 class="font-serif text-xl text-hermetic-white leading-snug mb-3">
+              Be First in the Air
+            </h2>
+            <p class="text-gray-400 font-light font-sans text-sm leading-relaxed">
+              Enter your email to receive an alert the moment the campaign goes live. Early birds get access to the limited First Flight tier — 222 spots only.
+            </p>
+          </div>
+
+          <form id="notify-form" class="space-y-3" novalidate>
+            <!-- Honeypot -->
+            <div style="position:absolute;left:-9999px;" aria-hidden="true">
+              <input type="text" name="website" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <input
+              type="text"
+              name="firstName"
+              id="notify-firstname"
+              placeholder="First Name (optional)"
+              class="w-full p-3 bg-hermetic-void/80 border border-hermetic-gold/20 rounded-lg text-hermetic-white font-sans placeholder:text-gray-500 focus:border-hermetic-gold/50 focus:outline-none transition-colors duration-300 text-sm"
+            />
+
+            <input
+              type="email"
+              name="email"
+              id="notify-email"
+              placeholder="Email Address"
+              required
+              class="w-full p-3 bg-hermetic-void/80 border border-hermetic-gold/20 rounded-lg text-hermetic-white font-sans placeholder:text-gray-500 focus:border-hermetic-gold/50 focus:outline-none transition-colors duration-300 text-sm"
+            />
+
+            <p id="notify-error" class="text-red-400 text-xs font-sans hidden">Please enter a valid email address.</p>
+
+            <button
+              type="submit"
+              id="notify-submit"
+              class="btn-flame w-full py-4 text-white font-sans font-bold text-sm tracking-widest uppercase"
+            >
+              Notify Me at Launch
+            </button>
+
+            <p class="text-hermetic-gold/30 text-xs font-sans text-center tracking-wider">No spam. One email when we launch.</p>
+          </form>
+        </div>
+
+        <!-- Success State (hidden until submit) -->
+        <div id="notify-success" class="hidden text-center py-4">
+          <div class="w-12 h-12 rounded-full border border-hermetic-gold/50 mx-auto mb-5 flex items-center justify-center">
+            <span class="text-hermetic-gold text-xl">&#x2713;</span>
+          </div>
+          <p class="font-serif text-xl text-hermetic-gold mb-3">You're on the List</p>
+          <p class="text-gray-300 font-sans font-light text-sm leading-relaxed mb-2">
+            We'll send you a single email the moment the Kickstarter goes live on August 8, 2026.
+          </p>
+          <p class="text-hermetic-gold/40 text-xs font-sans tracking-wider">
+            Until then, explore your archetype below.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer Links -->
+    <footer class="w-full max-w-xl text-center">
+      <div class="w-24 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/30 to-transparent mx-auto mb-8"></div>
+      <nav class="flex flex-wrap justify-center gap-x-8 gap-y-3">
+        <a href="/quiz" class="text-hermetic-gold/50 hover:text-hermetic-gold text-xs font-sans tracking-[0.2em] uppercase transition-colors duration-300">
+          Take the Quiz
+        </a>
+        <a href="/archetype/air-weaver" class="text-hermetic-gold/50 hover:text-hermetic-gold text-xs font-sans tracking-[0.2em] uppercase transition-colors duration-300">
+          Archetype Journeys
+        </a>
+        <a href="/" class="text-hermetic-gold/50 hover:text-hermetic-gold text-xs font-sans tracking-[0.2em] uppercase transition-colors duration-300">
+          Home
+        </a>
+      </nav>
+      <p class="text-hermetic-gold/20 text-xs font-sans mt-8 tracking-wider">&copy; {new Date().getFullYear()} The Hermetic Flight</p>
+    </footer>
+
+  </main>
+
+  <!-- Script 1: Countdown Timer -->
+  <script is:inline>
+    (function () {
+      // Target: August 8, 2026, midnight Eastern (EDT = UTC-4 in August)
+      var LAUNCH_DATE = new Date('2026-08-08T04:00:00.000Z');
+
+      function getCountdown(target) {
+        var diff = Math.max(0, target.getTime() - Date.now());
+        var totalSeconds = Math.floor(diff / 1000);
+        return {
+          days: Math.floor(totalSeconds / 86400),
+          hours: Math.floor((totalSeconds % 86400) / 3600),
+          minutes: Math.floor((totalSeconds % 3600) / 60),
+          seconds: totalSeconds % 60,
+        };
+      }
+
+      function pad(n) {
+        return String(n).padStart(2, '0');
+      }
+
+      function updateCountdown() {
+        var c = getCountdown(LAUNCH_DATE);
+        var isLaunched = c.days === 0 && c.hours === 0 && c.minutes === 0 && c.seconds === 0;
+
+        var elDays = document.getElementById('cd-days');
+        var elHours = document.getElementById('cd-hours');
+        var elMinutes = document.getElementById('cd-minutes');
+        var elSeconds = document.getElementById('cd-seconds');
+        var elDisplay = document.getElementById('countdown-display');
+        var elLaunched = document.getElementById('countdown-launched');
+
+        if (elDays) elDays.textContent = isLaunched ? '00' : String(c.days);
+        if (elHours) elHours.textContent = isLaunched ? '00' : pad(c.hours);
+        if (elMinutes) elMinutes.textContent = isLaunched ? '00' : pad(c.minutes);
+        if (elSeconds) elSeconds.textContent = isLaunched ? '00' : pad(c.seconds);
+
+        if (isLaunched) {
+          if (elDisplay) elDisplay.classList.add('hidden');
+          if (elLaunched) elLaunched.classList.remove('hidden');
+        }
+      }
+
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    })();
+  </script>
+
+  <!-- Script 2: Notify Form -->
+  <script is:inline>
+    (function () {
+      var startTime = Date.now();
+      var form = document.getElementById('notify-form');
+      var submitBtn = document.getElementById('notify-submit');
+      var formWrapper = document.getElementById('notify-form-wrapper');
+      var successEl = document.getElementById('notify-success');
+      var errorEl = document.getElementById('notify-error');
+
+      if (!form) return;
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Honeypot check
+        var website = form.querySelector('[name="website"]');
+        if (website && website.value) return;
+
+        var emailInput = document.getElementById('notify-email');
+        var firstNameInput = document.getElementById('notify-firstname');
+
+        var email = emailInput ? emailInput.value.trim() : '';
+        var firstName = firstNameInput ? firstNameInput.value.trim() : '';
+
+        // Basic email validation
+        var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+          if (errorEl) errorEl.classList.remove('hidden');
+          if (emailInput) emailInput.focus();
+          return;
+        }
+        if (errorEl) errorEl.classList.add('hidden');
+
+        submitBtn.textContent = 'Sending\u2026';
+        submitBtn.setAttribute('disabled', 'true');
+        submitBtn.style.opacity = '0.6';
+
+        fetch('/api/launch-notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: email,
+            firstName: firstName,
+            startTime: startTime,
+            website: '',
+          }),
+        })
+          .then(function (res) {
+            if (res.ok) {
+              // Show success
+              if (formWrapper) formWrapper.classList.add('hidden');
+              if (successEl) successEl.classList.remove('hidden');
+
+              // GA4
+              if (typeof gtag === 'function') {
+                gtag('event', 'generate_lead', {
+                  event_category: 'launch_notify',
+                  method: 'launch_page',
+                });
+              }
+              // Meta Pixel
+              if (typeof fbq === 'function') {
+                fbq('track', 'Lead', { content_category: 'launch_notify' });
+              }
+            } else {
+              submitBtn.textContent = 'Something went wrong \u2014 try again';
+              submitBtn.removeAttribute('disabled');
+              submitBtn.style.opacity = '1';
+            }
+          })
+          .catch(function () {
+            submitBtn.textContent = 'Something went wrong \u2014 try again';
+            submitBtn.removeAttribute('disabled');
+            submitBtn.style.opacity = '1';
+          });
+      });
+    })();
+  </script>
+
+  <!-- Scroll Reveal -->
+  <script is:inline>
+    (function () {
+      var observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('reveal-visible');
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+      document.querySelectorAll('.reveal-up').forEach(function (el) {
+        observer.observe(el);
+      });
+    })();
+  </script>
+
+</Layout>

@@ -70,22 +70,18 @@ and 4 API reference guides are written. Ready for execution.
 | 8 | Execute Sprint 5: Externally-Blocked Features (staggered) | `pending` | 5A: gallery (art ~May), 5B: waitlist (Supabase), 5C: content calendar (~June) |
 | 9 | Execute Sprint 6: Platform Expansion + Autoresearch Loops | `pending` | Hermes bot, skill dashboard, 4 autoresearch loops (ads, email subjects, quiz intro, journey CTA) |
 
-**Handoff Context (2026-03-13):** Sprint 2C (Daily Card Draw) code complete.
-78-card data module parsed from operator CSV, deterministic PRNG utility,
-`/daily` page with card flip animation, share buttons, GA4 tracking, and
-pre/post-reveal modes. REVEAL_DATE set to 2026-06-07. 440/440 Vitest pass,
-build clean. 3-evaluator review passed (correctness, UX patterns, test
-contract). Frozen test file verified. Not yet committed — awaiting operator
-review.
+**Handoff Context (2026-03-14):** Sprint 2 complete. All three tracks merged:
+- 2A: Archetype journey pages (merged earlier)
+- 2B: Kickstarter countdown `/launch` page with real tier data from
+  `kickstarter-tier-strategy.docx.md`, countdown timer utility, launch-notify
+  API route (Loops.so `launch_notify` event), FAQ updated with real tiers.
+  474/474 Vitest pass, build clean.
+- 2C: Daily card draw (committed this session)
 
-Plan: `docs/plans/2026-03-13-daily-card-draw.md` (supersedes 2026-03-09 plan).
+**Journaling prompts are AI-generated placeholders** — operator approved for now,
+review before launch. See header comment in `src/lib/card-data.ts`.
 
-**Journaling prompts are AI-generated placeholders** — operator review
-recommended before launch. See header comment in `src/lib/card-data.ts`.
-
-**Sprint 2 status:** 2A journey pages merged, 2B countdown blocked (pledge
-tiers), 2C daily draw complete (uncommitted). Next: commit 2C, then Sprint 3
-or Sprint 4.
+**Next:** Sprint 3 (Operational Visibility) or Sprint 4 (Code Quality).
 
 **Carried from prior handoff:** CSP violations (report-only), Meta Pixel
 custom event warnings, favicon 404s, GitHub CI secrets needed.
@@ -135,8 +131,8 @@ custom event warnings, favicon 404s, GitHub CI secrets needed.
 ### Sprint 2 — Growth Features (March–April)
 
 - **Archetype Journey Pages** — Plan: `docs/plans/2026-03-09-archetype-journey-pages.md` (7 tasks). Astro Content Collections, 6 deep-dive pages. Blocked on: archetype report PDFs from operator.
-- **Kickstarter Countdown Page** — Plan: `docs/plans/2026-03-09-kickstarter-countdown.md` (5 tasks). `/launch` page, Loops.so notify CTA. Blocked on: pledge tier content from operator.
-- **Daily Card Draw** — Plan: `docs/plans/2026-03-13-daily-card-draw.md` (5 tasks). Client-side deterministic draw. UNBLOCKED — 78-card CSV delivered 2026-03-13. Supersedes prior plan `2026-03-09-daily-card-draw.md`.
+- ~~**Kickstarter Countdown Page**~~ — COMPLETED 2026-03-14. `/launch` page with real tier data, countdown timer, launch-notify API.
+- ~~**Daily Card Draw**~~ — COMPLETED 2026-03-14. `/daily` page with 78-card data module, deterministic PRNG, card flip animation.
 
 ### Sprint 3 — Operational Visibility (April–May)
 
