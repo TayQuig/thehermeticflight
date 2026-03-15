@@ -204,12 +204,12 @@ describe('F-03: Quiz share CTA — static source contracts', () => {
   describe('quiz.astro share URL construction', () => {
     const quizSource = readSource('src/pages/quiz.astro');
 
-    it('constructs share URLs using encodeURIComponent', () => {
-      // The quiz page JS should use encodeURIComponent for share URLs
-      const encodePattern = /encodeURIComponent\s*\(/;
+    it('constructs share URLs using encodeURIComponent or share-utils helpers', () => {
+      const hasEncode = /encodeURIComponent\s*\(/.test(quizSource);
+      const hasShareUtils = /buildXShareUrl\s*\(/.test(quizSource) || /buildFacebookShareUrl\s*\(/.test(quizSource);
       expect(
-        encodePattern.test(quizSource),
-        'quiz.astro must use encodeURIComponent when constructing share URLs',
+        hasEncode || hasShareUtils,
+        'quiz.astro must use encodeURIComponent or share-utils helpers when constructing share URLs',
       ).toBe(true);
     });
 
@@ -242,20 +242,21 @@ describe('F-03: Quiz share CTA — static source contracts', () => {
       ).toBe(true);
     });
 
-    it('constructs an X/Twitter share link with intent URL', () => {
-      const xIntentPattern = /https:\/\/x\.com\/intent\/tweet\?text=/;
+    it('constructs an X/Twitter share link via intent URL or buildXShareUrl', () => {
+      const hasInline = /https:\/\/x\.com\/intent\/tweet\?text=/.test(quizSource);
+      const hasHelper = /buildXShareUrl\s*\(/.test(quizSource);
       expect(
-        xIntentPattern.test(quizSource),
-        'quiz.astro must construct an X/Twitter share link using the intent URL',
+        hasInline || hasHelper,
+        'quiz.astro must construct an X/Twitter share link (inline or via buildXShareUrl)',
       ).toBe(true);
     });
 
-    it('constructs a Facebook share link with sharer URL', () => {
-      const fbSharerPattern =
-        /https:\/\/www\.facebook\.com\/sharer\/sharer\.php\?u=/;
+    it('constructs a Facebook share link via sharer URL or buildFacebookShareUrl', () => {
+      const hasInline = /https:\/\/www\.facebook\.com\/sharer\/sharer\.php\?u=/.test(quizSource);
+      const hasHelper = /buildFacebookShareUrl\s*\(/.test(quizSource);
       expect(
-        fbSharerPattern.test(quizSource),
-        'quiz.astro must construct a Facebook share link using the sharer URL',
+        hasInline || hasHelper,
+        'quiz.astro must construct a Facebook share link (inline or via buildFacebookShareUrl)',
       ).toBe(true);
     });
 
@@ -288,28 +289,26 @@ describe('F-03: Quiz share CTA — static source contracts', () => {
   describe('result/[archetype].astro share contracts', () => {
     const resultSource = readSource('src/pages/quiz/result/[archetype].astro');
 
-    it('contains share buttons with X and Facebook URLs', () => {
+    it('renders <ShareButtons> component with correct props', () => {
       expect(
-        resultSource.includes('x.com/intent/tweet'),
-        'Result page must contain X/Twitter share link',
+        /<ShareButtons\s/.test(resultSource),
+        'Result page must render <ShareButtons> component',
       ).toBe(true);
       expect(
-        resultSource.includes('facebook.com/sharer/sharer.php'),
-        'Result page must contain Facebook share link',
+        /shareUrl\s*=/.test(resultSource),
+        'ShareButtons must receive shareUrl prop',
+      ).toBe(true);
+      expect(
+        /shareText\s*=/.test(resultSource),
+        'ShareButtons must receive shareText prop',
       ).toBe(true);
     });
 
-    it('share URLs use encodeURIComponent', () => {
-      const matches = resultSource.match(/encodeURIComponent\s*\(/g);
+    it('uses buildShareText from share-utils for share text', () => {
       expect(
-        matches,
-        'Result page must use encodeURIComponent for share URLs',
-      ).not.toBeNull();
-      // At minimum: encode the share text + encode the URL for X, and encode the URL for FB
-      expect(
-        matches!.length,
-        'Result page must use encodeURIComponent at least 3 times (text + X URL + FB URL)',
-      ).toBeGreaterThanOrEqual(3);
+        /buildShareText\s*\(/.test(resultSource),
+        'Result page must use buildShareText() from share-utils',
+      ).toBe(true);
     });
 
     it('share URLs use the www-prefixed canonical domain', () => {

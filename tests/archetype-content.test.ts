@@ -222,4 +222,9 @@ describe('TCF-06: archetypeByUrlSlug edge cases', () => {
   it('is case-sensitive — uppercase does not match', () => {
     expect(archetypeByUrlSlug('Air-Weaver')).toBeUndefined();
   });
+
+  it('returns undefined for well-formed but unknown slug', () => {
+    const result = archetypeByUrlSlug('valid-but-unknown');
+    expect(result).toBeUndefined();
+  });
 });

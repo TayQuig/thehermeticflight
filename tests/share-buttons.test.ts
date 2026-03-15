@@ -137,15 +137,15 @@ describe('ShareButtons.astro script uses share-utils', () => {
 // ---------------------------------------------------------------------------
 
 describe('ShareButtons deduplication (forward-looking contract)', () => {
-  it('quiz.astro imports ShareButtons component (verified post-Task 6)', () => {
-    // This test will fail until Task 6. It is intentionally included here
-    // so the baseline recorded now shows it failing, and Task 6 makes it pass.
+  it('quiz.astro does not import ShareButtons (cannot render Astro components in client JS)', () => {
     const source = readSource('src/pages/quiz.astro');
-    expect(source).toMatch(/import\s+ShareButtons\s+from/);
+    expect(source).not.toMatch(/import\s+ShareButtons\s+from/);
   });
 
-  it('[archetype].astro imports ShareButtons component (verified post-Task 6)', () => {
+  it('[archetype].astro renders <ShareButtons> component (not inline HTML)', () => {
     const source = readSource('src/pages/quiz/result/[archetype].astro');
-    expect(source).toMatch(/import\s+ShareButtons\s+from/);
+    expect(source).toMatch(/<ShareButtons\s/);
+    // Must NOT contain inline share SVG paths (deduplication verified)
+    expect(source).not.toMatch(/M18\.244 2\.25h3\.308/); // X SVG path
   });
 });

@@ -99,14 +99,14 @@ describe('F-04: Clipboard API calls have error handling', () => {
     });
   });
 
-  describe('[archetype].astro clipboard usage', () => {
-    const resultSource = readSource('src/pages/quiz/result/[archetype].astro');
+  describe('ShareButtons.astro clipboard usage (delegates from [archetype].astro)', () => {
+    const shareButtonsSource = readSource('src/components/ShareButtons.astro');
 
     it('wraps navigator.clipboard.writeText in a try/catch block', () => {
-      const scriptBlocks = resultSource.match(/<script[\s\S]*?<\/script>/g);
+      const scriptBlocks = shareButtonsSource.match(/<script[\s\S]*?<\/script>/g);
       expect(
         scriptBlocks,
-        '[archetype].astro must contain at least one <script> block',
+        'ShareButtons.astro must contain at least one <script> block',
       ).not.toBeNull();
 
       const clipboardScripts = scriptBlocks!.filter((block) =>
@@ -114,33 +114,29 @@ describe('F-04: Clipboard API calls have error handling', () => {
       );
       expect(
         clipboardScripts.length,
-        '[archetype].astro must contain at least one script block using clipboard.writeText',
+        'ShareButtons.astro must contain at least one script block using clipboard.writeText',
       ).toBeGreaterThanOrEqual(1);
 
       for (const script of clipboardScripts) {
         const tryCatchWrapsClipboard = /try\s*\{[^}]*clipboard\.writeText/.test(script);
         expect(
           tryCatchWrapsClipboard,
-          '[archetype].astro: navigator.clipboard.writeText must be wrapped in a try/catch block — ' +
-            'the Clipboard API can throw (e.g., when document is not focused or permissions are denied)',
+          'ShareButtons.astro: navigator.clipboard.writeText must be wrapped in a try/catch block',
         ).toBe(true);
       }
     });
 
-    it('provides user feedback on clipboard failure (catch is local to clipboard handler)', () => {
-      const resultSource = readSource('src/pages/quiz/result/[archetype].astro');
-      const scriptBlocks = resultSource.match(/<script[\s\S]*?<\/script>/g) || [];
+    it('provides user feedback on clipboard failure', () => {
+      const scriptBlocks = shareButtonsSource.match(/<script[\s\S]*?<\/script>/g) || [];
       const clipboardScripts = scriptBlocks.filter((block) =>
         block.includes('clipboard.writeText'),
       );
 
       for (const script of clipboardScripts) {
-        // Same logic as quiz.astro: the clipboard handler must have its own try/catch
-        const clipboardHandlerWithLocalCatch =
-          /addEventListener\s*\(\s*['"]click['"]\s*,\s*async\s*\(\s*\)\s*=>\s*\{\s*try\s*\{[^}]*clipboard\.writeText/;
+        const hasTryCatchWithClipboard = /try\s*\{[\s\S]*?clipboard\.writeText[\s\S]*?\}\s*catch/.test(script);
         expect(
-          clipboardHandlerWithLocalCatch.test(script),
-          '[archetype].astro: The clipboard click handler must have its own try/catch block',
+          hasTryCatchWithClipboard,
+          'ShareButtons.astro: The clipboard handler must have try/catch with error feedback',
         ).toBe(true);
       }
     });

@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ShareButtons from '../components/ShareButtons.astro';
 import { questions } from '../lib/quiz-data';
 import { archetypes } from '../lib/archetype-content';
 ---
@@ -178,7 +177,7 @@ import { archetypes } from '../lib/archetype-content';
     import type { ArchetypeSlug } from '../lib/classifier';
     import { archetypes, toUrlSlug } from '../lib/archetype-content';
     import { requireEl } from '../lib/dom-helpers';
-    import { trackShare } from '../lib/share-utils';
+    import { trackShare, buildShareText, buildXShareUrl, buildFacebookShareUrl } from '../lib/share-utils';
 
     const TOTAL_QUESTIONS = questions.length;
 
@@ -291,7 +290,7 @@ import { archetypes } from '../lib/archetype-content';
       const urlSlug = quizArchetype ? toUrlSlug(quizArchetype as ArchetypeSlug) : '';
       const shareUrl = `https://www.thehermeticflight.com/quiz/result/${urlSlug}`;
       const shareText = content
-        ? `I'm ${content.title} — ${content.element} element. Discover your aerial tarot archetype:`
+        ? buildShareText(content.title, content.element)
         : 'Discover your aerial tarot archetype:';
 
       const shareX = requireEl<HTMLAnchorElement>('share-x');
@@ -300,8 +299,8 @@ import { archetypes } from '../lib/archetype-content';
       const shareCopyText = requireEl('share-copy-text');
       const shareSection = requireEl('share-section');
 
-      shareX.href = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
-      shareFb.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+      shareX.href = buildXShareUrl(shareText, shareUrl);
+      shareFb.href = buildFacebookShareUrl(shareUrl);
 
       shareCopy.addEventListener('click', async () => {
         try {

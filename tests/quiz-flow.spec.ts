@@ -51,10 +51,10 @@ test.describe('Result page: air-weaver', () => {
     expect(ogImage).toContain('air-weaver.png');
 
     // Exactly 2 share links (X + Facebook)
-    await expect(page.locator('#share-buttons a')).toHaveCount(2);
+    await expect(page.locator('[data-share-buttons] a')).toHaveCount(2);
 
     // Copy link button is present
-    await expect(page.locator('#copy-link-btn')).toBeVisible();
+    await expect(page.locator('#share-copy')).toBeVisible();
 
     // Quiz CTA link is present
     await expect(page.locator('a[href="/quiz"]')).toBeVisible();
@@ -111,5 +111,39 @@ test.describe('Result page: shadow-dancer', () => {
 
     await expect(page.locator('link[rel="canonical"]'))
       .toHaveAttribute('href', /www\.thehermeticflight\.com/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Suite 6: TCF-08 — All result pages have correct canonical URL
+// ---------------------------------------------------------------------------
+test.describe('TCF-08: Canonical URLs on all result pages', () => {
+  const ALL_SLUGS = [
+    'air-weaver', 'embodied-intuitive', 'ascending-seeker',
+    'shadow-dancer', 'flow-artist', 'grounded-mystic',
+  ];
+
+  for (const slug of ALL_SLUGS) {
+    test(`/quiz/result/${slug} has canonical URL`, async ({ page }) => {
+      await page.goto(`/quiz/result/${slug}`);
+      const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
+      expect(canonical).toContain(`/quiz/result/${slug}`);
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Suite 7: TCF-10 — Clipboard copy button feedback
+// ---------------------------------------------------------------------------
+test.describe('TCF-10: Copy button clipboard feedback', () => {
+  test('Copy button shows "Copied!" feedback after click', async ({ browser }) => {
+    const context = await browser.newContext({ permissions: ['clipboard-write'] });
+    const page = await context.newPage();
+    await page.goto('/quiz/result/air-weaver');
+    const copyBtn = page.locator('#share-copy');
+    await copyBtn.click();
+    await expect(page.locator('#share-copy-text')).toHaveText('Copied!');
+    await expect(page.locator('#share-copy-text')).toHaveText('Copy Link', { timeout: 4000 });
+    await context.close();
   });
 });

@@ -75,4 +75,16 @@ describe('GA4 client', () => {
     await expect(queryGA4({ ...mockConfig, fetchFn: mockFetch }, mockQuery))
       .rejects.toThrow('Network error');
   });
+
+  it('uses query.propertyId when config.propertyId is empty string', async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ rows: [] }),
+    });
+    const emptyConfig = { ...mockConfig, propertyId: '', fetchFn: mockFetch };
+    await queryGA4(emptyConfig, mockQuery);
+    const url = mockFetch.mock.calls[0][0] as string;
+    expect(url).toContain(mockQuery.propertyId);
+    expect(url).not.toMatch(/\/properties\/:runReport/);
+  });
 });

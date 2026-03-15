@@ -57,7 +57,7 @@ export async function queryGA4(
   config: GA4ClientConfig,
   query: GA4QueryConfig,
 ): Promise<GA4Row[]> {
-  const propertyId = config.propertyId ?? query.propertyId;
+  const propertyId = config.propertyId || query.propertyId;
   const url = `${GA4_API_BASE}/properties/${propertyId}:runReport`;
 
   const body = {

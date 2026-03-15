@@ -57,4 +57,16 @@ describe('eval storage', () => {
     writeSnapshot({ metricId: 'x', timestamp: '2026-03-14T00:00:00Z', value: 1 }, TEST_FILE);
     expect(getLatestSnapshot('z', TEST_FILE)).toBeNull();
   });
+
+  it('readSnapshots returns empty array for corrupted JSON', () => {
+    writeFileSync(TEST_FILE, '{corrupted');
+    const result = readSnapshots(TEST_FILE);
+    expect(result).toEqual([]);
+  });
+
+  it('readSnapshots returns empty array for empty file', () => {
+    writeFileSync(TEST_FILE, '');
+    const result = readSnapshots(TEST_FILE);
+    expect(result).toEqual([]);
+  });
 });

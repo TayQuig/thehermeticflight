@@ -168,6 +168,13 @@ describe('TCF-03: quiz.astro gtag call patterns (structural)', () => {
       'quiz.astro must contain either a gtag share event or a trackShare() call',
     ).toBe(true);
   });
+
+  it('uses buildShareText from share-utils (not inline template)', () => {
+    expect(
+      quizSource.includes('buildShareText'),
+      'quiz.astro must import and use buildShareText from share-utils',
+    ).toBe(true);
+  });
 });
 
 // ===========================================================================
@@ -177,33 +184,35 @@ describe('TCF-03: quiz.astro gtag call patterns (structural)', () => {
 describe('TCF-03: [archetype].astro gtag call patterns (structural)', () => {
   const resultSource = readSource('src/pages/quiz/result/[archetype].astro');
 
-  it('contains a share event (via trackShare or direct gtag)', () => {
+  it('contains a share event (via trackShare, direct gtag, or ShareButtons component)', () => {
     const hasShare =
       resultSource.includes("'share'") ||
-      resultSource.includes('trackShare');
+      resultSource.includes('trackShare') ||
+      /<ShareButtons\s/.test(resultSource);
     expect(
       hasShare,
-      '[archetype].astro must contain either a gtag share event or a trackShare() call',
+      '[archetype].astro must contain a gtag share event, trackShare() call, or render <ShareButtons>',
     ).toBe(true);
   });
 
-  it('share event payload includes method, content_type, item_id', () => {
-    // Accept either direct gtag call (pre-Task 6) or trackShare import (post-Task 6)
+  it('share event payload includes method, content_type, item_id (or delegates to ShareButtons)', () => {
     const hasDirectPattern =
       /gtag\s*\(\s*['"]event['"]\s*,\s*['"]share['"][\s\S]*?method[\s\S]*?content_type[\s\S]*?item_id/.test(resultSource);
     const hasTrackShare = /trackShare\s*\(/.test(resultSource);
+    const hasShareButtons = /<ShareButtons\s/.test(resultSource) && /contentType\s*=/.test(resultSource);
     expect(
-      hasDirectPattern || hasTrackShare,
-      '[archetype].astro share tracking must include method, content_type, item_id — or delegate to trackShare()',
+      hasDirectPattern || hasTrackShare || hasShareButtons,
+      '[archetype].astro share tracking must include method, content_type, item_id — or delegate to ShareButtons/trackShare()',
     ).toBe(true);
   });
 
-  it('contains a gtag typeof guard or uses trackShare (which guards internally)', () => {
-    const hasGuard = /typeof\s+gtag\s*===?\s*['"]function['"]/. test(resultSource);
+  it('contains a gtag typeof guard, uses trackShare, or delegates to ShareButtons', () => {
+    const hasGuard = /typeof\s+gtag\s*===?\s*['"]function['"]/.test(resultSource);
     const hasTrackShare = /trackShare\s*\(/.test(resultSource);
+    const hasShareButtons = /<ShareButtons\s/.test(resultSource);
     expect(
-      hasGuard || hasTrackShare,
-      '[archetype].astro must guard gtag calls — use typeof check or trackShare() which guards internally',
+      hasGuard || hasTrackShare || hasShareButtons,
+      '[archetype].astro must guard gtag calls — use typeof check, trackShare(), or delegate to ShareButtons',
     ).toBe(true);
   });
 });

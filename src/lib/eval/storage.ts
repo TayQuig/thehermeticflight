@@ -13,7 +13,13 @@ export function readSnapshots(filePath = DEFAULT_PATH): MetricSnapshot[] {
     return [];
   }
   const raw = readFileSync(filePath, 'utf8');
-  return JSON.parse(raw) as MetricSnapshot[];
+  let all: MetricSnapshot[];
+  try {
+    all = JSON.parse(raw) as MetricSnapshot[];
+  } catch {
+    all = [];
+  }
+  return all;
 }
 
 /**
