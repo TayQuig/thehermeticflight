@@ -69,14 +69,14 @@ and 4 API reference guides are written. Ready for execution.
 | 7 | Execute Sprint 5: Externally-Blocked Features (staggered) | `pending` | 5A: gallery (art ~May), 5B: waitlist (Supabase), 5C: content calendar (~June) |
 | 8 | Execute Sprint 6: Platform Expansion + Autoresearch Loops | `pending` | Hermes bot, skill dashboard, 4 autoresearch loops (ads, email subjects, quiz intro, journey CTA) |
 
-**Handoff Context (2026-03-14):** Sprint 3+4 complete. 557/557 tests, build clean.
+**Handoff Context (2026-03-14):** Sprint 3+4 complete + eval findings remediated. 562/562 tests, build clean.
 - Track A (quiz refactoring): dom-helpers, share-utils, ShareButtons.astro, archetype-content hardening. FTF verified.
 - Track B (eval harness): GA4 client, PageSpeed client, storage, CLI scripts. FTF verified.
 - Track C (skills ×8): 8 skills created and verified at `~/.claude/skills/`.
 - Eval-protocol: 3 evaluators deployed (Functional, Fidelity, Quality). 1 Critical fixed (double GA4 share tracking).
-  Remaining High findings: ShareButtons not rendered in templates (by design for quiz.astro, spec gap for [archetype].astro),
-  TCF-08/TCF-10 E2E tests missing. Medium: inline share URL duplication, storage error handling. → Backlog.
-- Stale worktrees from FTF execution exist at `.claude/worktrees/agent-*` — safe to delete.
+- Eval findings remediation: All 9 findings (S-01 through S-09) fixed. [archetype].astro renders ShareButtons,
+  quiz.astro uses share-utils helpers, eval storage/ga4-client hardened, E2E tests added (TCF-08 canonical ×6,
+  TCF-10 clipboard feedback), dead ShareButtons import removed from quiz.astro. 562 tests, 11 SHA256 baselines verified.
 
 **Journaling prompts are AI-generated placeholders** — operator approved for now,
 review before launch. See header comment in `src/lib/card-data.ts`.
