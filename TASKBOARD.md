@@ -62,7 +62,7 @@ segmentation, rewrite classifier to cosine-similarity centroids, add email gate
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 0 | Content Design (collaborative — HUMAN GATE) | `pending` | Claude drafts, operator approves. Deliverable: `operations/mastermind-quiz-design-overhaul/approved-questions.md` |
+| 0 | Content Design (collaborative — HUMAN GATE) | `completed` | Approved 2026-03-19. 7 normative (adapted), 3 forced pairs (new), 2 segmentation. |
 | 1 | Data Model + Scoring Pipeline [FTF] | `pending` | dep: Phase 0. Rewrite quiz-data.ts. |
 | 2 | Classifier Redesign [FTF] | `pending` | dep: Phase 1. Cosine-similarity centroids + Monte Carlo validation. |
 | 3 | Quiz Engine [FTF] | `pending` | dep: Phase 2. New quiz-engine.ts state machine. |
