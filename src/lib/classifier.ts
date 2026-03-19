@@ -91,7 +91,7 @@ export function computeScores(
   const answerScoringMap = new Map<string, { dimension: 'A' | 'B' | 'C' | 'D'; points: number }[]>();
 
   for (const question of questions) {
-    if (!question.scored) continue;
+    if (question.phase !== 'scored') continue;
     for (const answer of question.answers) {
       answerScoringMap.set(answer.id, answer.scoring);
     }

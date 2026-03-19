@@ -294,7 +294,7 @@ describe('SYN-08: Loops.so payload structure verification', () => {
     // Build answers with only scored questions (no Q2, Q3, Q11, Q19, Q20)
     const answers: Record<string, string> = {};
     for (const q of questions) {
-      if (q.scored) {
+      if (q.phase === 'scored') {
         answers[q.id] = q.answers[0].id;
       }
     }
@@ -464,7 +464,7 @@ describe('SYN-11: Q11 flow state extraction', () => {
     // Build answers with only scored questions (Q11 is non-scored, so excluded)
     const answers: Record<string, string> = {};
     for (const q of questions) {
-      if (q.scored) {
+      if (q.phase === 'scored') {
         answers[q.id] = q.answers[0].id;
       }
     }

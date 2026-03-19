@@ -1,0 +1,7 @@
+# Frozen Test Baseline — do not edit manually
+SHA=33f0fed6bb8d4ad3d33762874c2de0498a2409f4
+TAG=frozen-baseline-1773959477-32017
+TIMESTAMP=2026-03-19T22:31:17Z
+FROZEN=tests/quiz-data.test.ts
+CONFIG=vitest.config.ts package.json
+FILE_COUNT=3

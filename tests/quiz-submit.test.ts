@@ -287,7 +287,7 @@ describe('SYN-02: Answer payload validation', () => {
     // Build answers with only scored questions
     const answers: Record<string, string> = {};
     for (const q of questions) {
-      if (q.scored) {
+      if (q.phase === 'scored') {
         answers[q.id] = q.answers[0].id;
       }
     }

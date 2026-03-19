@@ -1,0 +1,5 @@
+# Frozen-test verification receipt — do not edit manually
+VERIFIED_AT=2026-03-19T22:34:29Z
+BASELINE_SHA=33f0fed6bb8d4ad3d33762874c2de0498a2409f4
+BASELINE_TAG=frozen-baseline-1773959477-32017
+VERIFIER=verify-frozen.sh

@@ -1,0 +1,3 @@
+package.json
+tests/quiz-data.test.ts
+vitest.config.ts

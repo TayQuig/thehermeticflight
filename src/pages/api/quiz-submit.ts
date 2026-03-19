@@ -83,7 +83,7 @@ for (const q of questions) {
 }
 
 // Scored question IDs — must all be present in answers
-const scoredQuestionIds = new Set(questions.filter((q) => q.scored).map((q) => q.id));
+const scoredQuestionIds = new Set(questions.filter((q) => q.phase === 'scored').map((q) => q.id));
 
 // ---------------------------------------------------------------------------
 // SYN-03: Email validation helpers
