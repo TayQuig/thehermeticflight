@@ -1,13 +1,17 @@
 /**
  * Quiz Data — 6 Aerial Tarot Archetypes. Which Are You?
  *
- * Source: tally-quiz-extraction.md (form aQ5Gg9, production — 14 submissions)
- * Operator-confirmed corrections applied 2026-03-07:
- *   - Q5: Tally had shifted dimension assignments (A→B, B→C, C→D). Corrected to A=A, B=B, C=C, D=D.
- *   - Q6: Tally had B and C swapped. Corrected to B=B, C=C.
- *   - Q8-A: Tally was missing the conditional logic rule for option A; Air Weaver got +0. Corrected to A=A +4.
- *   - Q9-A: Tally's conditional logic fired twice (+8). Corrected to single Air Weaver +4.
- *   - Q9-D: Tally awarded +4 to all dimensions and Shadow Dancer fired twice (+8 total). Corrected to Shadow Dancer +4 only.
+ * Version: v2 (2026-03-19)
+ * Source: operations/mastermind-quiz-design-overhaul/approved-questions.md
+ *
+ * Quiz v2 changes from v1:
+ *   - 20 questions → 12 (2 segmentation + 10 scored)
+ *   - `scored: boolean` → `phase: 'scored' | 'segmentation'`
+ *   - Added `format: QuestionFormat` ('single_select' | 'forced_pair')
+ *   - Added `pair: [Dimension, Dimension] | null`
+ *   - Variable weighting: +3, +4, +6 tiers (was flat +4)
+ *   - Forced pairs: +6/+2 dual-dimension scoring
+ *   - New ID convention: NQ01-NQ07, FP01-FP03, SEG1-SEG2
  */
 
 // ---------------------------------------------------------------------------
@@ -15,6 +19,8 @@
 // ---------------------------------------------------------------------------
 
 export type Dimension = 'A' | 'B' | 'C' | 'D';
+
+export type QuestionFormat = 'single_select' | 'forced_pair';
 
 export interface ScoringWeight {
   dimension: Dimension;
@@ -32,16 +38,18 @@ export interface Question {
   number: number;
   text: string;
   answers: Answer[];
-  scored: boolean;
+  format: QuestionFormat;
+  phase: 'scored' | 'segmentation';
+  pair: [Dimension, Dimension] | null;
 }
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Produces a single-dimension scoring weight of +4. */
-function w(dimension: Dimension): ScoringWeight {
-  return { dimension, points: 4 };
+/** Produces a single-dimension scoring weight. */
+function w(dimension: Dimension, points: number): ScoringWeight {
+  return { dimension, points };
 }
 
 // ---------------------------------------------------------------------------
@@ -50,58 +58,28 @@ function w(dimension: Dimension): ScoringWeight {
 
 export const questions: Question[] = [
   // -------------------------------------------------------------------------
-  // Q1 — Scored. Clean A=A, B=B, C=C, D=D.
+  // SEG1 — Tarot experience level (segmentation, not scored)
   // -------------------------------------------------------------------------
   {
-    id: 'Q1',
+    id: 'SEG1',
     number: 1,
-    text: "1. You're awake at 2am with something weighing on you. What actually helps?",
-    scored: true,
+    text: "When it comes to tarot, I'd describe myself as:",
+    format: 'single_select',
+    phase: 'segmentation',
+    pair: null,
     answers: [
       {
-        id: 'Q1-A',
-        text: 'Making a list, researching options, or thinking it through logically.',
-        scoring: [w('A')],
-      },
-      {
-        id: 'Q1-B',
-        text: 'Getting out of bed—walking, stretching, doing something physical.',
-        scoring: [w('B')],
-      },
-      {
-        id: 'Q1-C',
-        text: 'Letting it go for now, trusting morning will bring clarity.',
-        scoring: [w('C')],
-      },
-      {
-        id: 'Q1-D',
-        text: "Sitting with the discomfort, asking what this situation is really trying to show you.",
-        scoring: [w('D')],
-      },
-    ],
-  },
-
-  // -------------------------------------------------------------------------
-  // Q2 — Non-scored. Experience segmentation. 3 answers (A-C).
-  // -------------------------------------------------------------------------
-  {
-    id: 'Q2',
-    number: 2,
-    text: '2. When it comes to Tarot, I\'d describe myself as:',
-    scored: false,
-    answers: [
-      {
-        id: 'Q2-A',
+        id: 'SEG1-A',
         text: 'Curious, but just beginning.',
         scoring: [],
       },
       {
-        id: 'Q2-B',
+        id: 'SEG1-B',
         text: 'Practicing, but still building confidence.',
         scoring: [],
       },
       {
-        id: 'Q2-C',
+        id: 'SEG1-C',
         text: 'Experienced, but looking to deepen.',
         scoring: [],
       },
@@ -109,41 +87,43 @@ export const questions: Question[] = [
   },
 
   // -------------------------------------------------------------------------
-  // Q3 — Non-scored. Pain point segmentation. 6 answers (A-F).
+  // SEG2 — Pain point segmentation (not scored)
   // -------------------------------------------------------------------------
   {
-    id: 'Q3',
-    number: 3,
-    text: "3. What's been your biggest frustration with tarot so far?",
-    scored: false,
+    id: 'SEG2',
+    number: 2,
+    text: "What's been your biggest frustration with tarot so far?",
+    format: 'single_select',
+    phase: 'segmentation',
+    pair: null,
     answers: [
       {
-        id: 'Q3-A',
+        id: 'SEG2-A',
         text: 'Too many cards to memorize.',
         scoring: [],
       },
       {
-        id: 'Q3-B',
+        id: 'SEG2-B',
         text: 'Court cards all seem the same.',
         scoring: [],
       },
       {
-        id: 'Q3-C',
+        id: 'SEG2-C',
         text: "Decks I've tried feel cheap or hard to use.",
         scoring: [],
       },
       {
-        id: 'Q3-D',
+        id: 'SEG2-D',
         text: "I can't read objectively for myself.",
         scoring: [],
       },
       {
-        id: 'Q3-E',
+        id: 'SEG2-E',
         text: "I haven't found a deck that reflects who I am.",
         scoring: [],
       },
       {
-        id: 'Q3-F',
+        id: 'SEG2-F',
         text: 'No frustrations yet!',
         scoring: [],
       },
@@ -151,572 +131,311 @@ export const questions: Question[] = [
   },
 
   // -------------------------------------------------------------------------
-  // Q4 — Scored. Clean A=A, B=B, C=C, D=D.
+  // NQ01 — Weight: +4 (standard) — Adapted from Q1
   // -------------------------------------------------------------------------
   {
-    id: 'Q4',
+    id: 'NQ01',
+    number: 3,
+    text: "You're awake at 2am with something weighing on you. What actually helps?",
+    format: 'single_select',
+    phase: 'scored',
+    pair: null,
+    answers: [
+      {
+        id: 'NQ01-A',
+        text: 'Making a list, researching options, or thinking it through logically.',
+        scoring: [w('A', 4)],
+      },
+      {
+        id: 'NQ01-B',
+        text: 'Getting out of bed — walking, stretching, doing something physical.',
+        scoring: [w('B', 4)],
+      },
+      {
+        id: 'NQ01-C',
+        text: 'Letting it go for now, trusting morning will bring clarity.',
+        scoring: [w('C', 4)],
+      },
+      {
+        id: 'NQ01-D',
+        text: 'Sitting with the discomfort, asking what this situation is really trying to show you.',
+        scoring: [w('D', 4)],
+      },
+    ],
+  },
+
+  // -------------------------------------------------------------------------
+  // NQ02 — Weight: +4 (standard) — Adapted from Q9
+  // -------------------------------------------------------------------------
+  {
+    id: 'NQ02',
     number: 4,
-    text: '4. You have an unexpected afternoon to yourself. You\'d most enjoy:',
-    scored: true,
+    text: 'Imagine watching someone perform something remarkable. What captivates you most?',
+    format: 'single_select',
+    phase: 'scored',
+    pair: null,
     answers: [
       {
-        id: 'Q4-A',
-        text: 'Learning a new skill or taking a workshop.',
-        scoring: [w('A')],
+        id: 'NQ02-A',
+        text: 'The precision — every movement intentional, nothing wasted.',
+        scoring: [w('A', 4)],
       },
       {
-        id: 'Q4-B',
-        text: 'Moving your body; dancing, yoga, hiking, or aerial practice.',
-        scoring: [w('B')],
+        id: 'NQ02-B',
+        text: "The physicality — you can almost feel what they're feeling in your own body.",
+        scoring: [w('B', 4)],
       },
       {
-        id: 'Q4-C',
-        text: 'Quiet reflection; journaling, meditation, or daydreaming.',
-        scoring: [w('C')],
+        id: 'NQ02-C',
+        text: 'The flow — that effortless quality where everything just... works.',
+        scoring: [w('C', 4)],
       },
       {
-        id: 'Q4-D',
-        text: "Going deep—journaling, meaningful conversation, or exploring something you've been avoiding.",
-        scoring: [w('D')],
+        id: 'NQ02-D',
+        text: 'The transformation — watching them become something different than when they started.',
+        scoring: [w('D', 4)],
       },
     ],
   },
 
   // -------------------------------------------------------------------------
-  // Q5 — Scored. CORRECTED: Tally had A→B, B→C, C→D (shifted pattern).
-  // Operator-confirmed correction: A=A, B=B, C=C, D=D.
+  // FP01 — Pair: A vs D (Grounded Mystic boundary) — forced pair
   // -------------------------------------------------------------------------
   {
-    id: 'Q5',
+    id: 'FP01',
     number: 5,
-    text: '5. When someone offers guidance, your first instinct is to:',
-    scored: true,
+    text: "When you encounter something you can't explain — a coincidence that feels meaningful, a dream that lingers:",
+    format: 'forced_pair',
+    phase: 'scored',
+    pair: ['A', 'D'],
     answers: [
       {
-        id: 'Q5-A',
-        // Tally bug: scored Embodied Intuitive (B). Corrected to Air Weaver (A).
-        text: "Evaluate whether it's logical and applicable to your situation.",
-        scoring: [w('A')],
+        id: 'FP01-A',
+        text: "You look for the pattern. There's a logic underneath, even if it's not obvious yet — and you want to find it.",
+        scoring: [w('A', 6), w('D', 2)],
       },
       {
-        id: 'Q5-B',
-        // Tally bug: scored Ascending Seeker (C). Corrected to Embodied Intuitive (B).
-        text: 'Check your gut—does this land in your body as true?',
-        scoring: [w('B')],
-      },
-      {
-        id: 'Q5-C',
-        // Tally bug: scored Shadow Dancer (D). Corrected to Ascending Seeker (C).
-        text: "Stay open—maybe there's something here worth exploring.",
-        scoring: [w('C')],
-      },
-      {
-        id: 'Q5-D',
-        // Tally was already correct for D.
-        text: "Look underneath—what's the real wisdom here, beyond the surface?",
-        scoring: [w('D')],
+        id: 'FP01-D',
+        text: "You follow it deeper. Whatever this is, it's pointing at something you haven't been willing to look at yet.",
+        scoring: [w('D', 6), w('A', 2)],
       },
     ],
   },
 
   // -------------------------------------------------------------------------
-  // Q6 — Scored. CORRECTED: Tally had B and C swapped (B→C, C→B).
-  // Operator-confirmed correction: B=B, C=C.
+  // NQ03 — Weight: +6 (ANCHOR) — Adapted from Q15
   // -------------------------------------------------------------------------
   {
-    id: 'Q6',
+    id: 'NQ03',
     number: 6,
-    text: '6. Which feels most true for you?',
-    scored: true,
+    text: 'You feel most alive when:',
+    format: 'single_select',
+    phase: 'scored',
+    pair: null,
     answers: [
       {
-        id: 'Q6-A',
-        // Tally was correct for A.
-        text: "'I need to understand how something works before I can trust it.'",
-        scoring: [w('A')],
+        id: 'NQ03-A',
+        text: "Mastering something complex or solving a problem others couldn't.",
+        scoring: [w('A', 6)],
       },
       {
-        id: 'Q6-B',
-        // Tally bug: scored Ascending Seeker (C). Corrected to Embodied Intuitive (B).
-        text: "'My body knows things my mind hasn't figured out yet.'",
-        scoring: [w('B')],
+        id: 'NQ03-B',
+        text: 'Fully in your body — present, physical, sensation-aware.',
+        scoring: [w('B', 6)],
       },
       {
-        id: 'Q6-C',
-        // Tally bug: scored Embodied Intuitive (B). Corrected to Ascending Seeker (C).
-        text: "'The best insights come when I stop trying to force them.'",
-        scoring: [w('C')],
-      },
-      {
-        id: 'Q6-D',
-        // Tally was correct for D.
-        text: "'Growth happens in the uncomfortable places most people avoid.'",
-        scoring: [w('D')],
-      },
-    ],
-  },
-
-  // -------------------------------------------------------------------------
-  // Q7 — Scored. 5 answers (A-E). Option E dual-scores A+D (Grounded Mystic detector).
-  // -------------------------------------------------------------------------
-  {
-    id: 'Q7',
-    number: 7,
-    text: '7. You learn best when you have:',
-    scored: true,
-    answers: [
-      {
-        id: 'Q7-A',
-        text: 'Clear frameworks, logical progressions, and reliable information.',
-        scoring: [w('A')],
-      },
-      {
-        id: 'Q7-B',
-        text: 'Hands-on practice—learning by doing, not just reading.',
-        scoring: [w('B')],
-      },
-      {
-        id: 'Q7-C',
-        text: 'Freedom to explore at your own pace without rigid rules.',
-        scoring: [w('C')],
-      },
-      {
-        id: 'Q7-D',
-        text: 'Permission to go deep, even into difficult or complex territory.',
-        scoring: [w('D')],
-      },
-      {
-        id: 'Q7-E',
-        // Intentional dual scoring: Grounded Mystic detector. +4 Air Weaver + +4 Shadow Dancer.
-        text: 'Both structure AND room for mystery—I need the framework AND the freedom.',
-        scoring: [w('A'), w('D')],
-      },
-    ],
-  },
-
-  // -------------------------------------------------------------------------
-  // Q8 — Scored. 5 answers (A-E). CORRECTED: Option A was missing scoring in Tally (+0).
-  // Operator-confirmed correction: Q8-A scores Air Weaver +4.
-  // Option E dual-scores A+D (Grounded Mystic detector).
-  // -------------------------------------------------------------------------
-  {
-    id: 'Q8',
-    number: 8,
-    text: '8. When making an important decision you want:',
-    scored: true,
-    answers: [
-      {
-        id: 'Q8-A',
-        // Tally bug: no conditional logic rule — option A was effectively dead (+0). Corrected to Air Weaver +4.
-        text: 'Data, logic, and clear analysis.',
-        scoring: [w('A')],
-      },
-      {
-        id: 'Q8-B',
-        text: 'To check what my body is telling me.',
-        scoring: [w('B')],
-      },
-      {
-        id: 'Q8-C',
-        text: 'Time to sit with it and let the answer emerge.',
-        scoring: [w('C')],
-      },
-      {
-        id: 'Q8-D',
-        text: 'To understand the deeper pattern or lesson underneath.',
-        scoring: [w('D')],
-      },
-      {
-        id: 'Q8-E',
-        // Intentional dual scoring: Grounded Mystic detector. +4 Air Weaver + +4 Shadow Dancer.
-        text: 'I need both the practical AND the mystical—one without the other feels incomplete.',
-        scoring: [w('A'), w('D')],
-      },
-    ],
-  },
-
-  // -------------------------------------------------------------------------
-  // Q9 — Scored. CORRECTED (two bugs):
-  //   Q9-A: Tally fired duplicate rule (+8 Air Weaver). Corrected to single +4.
-  //   Q9-D: Tally awarded +4 to all dimensions and Shadow Dancer fired twice (+8 D).
-  //          Corrected to Shadow Dancer +4 only.
-  // -------------------------------------------------------------------------
-  {
-    id: 'Q9',
-    number: 9,
-    text: '9. Imagine watching someone perform something remarkable. What captivates you most?',
-    scored: true,
-    answers: [
-      {
-        id: 'Q9-A',
-        // Tally bug: duplicate conditional logic rule fired twice (+8 Air Weaver). Corrected to +4 once.
-        text: 'The precision—every movement intentional, nothing wasted.',
-        scoring: [w('A')],
-      },
-      {
-        id: 'Q9-B',
-        text: "The physicality—you can almost feel what they're feeling in your own body.",
-        scoring: [w('B')],
-      },
-      {
-        id: 'Q9-C',
-        text: "The flow—that effortless quality where everything just... works.",
-        scoring: [w('C')],
-      },
-      {
-        id: 'Q9-D',
-        // Tally bug: awarded +4 to all dimensions with Shadow Dancer firing twice (+8 D total).
-        // Corrected to Shadow Dancer +4 only.
-        text: 'The transformation—watching them become something different than when they started.',
-        scoring: [w('D')],
-      },
-    ],
-  },
-
-  // -------------------------------------------------------------------------
-  // Q10 — Scored. Clean A=A, B=B, C=C, D=D.
-  // -------------------------------------------------------------------------
-  {
-    id: 'Q10',
-    number: 10,
-    text: '10. The idea that excites you most about tarot is:',
-    scored: true,
-    answers: [
-      {
-        id: 'Q10-A',
-        text: 'Having a structured system for gaining clarity and making decisions.',
-        scoring: [w('A')],
-      },
-      {
-        id: 'Q10-B',
-        text: "A tangible way to connect with intuition I can actually feel.",
-        scoring: [w('B')],
-      },
-      {
-        id: 'Q10-C',
-        text: 'Exploring symbols and meanings without needing all the answers.',
-        scoring: [w('C')],
-      },
-      {
-        id: 'Q10-D',
-        text: "Accessing deeper truths about patterns, cycles, and what's really going on.",
-        scoring: [w('D')],
-      },
-    ],
-  },
-
-  // -------------------------------------------------------------------------
-  // Q11 — Non-scored. Flow state segmentation. 4 answers (A-D).
-  // Note: answer options mirror dimension language but confirmed non-scored in Tally.
-  // -------------------------------------------------------------------------
-  {
-    id: 'Q11',
-    number: 11,
-    text: "11. When everything clicks and you're fully engaged, it feels like:",
-    scored: false,
-    answers: [
-      {
-        id: 'Q11-A',
-        text: 'Building something—each piece fitting into place, logic flowing.',
-        scoring: [],
-      },
-      {
-        id: 'Q11-B',
-        text: 'My body knows what to do without me having to think about it.',
-        scoring: [],
-      },
-      {
-        id: 'Q11-C',
-        text: "Time disappears and I'm just... present, open, receiving.",
-        scoring: [],
-      },
-      {
-        id: 'Q11-D',
-        text: 'Something is being revealed—layers peeling back, truth emerging.',
-        scoring: [],
-      },
-    ],
-  },
-
-  // -------------------------------------------------------------------------
-  // Q12 — Scored. Clean A=A, B=B, C=C, D=D.
-  // -------------------------------------------------------------------------
-  {
-    id: 'Q12',
-    number: 12,
-    text: "12. What tends to derail you when you're trying to grow or learn?",
-    scored: true,
-    answers: [
-      {
-        id: 'Q12-A',
-        text: "Too much conflicting information—hard to know what's actually reliable.",
-        scoring: [w('A')],
-      },
-      {
-        id: 'Q12-B',
-        text: 'Losing momentum when life gets busy or practice feels abstract.',
-        scoring: [w('B')],
-      },
-      {
-        id: 'Q12-C',
-        text: "Worrying I'm 'doing it wrong' or not making progress fast enough.",
-        scoring: [w('C')],
-      },
-      {
-        id: 'Q12-D',
-        text: 'Either going too deep too fast, or avoiding the shadow stuff entirely.',
-        scoring: [w('D')],
-      },
-    ],
-  },
-
-  // -------------------------------------------------------------------------
-  // Q13 — Scored. Clean A=A, B=B, C=C, D=D.
-  // -------------------------------------------------------------------------
-  {
-    id: 'Q13',
-    number: 13,
-    text: '13. What would make learning a symbolic system (like tarot) frustrating for you?',
-    scored: true,
-    answers: [
-      {
-        id: 'Q13-A',
-        text: 'No logical framework—just memorize 78 random things.',
-        scoring: [w('A')],
-      },
-      {
-        id: 'Q13-B',
-        text: 'Too abstract—I need to feel it or do something with it.',
-        scoring: [w('B')],
-      },
-      {
-        id: 'Q13-C',
-        text: "Too many rigid rules about the 'right way' to do it.",
-        scoring: [w('C')],
-      },
-      {
-        id: 'Q13-D',
-        text: 'Too shallow—surface keywords instead of real depth.',
-        scoring: [w('D')],
-      },
-    ],
-  },
-
-  // -------------------------------------------------------------------------
-  // Q14 — Scored. Clean A=A, B=B, C=C, D=D.
-  // -------------------------------------------------------------------------
-  {
-    id: 'Q14',
-    number: 14,
-    text: '14. Right now, you\'d most want tarot to help you:',
-    scored: true,
-    answers: [
-      {
-        id: 'Q14-A',
-        text: 'Make clearer decisions with confidence.',
-        scoring: [w('A')],
-      },
-      {
-        id: 'Q14-B',
-        text: 'Reconnect with intuition in a way that feels real and grounded.',
-        scoring: [w('B')],
-      },
-      {
-        id: 'Q14-C',
-        text: 'Understand yourself without needing definitive answers.',
-        scoring: [w('C')],
-      },
-      {
-        id: 'Q14-D',
-        text: "Navigate something you've been avoiding or transform a stuck pattern.",
-        scoring: [w('D')],
-      },
-    ],
-  },
-
-  // -------------------------------------------------------------------------
-  // Q15 — Scored. Clean A=A, B=B, C=C, D=D.
-  // -------------------------------------------------------------------------
-  {
-    id: 'Q15',
-    number: 15,
-    text: '15. You feel most alive when:',
-    scored: true,
-    answers: [
-      {
-        id: 'Q15-A',
-        text: 'Mastering something complex or solving a problem others couldn\'t.',
-        scoring: [w('A')],
-      },
-      {
-        id: 'Q15-B',
-        text: 'Fully in your body—present, physical, sensation-aware.',
-        scoring: [w('B')],
-      },
-      {
-        id: 'Q15-C',
+        id: 'NQ03-C',
         text: 'In creative flow, following curiosity wherever it leads.',
-        scoring: [w('C')],
+        scoring: [w('C', 6)],
       },
       {
-        id: 'Q15-D',
+        id: 'NQ03-D',
         text: "Going through meaningful change, even when it's uncomfortable.",
-        scoring: [w('D')],
+        scoring: [w('D', 6)],
       },
     ],
   },
 
   // -------------------------------------------------------------------------
-  // Q16 — Scored. Clean A=A, B=B, C=C, D=D.
+  // NQ04 — Weight: +4 (standard) — Adapted from Q6
   // -------------------------------------------------------------------------
   {
-    id: 'Q16',
-    number: 16,
-    text: '16. \'Defying gravity\' makes you think of:',
-    scored: true,
+    id: 'NQ04',
+    number: 7,
+    text: 'Which feels most true for you?',
+    format: 'single_select',
+    phase: 'scored',
+    pair: null,
     answers: [
       {
-        id: 'Q16-A',
+        id: 'NQ04-A',
+        text: '"I need to understand how something works before I can trust it."',
+        scoring: [w('A', 4)],
+      },
+      {
+        id: 'NQ04-B',
+        text: '"My body knows things my mind hasn\'t figured out yet."',
+        scoring: [w('B', 4)],
+      },
+      {
+        id: 'NQ04-C',
+        text: '"The best insights come when I stop trying to force them."',
+        scoring: [w('C', 4)],
+      },
+      {
+        id: 'NQ04-D',
+        text: '"Growth happens in the uncomfortable places most people avoid."',
+        scoring: [w('D', 4)],
+      },
+    ],
+  },
+
+  // -------------------------------------------------------------------------
+  // FP02 — Pair: B vs C (Flow Artist boundary) — forced pair
+  // -------------------------------------------------------------------------
+  {
+    id: 'FP02',
+    number: 8,
+    text: "You're offered two experiences at a retreat. Which draws you in?",
+    format: 'forced_pair',
+    phase: 'scored',
+    pair: ['B', 'C'],
+    answers: [
+      {
+        id: 'FP02-B',
+        text: 'A movement practice with no choreography — just your body, music, and whatever wants to happen.',
+        scoring: [w('B', 6), w('C', 2)],
+      },
+      {
+        id: 'FP02-C',
+        text: 'A silent sit in nature — no agenda, no timer, just presence and whatever arises.',
+        scoring: [w('C', 6), w('B', 2)],
+      },
+    ],
+  },
+
+  // -------------------------------------------------------------------------
+  // NQ05 — Weight: +3 (lighter) — Adapted from Q12
+  // -------------------------------------------------------------------------
+  {
+    id: 'NQ05',
+    number: 9,
+    text: "What tends to derail you when you're trying to grow or learn?",
+    format: 'single_select',
+    phase: 'scored',
+    pair: null,
+    answers: [
+      {
+        id: 'NQ05-A',
+        text: 'Too much conflicting information — hard to know what\'s actually reliable.',
+        scoring: [w('A', 3)],
+      },
+      {
+        id: 'NQ05-B',
+        text: 'Losing momentum when life gets busy or practice feels abstract.',
+        scoring: [w('B', 3)],
+      },
+      {
+        id: 'NQ05-C',
+        text: 'Worrying I\'m "doing it wrong" or not making progress fast enough.',
+        scoring: [w('C', 3)],
+      },
+      {
+        id: 'NQ05-D',
+        text: 'Either going too deep too fast, or avoiding the shadow stuff entirely.',
+        scoring: [w('D', 3)],
+      },
+    ],
+  },
+
+  // -------------------------------------------------------------------------
+  // NQ06 — Weight: +6 (ANCHOR) — Adapted from Q16
+  // -------------------------------------------------------------------------
+  {
+    id: 'NQ06',
+    number: 10,
+    text: '"Defying gravity" makes you think of:',
+    format: 'single_select',
+    phase: 'scored',
+    pair: null,
+    answers: [
+      {
+        id: 'NQ06-A',
         text: 'Achieving something that seemed impossible through skill and effort.',
-        scoring: [w('A')],
+        scoring: [w('A', 6)],
       },
       {
-        id: 'Q16-B',
+        id: 'NQ06-B',
         text: 'The physical thrill of movement, lift, suspension.',
-        scoring: [w('B')],
+        scoring: [w('B', 6)],
       },
       {
-        id: 'Q16-C',
+        id: 'NQ06-C',
         text: "Letting go of what's weighing you down.",
-        scoring: [w('C')],
+        scoring: [w('C', 6)],
       },
       {
-        id: 'Q16-D',
-        text: "Transcending old patterns—becoming who you're meant to be.",
-        scoring: [w('D')],
-      },
-    ],
-  },
-
-  // -------------------------------------------------------------------------
-  // Q17 — Scored. Clean A=A, B=B, C=C, D=D.
-  // -------------------------------------------------------------------------
-  {
-    id: 'Q17',
-    number: 17,
-    text: "17. When someone says something that doesn't make logical sense, you:",
-    scored: true,
-    answers: [
-      {
-        id: 'Q17-A',
-        text: "Try to understand their reasoning—there must be a framework I'm missing.",
-        scoring: [w('A')],
-      },
-      {
-        id: 'Q17-B',
-        text: 'Notice how it lands in your body—does it feel true or off?',
-        scoring: [w('B')],
-      },
-      {
-        id: 'Q17-C',
-        text: "Stay curious—maybe there's something here I don't understand yet.",
-        scoring: [w('C')],
-      },
-      {
-        id: 'Q17-D',
-        text: "Look for what's underneath—what are they really trying to express?",
-        scoring: [w('D')],
+        id: 'NQ06-D',
+        text: "Transcending old patterns — becoming who you're meant to be.",
+        scoring: [w('D', 6)],
       },
     ],
   },
 
   // -------------------------------------------------------------------------
-  // Q18 — Scored. Clean A=A, B=B, C=C, D=D.
+  // FP03 — Pair: B vs D (flexible boundary) — forced pair
   // -------------------------------------------------------------------------
   {
-    id: 'Q18',
-    number: 18,
-    text: '18. If this quiz reveals something true about you, you\'ll want to:',
-    scored: true,
+    id: 'FP03',
+    number: 11,
+    text: "When something feels off but you can't name why:",
+    format: 'forced_pair',
+    phase: 'scored',
+    pair: ['B', 'D'],
     answers: [
       {
-        id: 'Q18-A',
-        text: 'Understand the practical implications—how do I use this?',
-        scoring: [w('A')],
+        id: 'FP03-B',
+        text: 'You tune into your body — tension, breath, gut feeling. It knows before your mind catches up.',
+        scoring: [w('B', 6), w('D', 2)],
       },
       {
-        id: 'Q18-B',
-        text: "Feel it resonate in my body before I do anything with it.",
-        scoring: [w('B')],
-      },
-      {
-        id: 'Q18-C',
-        text: 'Let it unfold over time, see where it leads.',
-        scoring: [w('C')],
-      },
-      {
-        id: 'Q18-D',
-        text: 'Go deeper—what does this mean about my path and growth?',
-        scoring: [w('D')],
+        id: 'FP03-D',
+        text: "You sit with the discomfort and ask what it's trying to show you. There's always something underneath.",
+        scoring: [w('D', 6), w('B', 2)],
       },
     ],
   },
 
   // -------------------------------------------------------------------------
-  // Q19 — Non-scored. Product research (card back preference). 2 answers (A-B).
+  // NQ07 — Weight: +3 (lighter) — Adapted from Q14
   // -------------------------------------------------------------------------
   {
-    id: 'Q19',
-    number: 19,
-    text: '19. Card Back Preference?',
-    scored: false,
+    id: 'NQ07',
+    number: 12,
+    text: "Right now, you'd most want tarot to help you:",
+    format: 'single_select',
+    phase: 'scored',
+    pair: null,
     answers: [
       {
-        id: 'Q19-A',
-        text: 'Fully Reversible',
-        scoring: [],
+        id: 'NQ07-A',
+        text: 'Make clearer decisions with confidence.',
+        scoring: [w('A', 3)],
       },
       {
-        id: 'Q19-B',
-        text: 'Distinct Top and Bottom',
-        scoring: [],
-      },
-    ],
-  },
-
-  // -------------------------------------------------------------------------
-  // Q20 — Non-scored. Product research (desired learning format). 5 answers (A-E).
-  // -------------------------------------------------------------------------
-  {
-    id: 'Q20',
-    number: 20,
-    text: '20. If we created something to deepen your practice, what would actually serve you?',
-    scored: false,
-    answers: [
-      {
-        id: 'Q20-A',
-        text: 'An Online Course (video lessons on reading with the deck)',
-        scoring: [],
+        id: 'NQ07-B',
+        text: 'Reconnect with intuition in a way that feels real and grounded.',
+        scoring: [w('B', 3)],
       },
       {
-        id: 'Q20-B',
-        text: 'A Live Virtual Workshop (interactive sessions with the deck creator)',
-        scoring: [],
+        id: 'NQ07-C',
+        text: 'Understand yourself without needing definitive answers.',
+        scoring: [w('C', 3)],
       },
       {
-        id: 'Q20-C',
-        text: 'An Expanded Guide Book (in depth card meanings, spreads and quality)',
-        scoring: [],
-      },
-      {
-        id: 'Q20-D',
-        text: 'A Live Aerial Tarot Reading Show',
-        scoring: [],
-      },
-      {
-        id: 'Q20-E',
-        text: 'Honestly, none of the above',
-        scoring: [],
+        id: 'NQ07-D',
+        text: "Navigate something you've been avoiding or transform a stuck pattern.",
+        scoring: [w('D', 3)],
       },
     ],
   },
