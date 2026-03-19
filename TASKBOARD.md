@@ -63,7 +63,7 @@ segmentation, rewrite classifier to cosine-similarity centroids, add email gate
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
 | 0 | Content Design (collaborative — HUMAN GATE) | `completed` | Approved 2026-03-19. 7 normative (adapted), 3 forced pairs (new), 2 segmentation. |
-| 1 | Data Model + Scoring Pipeline [FTF] | `in_progress` | dep: Phase 0. Tests written (49 fail). SHA256 baseline recorded. |
+| 1 | Data Model + Scoring Pipeline [FTF] | `completed` | 57/57 tests. FTF verified (record-baseline.sh + verify-frozen.sh). Downstream .scored→.phase migrated by subagent. |
 | 2 | Classifier Redesign [FTF] | `pending` | dep: Phase 1. Cosine-similarity centroids + Monte Carlo validation. |
 | 3 | Quiz Engine [FTF] | `pending` | dep: Phase 2. New quiz-engine.ts state machine. |
 | 4 | UI Implementation | `pending` | dep: Phase 3. Major rewrite of quiz.astro. |
