@@ -50,39 +50,38 @@ this file at session start and reports current state to the operator.
 
 ## Active Task
 
-### Sprint Roadmap — Pre-Launch (target: 8/8/26 Kickstarter)
+### Quiz Design Overhaul — 10-Flaw Resolution
 
-**Brief:** Execute 6 sprints of parallel work across the full backlog, organized by
-launch leverage with maximum intra-sprint parallelism. All 8 required plan docs
-and 4 API reference guides are written. Ready for execution.
+**Brief:** Rewrite the archetype quiz to resolve 10 interconnected design flaws.
+Replace 20 questions with 10 scored (7 normative + 3 forced-pair) + 2
+segmentation, rewrite classifier to cosine-similarity centroids, add email gate
++ calculating interstitial, implement answer randomization.
 
-**Roadmap plan:** `docs/plans/2026-03-09-sprint-roadmap.md`
+**Plan:** `docs/plans/2026-03-19-quiz-design-overhaul-implementation.md`
+**Design spec:** `docs/plans/2026-03-19-mastermind-quiz-design-overhaul.md`
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 1 | Write sprint roadmap + organize backlog into 6 sprints | `completed` | `docs/plans/2026-03-09-sprint-roadmap.md` |
-| 2 | Scrape API references (PageSpeed, Supabase, Playwright, Vercel GH Actions) | `completed` | 4 guides in `operations/*-reference.md` |
-| 3 | Write 8 detailed plan docs with FTF/eval/harden gates | `completed` | All at `docs/plans/2026-03-09-*.md` |
-| 4 | Execute Sprint 1: Foundation & Quick Wins (3 parallel tracks) | `completed` | All 3 tracks merged, 381/381 tests pass, build clean |
-| 5 | Execute Sprint 2: Growth Features (3 parallel tracks) | `completed` | 2A: journey pages (merged), 2B: countdown (complete), 2C: daily draw (committed) |
-| 6 | Execute Sprint 3+4 in parallel (3 tracks) | `completed` | FTF-redo: 557/557 tests, build clean. Eval-protocol: 3 evaluators, 1 Critical fixed (double-tracking S-02), remaining High/Medium → backlog. |
-| 7 | Execute Sprint 5: Externally-Blocked Features (staggered) | `pending` | 5A: gallery (art ~May), 5B: waitlist (Supabase), 5C: content calendar (~June) |
-| 8 | Execute Sprint 6: Platform Expansion + Autoresearch Loops | `pending` | Hermes bot, skill dashboard, 4 autoresearch loops (ads, email subjects, quiz intro, journey CTA) |
+| 0 | Content Design (collaborative — HUMAN GATE) | `pending` | Claude drafts, operator approves. Deliverable: `operations/mastermind-quiz-design-overhaul/approved-questions.md` |
+| 1 | Data Model + Scoring Pipeline [FTF] | `pending` | dep: Phase 0. Rewrite quiz-data.ts. |
+| 2 | Classifier Redesign [FTF] | `pending` | dep: Phase 1. Cosine-similarity centroids + Monte Carlo validation. |
+| 3 | Quiz Engine [FTF] | `pending` | dep: Phase 2. New quiz-engine.ts state machine. |
+| 4 | UI Implementation | `pending` | dep: Phase 3. Major rewrite of quiz.astro. |
+| 5 | API Integration | `pending` | dep: Phase 2. Parallel with 3-4. Update quiz-submit.ts for v2 payloads. |
+| 6 | Integration Testing | `pending` | dep: Phases 1-5. E2E + unit test sweep. |
+| 7 | Eval Protocol + Harden | `pending` | dep: Phase 6. 3 evaluators (Functional, Security, UX/a11y). |
 
-**Handoff Context (2026-03-14):** Sprint 3+4 complete + eval findings remediated. 562/562 tests, build clean.
-- Track A (quiz refactoring): dom-helpers, share-utils, ShareButtons.astro, archetype-content hardening. FTF verified.
-- Track B (eval harness): GA4 client, PageSpeed client, storage, CLI scripts. FTF verified.
-- Track C (skills ×8): 8 skills created and verified at `~/.claude/skills/`.
-- Eval-protocol: 3 evaluators deployed (Functional, Fidelity, Quality). 1 Critical fixed (double GA4 share tracking).
-- Eval findings remediation: All 9 findings (S-01 through S-09) fixed. [archetype].astro renders ShareButtons,
-  quiz.astro uses share-utils helpers, eval storage/ga4-client hardened, E2E tests added (TCF-08 canonical ×6,
-  TCF-10 clipboard feedback), dead ShareButtons import removed from quiz.astro. 562 tests, 11 SHA256 baselines verified.
+**Handoff Context (2026-03-19):** Mastermind deliberation complete (3 rounds, conditional consensus).
+Plan written and reviewed (READY TO BUILD, attempt 1). Phase 0 is a human gate — engineering blocked
+until operator approves question content. Branch: `feature/quiz-design-overhaul`. This task supersedes
+the Sprint 4 "Quiz code quality refactoring" backlog item (all 10 deferred findings addressed by rewrite).
 
-**Journaling prompts are AI-generated placeholders** — operator approved for now,
-review before launch. See header comment in `src/lib/card-data.ts`.
+**Paused task:** Sprint Roadmap — Pre-Launch (6/8 phases complete). Phases 7-8
+externally blocked until May-July. Resume when blockers clear.
 
-**Carried from prior handoff:** CSP violations (report-only), Meta Pixel
-custom event warnings, favicon 404s, GitHub CI secrets needed.
+**Carried:** CSP violations (report-only), Meta Pixel custom event warnings,
+favicon 404s, GitHub CI secrets needed. Journaling prompts are AI-generated
+placeholders — review before launch.
 
 ---
 
@@ -143,7 +142,7 @@ custom event warnings, favicon 404s, GitHub CI secrets needed.
 
 ### Sprint 4 — Code Quality & Skill Hardening (May)
 
-- **Quiz code quality refactoring** — Plan: `docs/plans/2026-03-09-quiz-refactoring.md` (7 tasks). 10 deferred findings from hardening-2026-03-08.
+- ~~**Quiz code quality refactoring**~~ — ABSORBED by Quiz Design Overhaul (2026-03-19). Full rewrite eliminates all 10 deferred findings.
 - **Skill suite consistency pass + content polish** — No plan doc (skill file edits). 12 deferred findings from eval-skills-2026-03-08.
 
 ### Sprint 5 — Externally-Blocked Features (May–July, staggered)
