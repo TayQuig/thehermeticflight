@@ -71,13 +71,12 @@ segmentation, rewrite classifier to cosine-similarity centroids, add email gate
 | 6 | Integration Testing | `pending` | dep: Phases 1-5. E2E + unit test sweep. |
 | 7 | Eval Protocol + Harden | `pending` | dep: Phase 6. 3 evaluators (Functional, Security, UX/a11y). |
 
-**Handoff Context (2026-03-19):** Phase 0 (content) and Phase 1 (data model) complete. Branch: `feature/quiz-design-overhaul`.
-- quiz-data.ts rewritten: 12 questions (2 seg + 7 normative + 3 forced-pair), QuestionFormat type, variable weights (+3/+4/+6), pair field.
-- FTF baseline recorded via record-baseline.sh, verified via verify-frozen.sh. Tag: frozen-baseline-1773959477-32017.
-- Downstream .scored→.phase migration applied to classifier.ts, quiz-submit.ts, and both quiz-submit test files (Sonnet subagent).
-- 30 pre-existing test failures remain in classifier.test.ts and quiz-submit-medium.test.ts — these reference old v1 question IDs (Q2, Q3, Q7, Q8, Q11, Q19, Q20). Will be resolved by Phase 2 (classifier rewrite) and Phase 5 (API update).
-- **Next:** Phase 2 — rewrite classifier.test.ts + archetype-distribution.test.ts (Test Author), record baseline, dispatch Sonnet implementer for cosine-similarity centroids. Use record-baseline.sh and verify-frozen.sh strictly.
-- **Process note:** First attempt at Phase 1 used ad-hoc SHA instead of FTF scripts and edited test files directly. Rolled back and redone properly. Follow FTF protocol strictly for all remaining phases.
+**Handoff Context (2026-03-19):** Phases 0-2 complete. Branch: `feature/quiz-design-overhaul`.
+- Phase 2: classifier.ts rewritten to cosine-similarity centroids. Z-score normalization removes forced-pair structural bias. Bipolar composite centroids ([1,-1,-1,1] for grounded_mystic). Softmax T=6. ClassificationResult type exported. classifyLegacy() shim added. Caller migration done (quiz.astro, quiz-submit.ts destructure .primary).
+- 66/66 classifier + distribution tests pass. Monte Carlo: EI 26.9%, SD 26.2%, GM 14.1%, FA 13.8%, AS 9.7%, AW 9.3%. Self-select 3.5%.
+- 9 pre-existing failures remain in quiz-submit-medium.test.ts only — old v1 Q-IDs (Q2, Q3, Q11, Q19, Q20). Resolved by Phase 5.
+- **Next:** Phase 3 — Quiz Engine [FTF]. Write quiz-engine.test.ts (Test Author), record baseline, dispatch Sonnet for quiz-engine.ts state machine. 7-phase flow: intro → segmentation → scored → email-gate → calculating → [self-select] → results.
+- **Process note:** FTF protocol followed strictly. record-baseline.sh → Sonnet implements → verify-frozen.sh → clean.
 
 **Paused task:** Sprint Roadmap — Pre-Launch (6/8 phases complete). Phases 7-8
 externally blocked until May-July. Resume when blockers clear.
