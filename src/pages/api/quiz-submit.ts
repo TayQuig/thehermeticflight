@@ -243,7 +243,7 @@ export const POST: APIRoute = async ({ request }) => {
     // Server-side classification (integrity check — don't trust client)
     const validatedAnswers = answers as Record<string, string>;
     const scores = computeScores(validatedAnswers, questions);
-    const archetype = classify(scores);
+    const { primary: archetype } = classify(scores);
 
     // Helper: look up human-readable answer text from quiz-data by question+answer ID.
     // Returns null if the question or answer ID is not found (defensive — validation

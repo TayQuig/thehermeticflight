@@ -249,7 +249,7 @@ import { archetypes } from '../lib/archetype-content';
 
     function revealResults() {
       const scores = computeScores(state.answers, questions);
-      const archetype = classify(scores);
+      const archetype = classify(scores).primary;
       const content = archetypes[archetype];
 
       resultTitle.textContent = content.title;
