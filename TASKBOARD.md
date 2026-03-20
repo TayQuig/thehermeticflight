@@ -61,10 +61,10 @@ after archetype reveal.
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
 | 1 | Content Approval (HUMAN GATE) | `completed` | Approved 2026-03-19. PR01 (card backs, 3 options) + PR02 (product interest, 6 options incl. live aerial performance). |
-| 2 | Quiz Results Gating + Product Research UI [FTF] | `in_progress` | dep: Phase 1. quiz.astro: split results, email re-capture, product research, cookie. plan: docs/plans/2026-03-19-email-gate-product-research.md |
-| 3 | API Update for Product Research [FTF] | `pending` | dep: Phase 2. quiz-submit.ts: productResearch field. Parallel with Phase 4. |
-| 4 | Journey Page Gating [FTF] | `pending` | dep: Phase 2. archetype/[slug].astro: cookie-based gating. Parallel with Phase 3. |
-| 5 | Integration Testing | `pending` | dep: Phases 3+4. Full E2E flow verification. |
+| 2 | Quiz Results Gating + Product Research UI [FTF] | `completed` | dep: Phase 1. quiz.astro: split results, email re-capture, product research, cookie. 13 E2E + 5 unit contracts, all pass. |
+| 3 | API Update for Product Research [FTF] | `completed` | dep: Phase 2. quiz-submit.ts: productResearch validation + Loops.so forwarding. 59/59 unit tests. |
+| 4 | Journey Page Gating [FTF] | `completed` | dep: Phase 2. archetype/[slug].astro: SSR cookie check, soft-gate (optimistic reveal). 60/60 E2E. |
+| 5 | Integration Testing | `completed` | 60/60 Playwright, 613/613 unit, 5/5 FTF baselines verified, build clean. |
 | 6 | Eval Protocol (2 evaluators) | `pending` | dep: Phase 5. UX Funnel + Functional. |
 
 **Handoff Context:** Plan written and reviewed (READY TO BUILD). Phase 1 is a
