@@ -33,7 +33,11 @@ const accentColor = archetypeData.accentHex;
 // email for this specific archetype journey. The cookie `thf_sub` is set
 // client-side after email submission (value = kebab-case slug).
 const cookie = Astro.cookies.get('thf_sub');
-const slugList = cookie ? decodeURIComponent(cookie.value).split(',').filter(Boolean) : [];
+let slugList: string[] = [];
+if (cookie) {
+  try { slugList = decodeURIComponent(cookie.value).split(',').filter(Boolean); }
+  catch { /* malformed percent-encoding — treat as no cookie */ }
+}
 const isGated = !slugList.includes(urlSlug);
 
 // Cookie renewal: refresh Max-Age to 180 days on each visit (keeps access alive).
@@ -168,7 +172,8 @@ const pageDescription = `Explore the ${archetypeData.name} archetype in depth: a
       )}
 
       <!-- ===== JOURNEY CONTENT (visible only when subscribed) ===== -->
-      <div id="journey-content" style={isGated ? 'display:none' : ''}>
+      {!isGated && (
+      <div id="journey-content">
 
         <!-- ===== AFFILIATED CARDS ===== -->
         <section aria-label="Affiliated tarot cards" class="glass-panel p-8 rounded-lg relative mb-10">
@@ -265,6 +270,7 @@ const pageDescription = `Explore the ${archetypeData.name} archetype in depth: a
         )}
 
       </div>
+      )}
 
       <!-- ===== EMAIL SERIES SIGNUP (visible only when subscribed — gated visitors should take quiz first) ===== -->
       {!isGated && (
