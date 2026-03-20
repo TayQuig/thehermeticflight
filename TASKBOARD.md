@@ -50,67 +50,20 @@ this file at session start and reports current state to the operator.
 
 ## Active Task
 
-### Sprint Roadmap — Pre-Launch (target: 8/8/26 Kickstarter)
+[Empty — no task in progress.]
 
-**Brief:** Execute 6 sprints of parallel work across the full backlog, organized by
-launch leverage with maximum intra-sprint parallelism. All 8 required plan docs
-and 4 API reference guides are written. Ready for execution.
+**Paused task:** Sprint Roadmap — Pre-Launch (6/8 phases complete). Phases 7-8
+externally blocked until May-July. Resume when blockers clear.
 
-**Roadmap plan:** `docs/plans/2026-03-09-sprint-roadmap.md`
-
-| # | Phase | Status | Notes |
-|---|-------|--------|-------|
-| 1 | Write sprint roadmap + organize backlog into 6 sprints | `completed` | `docs/plans/2026-03-09-sprint-roadmap.md` |
-| 2 | Scrape API references (PageSpeed, Supabase, Playwright, Vercel GH Actions) | `completed` | 4 guides in `operations/*-reference.md` |
-| 3 | Write 8 detailed plan docs with FTF/eval/harden gates | `completed` | All at `docs/plans/2026-03-09-*.md` |
-| 4 | Execute Sprint 1: Foundation & Quick Wins (3 parallel tracks) | `completed` | All 3 tracks merged, 381/381 tests pass, build clean |
-| 5 | Execute Sprint 2: Growth Features (3 parallel tracks) | `completed` | 2A: journey pages (merged), 2B: countdown (complete), 2C: daily draw (committed) |
-| 6 | Execute Sprint 3+4 in parallel (3 tracks) | `completed` | FTF-redo: 557/557 tests, build clean. Eval-protocol: 3 evaluators, 1 Critical fixed (double-tracking S-02), remaining High/Medium → backlog. |
-| 7 | Execute Sprint 5: Externally-Blocked Features (staggered) | `pending` | 5A: gallery (art ~May), 5B: waitlist (Supabase), 5C: content calendar (~June) |
-| 8 | Execute Sprint 6: Platform Expansion + Autoresearch Loops | `pending` | Hermes bot, skill dashboard, 4 autoresearch loops (ads, email subjects, quiz intro, journey CTA) |
-
-**Handoff Context (2026-03-14):** Sprint 3+4 complete + eval findings remediated. 562/562 tests, build clean.
-- Track A (quiz refactoring): dom-helpers, share-utils, ShareButtons.astro, archetype-content hardening. FTF verified.
-- Track B (eval harness): GA4 client, PageSpeed client, storage, CLI scripts. FTF verified.
-- Track C (skills ×8): 8 skills created and verified at `~/.claude/skills/`.
-- Eval-protocol: 3 evaluators deployed (Functional, Fidelity, Quality). 1 Critical fixed (double GA4 share tracking).
-- Eval findings remediation: All 9 findings (S-01 through S-09) fixed. [archetype].astro renders ShareButtons,
-  quiz.astro uses share-utils helpers, eval storage/ga4-client hardened, E2E tests added (TCF-08 canonical ×6,
-  TCF-10 clipboard feedback), dead ShareButtons import removed from quiz.astro. 562 tests, 11 SHA256 baselines verified.
-
-**Journaling prompts are AI-generated placeholders** — operator approved for now,
-review before launch. See header comment in `src/lib/card-data.ts`.
-
-**Carried from prior handoff:** CSP violations (report-only), Meta Pixel
-custom event warnings, favicon 404s, GitHub CI secrets needed.
+**Carried:** CSP violations (report-only), Meta Pixel custom event warnings,
+favicon 404s, GitHub CI secrets needed. Journaling prompts are AI-generated
+placeholders — review before launch.
 
 ---
 
 ## Ideas
 
-- **Retargeting campaigns for quiz completers who didn't subscribe.** The `QuizCompleted` custom event (GA4 + Meta pixel) creates an audience of high-intent non-converters. Test alternate offers:
-  - *Deck-forward:* "Your archetype is waiting" → Kickstarter/deck page (skip the email series pitch)
-  - *Content pull:* Serve archetype-matched blog post as ad creative (blog_links data already maps these per archetype)
-  - *Social proof:* "X people discovered they're a [archetype]" → quiz link for cold, journey link for returners
-  - The `archetype` param in the pixel event enables per-archetype creative segmentation once audience is large enough
-
-- **Core Web Vitals autoresearch loop.** PageSpeed API gives instant feedback (seconds, not days) — the only loop that can run 100+ iterations overnight like the original autoresearch. Artifact: page layout, asset loading strategy, image config. Metric: LCP/CLS/FID scores. Could be folded into Sprint 3 Performance Budget item or run standalone.
-
-- **Daily card draw engagement optimization (autoresearch).** Test share CTA copy, card reveal animation timing, journaling prompt framing on `/daily`. Metric: `share_rate` (shares / daily_visits, GA4). Traffic-gated — needs daily visitor volume.
-
-- **OG image variant testing (autoresearch).** Test different social card images per archetype to optimize click-through from social shares. Metric: referral traffic from shared links (GA4 referral source). Slow feedback — needs share volume.
-
-- **Blog title / meta description SEO loop (autoresearch).** Artifact: title tags and meta descriptions. Metric: organic CTR from Google Search Console API. Very slow feedback (weeks). Low leverage pre-launch, high leverage post-launch with organic traffic.
-
-- **Email send timing optimization (autoresearch).** Which day of week / hour gets best open rates per archetype. Artifact: Loops.so send schedule config. Metric: open rate by send time. Needs cohort accumulation over weeks.
-
-- **Quiz question wording optimization (autoresearch).** Test question text and answer option phrasing. Metric: `quiz_completed / quiz_started`. **Requires guardrail:** archetype distribution shift > ±5% → auto-discard (prevents confounding completion rate with classification accuracy). Higher risk loop.
-
-- **Archetype result page copy optimization (autoresearch).** Test the reveal page messaging and layout on `/quiz/result/[archetype]`. Metric: share_rate + journey_subscribe_rate from result pages (GA4). Medium leverage — sits at the funnel's conversion-to-advocacy pivot point.
-
-- **Kickstarter page copy optimization (autoresearch).** Once live. Artifact: pledge page headline, tier descriptions, stretch goal framing. Metric: pledge conversion rate. High leverage but post-launch only.
-
-- **Journaling prompt quality loop (autoresearch).** Currently AI-generated placeholders in `card-data.ts`. Optimize for daily card draw return rate. Metric: 7-day return visitor rate. Very slow feedback, low leverage pre-launch.
+[Empty]
 
 ---
 
@@ -143,7 +96,7 @@ custom event warnings, favicon 404s, GitHub CI secrets needed.
 
 ### Sprint 4 — Code Quality & Skill Hardening (May)
 
-- **Quiz code quality refactoring** — Plan: `docs/plans/2026-03-09-quiz-refactoring.md` (7 tasks). 10 deferred findings from hardening-2026-03-08.
+- ~~**Quiz code quality refactoring**~~ — ABSORBED by Quiz Design Overhaul (2026-03-19). Full rewrite eliminates all 10 deferred findings.
 - **Skill suite consistency pass + content polish** — No plan doc (skill file edits). 12 deferred findings from eval-skills-2026-03-08.
 
 ### Sprint 5 — Externally-Blocked Features (May–July, staggered)
@@ -160,6 +113,26 @@ custom event warnings, favicon 404s, GitHub CI secrets needed.
 - **Email Subject Line Optimization Loop (autoresearch)** — Per-archetype hill-climbing on drip sequence subject lines + preview text. 6 archetypes = 6 parallel loops. Artifact: subject line config per archetype. Eval: open rate via Loops.so webhook counters (from eval harness). Winning patterns in one archetype become hypotheses for others. ~2-3 iterations/week/archetype. Depends on: eval harness (Sprint 3), email drip sequences live (Sprint 3).
 - **Quiz Intro Copy Optimization Loop (autoresearch)** — Hill-climbing on quiz landing page headline, subheadline, CTA button text. Artifact: intro copy section of `/quiz`. Eval: `quiz_started / page_sessions` (GA4). Constraint: modify only intro copy, nothing downstream. Traffic-gated — needs minimum sessions threshold per test window. Depends on: eval harness (Sprint 3).
 - **Journey Page CTA Optimization Loop (autoresearch)** — Per-archetype CTA copy testing on `/archetype/[slug]` pages. Artifact: CTA section copy. Eval: `journey_subscribe` conversion rate (GA4). Can run 6 parallel per-archetype variants. Depends on: eval harness (Sprint 3).
+
+### Autoresearch Loops (Future — traffic/data gated)
+
+- **Retargeting campaigns for quiz completers who didn't subscribe.** The `QuizCompleted` custom event (GA4 + Meta pixel) creates an audience of high-intent non-converters. Test alternate offers: deck-forward, content pull, social proof. Per-archetype creative segmentation once audience is large enough.
+- **Core Web Vitals autoresearch loop.** PageSpeed API gives instant feedback — the only loop that can run 100+ iterations overnight. Artifact: page layout, asset loading, image config. Metric: LCP/CLS/FID. Could fold into Sprint 3 Performance Budget or run standalone.
+- **Daily card draw engagement optimization.** Test share CTA copy, card reveal animation timing, journaling prompt framing on `/daily`. Metric: `share_rate`. Traffic-gated.
+- **OG image variant testing.** Test social card images per archetype. Metric: referral traffic. Slow feedback — needs share volume.
+- **Blog title / meta description SEO loop.** Metric: organic CTR from Google Search Console API. Low leverage pre-launch, high post-launch.
+- **Email send timing optimization.** Day/hour optimization per archetype. Metric: open rate by send time. Needs cohort accumulation.
+- **Quiz question wording optimization.** Metric: `quiz_completed / quiz_started`. **Guardrail:** archetype distribution shift > ±5% → auto-discard. Higher risk loop.
+- **Archetype result page copy optimization.** Metric: share_rate + journey_subscribe_rate. Medium leverage — funnel conversion-to-advocacy pivot.
+- **Kickstarter page copy optimization.** Post-launch only. Metric: pledge conversion rate. High leverage.
+- **Journaling prompt quality loop.** Currently AI-generated placeholders. Metric: 7-day return visitor rate. Low leverage pre-launch.
+
+### Post-Launch Monitoring & Polish
+
+- **Self-select decision fatigue monitoring.** Operator observation — track drop-off at self-select step vs direct results. If significant, consider removing self-select and defaulting to top archetype regardless of confidence.
+- ~~**Multi-archetype cookie support.**~~ COMPLETED 2026-03-19. Multi-slug cookie format implemented in Close Side Door task.
+- ~~**Cookie max-age extension.**~~ COMPLETED 2026-03-19. Extended to 180 days (15552000s) in Close Side Door task.
+- **generate_lead analytics cleanup.** Currently fires for skip-path users who didn't provide email. Gate behind `if (state.email)`. Eval finding N-1.
 
 ### Completed / Absorbed
 

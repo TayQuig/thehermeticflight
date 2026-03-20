@@ -3,6 +3,7 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { questions } from '../../lib/quiz-data';
 import { classify, computeScores } from '../../lib/classifier';
+import { parseCookieValue, appendSlug } from '../../lib/cookie-helpers';
 
 // ---------------------------------------------------------------------------
 // SYN-04: In-memory rate limiter
@@ -83,7 +84,7 @@ for (const q of questions) {
 }
 
 // Scored question IDs — must all be present in answers
-const scoredQuestionIds = new Set(questions.filter((q) => q.scored).map((q) => q.id));
+const scoredQuestionIds = new Set(questions.filter((q) => q.phase === 'scored').map((q) => q.id));
 
 // ---------------------------------------------------------------------------
 // SYN-03: Email validation helpers
@@ -178,10 +179,45 @@ function validateAnswers(answers: unknown): string | null {
 // Main handler
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Product research allowlists
+// ---------------------------------------------------------------------------
+
+const VALID_CARD_BACKS = new Set(['single', 'reversible', 'artist_choice']);
+const VALID_PRODUCT_INTEREST = new Set([
+  'guidebook', 'journal', 'app', 'cloth', 'live_performance', 'cards_only',
+]);
+
+function validateProductResearch(pr: unknown): {
+  cardBacks: string | null;
+  productInterest: string[] | null;
+} | null {
+  if (pr === undefined || pr === null) return null;
+  if (typeof pr !== 'object' || Array.isArray(pr)) return { cardBacks: null, productInterest: null };
+
+  const prObj = pr as Record<string, unknown>;
+
+  const rawCardBacks = prObj.cardBacks;
+  const validatedCardBacks =
+    typeof rawCardBacks === 'string' && VALID_CARD_BACKS.has(rawCardBacks)
+      ? rawCardBacks
+      : null;
+
+  const rawInterest = prObj.productInterest;
+  let validatedInterest: string[] | null = null;
+  if (Array.isArray(rawInterest)) {
+    const filtered = (rawInterest as unknown[])
+      .filter((item): item is string => typeof item === 'string' && VALID_PRODUCT_INTEREST.has(item));
+    validatedInterest = filtered.length > 0 ? filtered : null;
+  }
+
+  return { cardBacks: validatedCardBacks, productInterest: validatedInterest };
+}
+
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { email, firstName, answers, website } = body;
+    const { email, firstName, answers, website, selfSelected, displayOrder, productResearch } = body;
 
     // SYN-05: Server-side honeypot check
     // If the "website" honeypot field is present and non-empty, reject as bot.
@@ -192,8 +228,11 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    // S-06: Email normalization — trim and lowercase before validation and use
+    const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : email;
+
     // SYN-03: Email validation
-    const emailError = validateEmail(email);
+    const emailError = validateEmail(normalizedEmail);
     if (emailError) {
       return new Response(
         JSON.stringify({ error: emailError }),
@@ -233,7 +272,7 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    if (checkEmailRateLimit(buckets, email)) {
+    if (checkEmailRateLimit(buckets, normalizedEmail)) {
       return new Response(
         JSON.stringify({ error: 'Too many requests from this email — please try again later' }),
         { status: 429, headers: { 'Content-Type': 'application/json' } },
@@ -243,7 +282,12 @@ export const POST: APIRoute = async ({ request }) => {
     // Server-side classification (integrity check — don't trust client)
     const validatedAnswers = answers as Record<string, string>;
     const scores = computeScores(validatedAnswers, questions);
-    const archetype = classify(scores);
+    const classificationResult = classify(scores);
+    const VALID_SLUGS = new Set(['air_weaver', 'embodied_intuitive', 'ascending_seeker', 'shadow_dancer', 'flow_artist', 'grounded_mystic']);
+    function isValidArchetypeSlug(s: unknown): s is string {
+      return typeof s === 'string' && VALID_SLUGS.has(s);
+    }
+    const archetype = isValidArchetypeSlug(selfSelected) ? selfSelected : classificationResult.primary;
 
     // Helper: look up human-readable answer text from quiz-data by question+answer ID.
     // Returns null if the question or answer ID is not found (defensive — validation
@@ -257,11 +301,16 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Extract non-scored answers for segmentation — resolved to human-readable text.
-    const experienceLevel = resolveAnswerText('Q2', validatedAnswers['Q2']);
-    const painPoint = resolveAnswerText('Q3', validatedAnswers['Q3']);
-    const flowState = resolveAnswerText('Q11', validatedAnswers['Q11']);
-    const cardBackPref = resolveAnswerText('Q19', validatedAnswers['Q19']);
-    const productInterest = resolveAnswerText('Q20', validatedAnswers['Q20']);
+    const experienceLevel = resolveAnswerText('SEG1', validatedAnswers['SEG1']);
+    const painPoint = resolveAnswerText('SEG2', validatedAnswers['SEG2']);
+
+    // S-05: firstName sanitization — strip HTML tags before forwarding to Loops.so
+    const sanitizedFirstName = typeof firstName === 'string'
+      ? firstName.replace(/<[^>]*>/g, '')
+      : '';
+
+    // Product research: validate and sanitize
+    const validatedProductResearch = validateProductResearch(productResearch);
 
     // Push to Loops.so
     // import.meta.env works in Vitest; Vite transforms it to process.env for
@@ -300,35 +349,71 @@ export const POST: APIRoute = async ({ request }) => {
 
     let loopsRes: Response;
     try {
+      // S-03: Validate and sanitize displayOrder before forwarding to Loops.so.
+      // Only allow keys matching valid question ID pattern; strip the rest.
+      const VALID_DISPLAY_ORDER_KEY = /^(SEG[12]|NQ0[1-7]|FP0[1-3])$/;
+      let sanitizedDisplayOrder: Record<string, number[]> | undefined;
+      if (displayOrder && typeof displayOrder === 'object' && !Array.isArray(displayOrder)) {
+        const filtered: Record<string, number[]> = {};
+        for (const [key, value] of Object.entries(displayOrder as Record<string, unknown>)) {
+          if (VALID_DISPLAY_ORDER_KEY.test(key) && Array.isArray(value)) {
+            filtered[key] = value as number[];
+          }
+        }
+        if (Object.keys(filtered).length > 0) {
+          sanitizedDisplayOrder = filtered;
+        }
+      }
+
       const fetchPromise = fetch('https://app.loops.so/api/v1/events/send', {
         method: 'POST',
         signal: controller.signal,
         headers: {
           'Authorization': `Bearer ${LOOPS_API_KEY}`,
           'Content-Type': 'application/json',
-          'Idempotency-Key': `quiz_${email.toLowerCase()}_${today}`,
+          'Idempotency-Key': productResearch
+            ? `quiz_pr_${normalizedEmail}_${today}`
+            : `quiz_${normalizedEmail}_${today}`,
         },
         body: JSON.stringify({
-          email,
+          email: normalizedEmail,
           eventName: 'quiz_completed',
 
           // Contact properties (saved permanently)
-          firstName: typeof firstName === 'string' ? firstName : '',
+          firstName: sanitizedFirstName,
           archetype,
           source: 'quiz',
           ...(experienceLevel && { experienceLevel }),
           ...(painPoint && { painPoint }),
-          ...(flowState && { flowState }),
-          ...(cardBackPref && { cardBackPref }),
-          ...(productInterest && { productInterest }),
+          ...(selfSelected && isValidArchetypeSlug(selfSelected) && { selfSelected }),
+          // Product research contact properties (only when productResearch was submitted)
+          ...(validatedProductResearch !== null && {
+            card_back_preference: validatedProductResearch.cardBacks,
+            product_interest: validatedProductResearch.productInterest
+              ? validatedProductResearch.productInterest.join(',')
+              : null,
+          }),
 
           // Event properties (temporary, available in triggered emails)
           eventProperties: {
             archetype,
+            quizVersion: 'v2',
             scoreA: scores.A,
             scoreB: scores.B,
             scoreC: scores.C,
             scoreD: scores.D,
+            confidence: classificationResult.confidence,
+            ...Object.fromEntries(
+              Object.entries(classificationResult.memberships).map(([k, v]) => [`membership_${k}`, v])
+            ),
+            ...(sanitizedDisplayOrder && { displayOrder: sanitizedDisplayOrder }),
+            // Product research event properties (only when productResearch was submitted)
+            ...(validatedProductResearch !== null && {
+              card_back_preference: validatedProductResearch.cardBacks,
+              product_interest: validatedProductResearch.productInterest
+                ? validatedProductResearch.productInterest.join(',')
+                : null,
+            }),
           },
         }),
       });
@@ -393,9 +478,18 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    return new Response(JSON.stringify({ success: true, archetype }), {
+    // Server-side Set-Cookie: bypasses Safari ITP 7-day cap on document.cookie.
+    // Read existing thf_sub from request Cookie header, append new slug, deduplicate.
+    const existingCookie = parseCookieValue(request.headers.get('cookie') || '', 'thf_sub');
+    const kebabSlug = archetype.replace(/_/g, '-');
+    const mergedSlugs = appendSlug(existingCookie, kebabSlug);
+
+    return new Response(JSON.stringify({ success: true, archetype, quizVersion: 'v2' }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Set-Cookie': `thf_sub=${encodeURIComponent(mergedSlugs)};Path=/;Max-Age=15552000;SameSite=Lax;Secure`,
+      },
     });
   } catch (error) {
     console.error('Quiz submit error:', error);

@@ -124,8 +124,8 @@ afterEach(() => {
 describe('SYN-07: Non-scored answers sent as human-readable text', () => {
   it('sends experienceLevel as answer text, not raw answer ID', async () => {
     const answers = buildValidAnswers();
-    // Q2-A should resolve to "Curious, but just beginning."
-    answers['Q2'] = 'Q2-A';
+    // SEG1-A should resolve to "Curious, but just beginning."
+    answers['SEG1'] = 'SEG1-A';
     const body = buildValidBody({ answers });
 
     await POST({ request: mockRequest(body) });
@@ -135,15 +135,15 @@ describe('SYN-07: Non-scored answers sent as human-readable text', () => {
     const loopsBody = JSON.parse(fetchCall[1].body);
 
     // Must contain the human-readable text, not the raw ID
-    const expectedText = getAnswerText('Q2', 'Q2-A');
+    const expectedText = getAnswerText('SEG1', 'SEG1-A');
     expect(loopsBody.experienceLevel).toBe(expectedText);
     // Must NOT be the raw ID
-    expect(loopsBody.experienceLevel).not.toBe('Q2-A');
+    expect(loopsBody.experienceLevel).not.toBe('SEG1-A');
   });
 
   it('sends painPoint as answer text, not raw answer ID', async () => {
     const answers = buildValidAnswers();
-    answers['Q3'] = 'Q3-C';
+    answers['SEG2'] = 'SEG2-C';
     const body = buildValidBody({ answers });
 
     await POST({ request: mockRequest(body) });
@@ -152,49 +152,17 @@ describe('SYN-07: Non-scored answers sent as human-readable text', () => {
     const fetchCall = fetchMock.mock.calls[0];
     const loopsBody = JSON.parse(fetchCall[1].body);
 
-    const expectedText = getAnswerText('Q3', 'Q3-C');
+    const expectedText = getAnswerText('SEG2', 'SEG2-C');
     expect(loopsBody.painPoint).toBe(expectedText);
-    expect(loopsBody.painPoint).not.toBe('Q3-C');
+    expect(loopsBody.painPoint).not.toBe('SEG2-C');
   });
 
-  it('sends cardBackPref as answer text, not raw answer ID', async () => {
-    const answers = buildValidAnswers();
-    answers['Q19'] = 'Q19-B';
-    const body = buildValidBody({ answers });
-
-    await POST({ request: mockRequest(body) });
-
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    const fetchCall = fetchMock.mock.calls[0];
-    const loopsBody = JSON.parse(fetchCall[1].body);
-
-    const expectedText = getAnswerText('Q19', 'Q19-B');
-    expect(loopsBody.cardBackPref).toBe(expectedText);
-    expect(loopsBody.cardBackPref).not.toBe('Q19-B');
-  });
-
-  it('sends productInterest as answer text, not raw answer ID', async () => {
-    const answers = buildValidAnswers();
-    answers['Q20'] = 'Q20-D';
-    const body = buildValidBody({ answers });
-
-    await POST({ request: mockRequest(body) });
-
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    const fetchCall = fetchMock.mock.calls[0];
-    const loopsBody = JSON.parse(fetchCall[1].body);
-
-    const expectedText = getAnswerText('Q20', 'Q20-D');
-    expect(loopsBody.productInterest).toBe(expectedText);
-    expect(loopsBody.productInterest).not.toBe('Q20-D');
-  });
-
-  it('sends all non-scored answers as text for every Q2 option', async () => {
-    // Test each Q2 answer option to ensure lookup is comprehensive
-    for (const answer of questions.find((q) => q.id === 'Q2')!.answers) {
+  it('sends all non-scored answers as text for every SEG1 option', async () => {
+    // Test each SEG1 answer option to ensure lookup is comprehensive
+    for (const answer of questions.find((q) => q.id === 'SEG1')!.answers) {
       const answers = buildValidAnswers();
-      answers['Q2'] = answer.id;
-      const body = buildValidBody({ answers, email: `q2-${answer.id}@example.com` });
+      answers['SEG1'] = answer.id;
+      const body = buildValidBody({ answers, email: `seg1-${answer.id}@example.com` });
 
       // Fresh mock for each iteration to avoid rate limiting
       fetchMock.mockClear();
@@ -261,7 +229,7 @@ describe('SYN-08: Loops.so payload structure verification', () => {
   });
 
   it('sends all non-scored segmentation fields when all non-scored questions answered', async () => {
-    const answers = buildValidAnswers(); // includes Q2, Q3, Q11, Q19, Q20
+    const answers = buildValidAnswers(); // includes SEG1, SEG2
     const body = buildValidBody({ answers });
 
     await POST({ request: mockRequest(body) });
@@ -273,28 +241,22 @@ describe('SYN-08: Loops.so payload structure verification', () => {
     // All segmentation fields must be present when their questions are answered
     expect(loopsBody).toHaveProperty('experienceLevel');
     expect(loopsBody).toHaveProperty('painPoint');
-    expect(loopsBody).toHaveProperty('flowState');
-    expect(loopsBody).toHaveProperty('cardBackPref');
-    expect(loopsBody).toHaveProperty('productInterest');
 
     // Each must be a non-empty string (the human-readable text)
     expect(typeof loopsBody.experienceLevel).toBe('string');
     expect(loopsBody.experienceLevel.length).toBeGreaterThan(0);
     expect(typeof loopsBody.painPoint).toBe('string');
     expect(loopsBody.painPoint.length).toBeGreaterThan(0);
-    expect(typeof loopsBody.flowState).toBe('string');
-    expect(loopsBody.flowState.length).toBeGreaterThan(0);
-    expect(typeof loopsBody.cardBackPref).toBe('string');
-    expect(loopsBody.cardBackPref.length).toBeGreaterThan(0);
-    expect(typeof loopsBody.productInterest).toBe('string');
-    expect(loopsBody.productInterest.length).toBeGreaterThan(0);
+
+    // v2: quizVersion must be present in eventProperties
+    expect(loopsBody.eventProperties).toHaveProperty('quizVersion', 'v2');
   });
 
   it('omits non-scored fields when their questions are not answered', async () => {
-    // Build answers with only scored questions (no Q2, Q3, Q11, Q19, Q20)
+    // Build answers with only scored questions (no SEG1, SEG2)
     const answers: Record<string, string> = {};
     for (const q of questions) {
-      if (q.scored) {
+      if (q.phase === 'scored') {
         answers[q.id] = q.answers[0].id;
       }
     }
@@ -310,9 +272,6 @@ describe('SYN-08: Loops.so payload structure verification', () => {
     // (the API route uses conditional spread: ...(value && { key: value }))
     expect(loopsBody).not.toHaveProperty('experienceLevel');
     expect(loopsBody).not.toHaveProperty('painPoint');
-    expect(loopsBody).not.toHaveProperty('flowState');
-    expect(loopsBody).not.toHaveProperty('cardBackPref');
-    expect(loopsBody).not.toHaveProperty('productInterest');
   });
 
   it('sends correct Authorization header with Bearer token', async () => {
@@ -420,17 +379,17 @@ describe('SYN-09: Back button structural verification in quiz.astro', () => {
 });
 
 // ===========================================================================
-// SYN-11: Q11 flow state not extracted
+// SYN-11 (V2): V2 segmentation field extraction
 //
-// Q11 flow state answer is captured on the client but not extracted by the
-// server-side API route. The API route currently extracts Q2, Q3, Q19, Q20
-// but silently discards Q11.
+// In v2, the quiz has 2 segmentation questions: SEG1 (experience level) and
+// SEG2 (pain point). The API route must extract these and send as
+// experienceLevel and painPoint to Loops.so.
 // ===========================================================================
 
-describe('SYN-11: Q11 flow state extraction', () => {
-  it('extracts Q11 answer and sends as flowState to Loops.so', async () => {
+describe('SYN-11: V2 segmentation field extraction', () => {
+  it('extracts SEG1 answer and sends as experienceLevel to Loops.so', async () => {
     const answers = buildValidAnswers();
-    answers['Q11'] = 'Q11-B';
+    answers['SEG1'] = 'SEG1-B';
     const body = buildValidBody({ answers });
 
     await POST({ request: mockRequest(body) });
@@ -439,14 +398,14 @@ describe('SYN-11: Q11 flow state extraction', () => {
     const fetchCall = fetchMock.mock.calls[0];
     const loopsBody = JSON.parse(fetchCall[1].body);
 
-    // flowState must be present in the Loops.so payload
-    expect(loopsBody).toHaveProperty('flowState');
-    expect(loopsBody.flowState).toBeTruthy();
+    // experienceLevel must be present in the Loops.so payload
+    expect(loopsBody).toHaveProperty('experienceLevel');
+    expect(loopsBody.experienceLevel).toBeTruthy();
   });
 
-  it('sends Q11 flowState as human-readable text, not raw ID', async () => {
+  it('sends SEG1 experienceLevel as human-readable text, not raw ID', async () => {
     const answers = buildValidAnswers();
-    answers['Q11'] = 'Q11-C';
+    answers['SEG1'] = 'SEG1-C';
     const body = buildValidBody({ answers });
 
     await POST({ request: mockRequest(body) });
@@ -455,16 +414,32 @@ describe('SYN-11: Q11 flow state extraction', () => {
     const fetchCall = fetchMock.mock.calls[0];
     const loopsBody = JSON.parse(fetchCall[1].body);
 
-    const expectedText = getAnswerText('Q11', 'Q11-C');
-    expect(loopsBody.flowState).toBe(expectedText);
-    expect(loopsBody.flowState).not.toBe('Q11-C');
+    const expectedText = getAnswerText('SEG1', 'SEG1-C');
+    expect(loopsBody.experienceLevel).toBe(expectedText);
+    expect(loopsBody.experienceLevel).not.toBe('SEG1-C');
   });
 
-  it('omits flowState when Q11 is not answered', async () => {
-    // Build answers with only scored questions (Q11 is non-scored, so excluded)
+  it('extracts SEG2 answer and sends as painPoint to Loops.so', async () => {
+    const answers = buildValidAnswers();
+    answers['SEG2'] = 'SEG2-B';
+    const body = buildValidBody({ answers });
+
+    await POST({ request: mockRequest(body) });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const fetchCall = fetchMock.mock.calls[0];
+    const loopsBody = JSON.parse(fetchCall[1].body);
+
+    // painPoint must be present in the Loops.so payload
+    expect(loopsBody).toHaveProperty('painPoint');
+    expect(loopsBody.painPoint).toBeTruthy();
+  });
+
+  it('omits segmentation fields when their questions are not answered', async () => {
+    // Build answers with only scored questions (SEG1 and SEG2 excluded)
     const answers: Record<string, string> = {};
     for (const q of questions) {
-      if (q.scored) {
+      if (q.phase === 'scored') {
         answers[q.id] = q.answers[0].id;
       }
     }
@@ -476,33 +451,9 @@ describe('SYN-11: Q11 flow state extraction', () => {
     const fetchCall = fetchMock.mock.calls[0];
     const loopsBody = JSON.parse(fetchCall[1].body);
 
-    // When Q11 is not answered, flowState should be absent
-    expect(loopsBody).not.toHaveProperty('flowState');
-  });
-
-  it('sends correct flowState for each Q11 answer option', async () => {
-    const q11 = questions.find((q) => q.id === 'Q11')!;
-
-    for (const answer of q11.answers) {
-      const answers = buildValidAnswers();
-      answers['Q11'] = answer.id;
-      const body = buildValidBody({
-        answers,
-        email: `q11-${answer.id}@example.com`,
-      });
-
-      // Fresh mock for each iteration to avoid rate limiting
-      fetchMock.mockClear();
-      fetchMock.mockImplementation(() => Promise.resolve(makeLoopsSuccess()));
-
-      const res = await POST({ request: mockRequest(body) });
-      expect(res.status).toBe(200);
-
-      const fetchCall = fetchMock.mock.calls[0];
-      const loopsBody = JSON.parse(fetchCall[1].body);
-
-      expect(loopsBody.flowState).toBe(answer.text);
-    }
+    // When SEG1/SEG2 are not answered, fields should be absent
+    expect(loopsBody).not.toHaveProperty('experienceLevel');
+    expect(loopsBody).not.toHaveProperty('painPoint');
   });
 });
 

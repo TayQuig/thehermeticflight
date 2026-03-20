@@ -39,8 +39,8 @@ test.describe('Result page: air-weaver', () => {
   test('OG tags and share buttons', async ({ page }) => {
     await page.goto('/quiz/result/air-weaver');
 
-    // Page loads with correct h1
-    await expect(page.locator('h1')).toContainText('The Air Weaver');
+    // Page loads with correct h1 (scoped to main to avoid overlay elements)
+    await expect(page.locator('main h1').first()).toContainText('The Air Weaver');
 
     // og:title contains archetype name
     const ogTitle = await page.locator('meta[property="og:title"]').getAttribute('content');
@@ -78,7 +78,7 @@ test.describe('All result pages', () => {
     test(`loads: ${slug}`, async ({ page }) => {
       const response = await page.goto(`/quiz/result/${slug}`);
       expect(response?.status()).toBe(200);
-      await expect(page.locator('h1')).not.toBeEmpty();
+      await expect(page.locator('main h1').first()).not.toBeEmpty();
     });
   }
 });

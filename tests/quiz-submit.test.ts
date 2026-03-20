@@ -114,6 +114,12 @@ describe('Baseline: valid submission', () => {
     expect(data.archetype).toBeDefined();
     expect(typeof data.archetype).toBe('string');
   });
+
+  it('returns quizVersion v2 in response', async () => {
+    const res = await POST({ request: mockRequest(buildValidBody()) });
+    const data = await parseResponse(res);
+    expect(data.quizVersion).toBe('v2');
+  });
 });
 
 // ===========================================================================
@@ -185,7 +191,7 @@ describe('SYN-02: Answer payload validation', () => {
 
   it('rejects when answer values are not strings', async () => {
     const answers = buildValidAnswers();
-    (answers as any)['Q1'] = 42; // number instead of string
+    (answers as any)['SEG1'] = 42; // number instead of string
     const body = buildValidBody({ answers });
     const res = await POST({ request: mockRequest(body) });
     expect(res.status).toBe(400);
@@ -195,7 +201,7 @@ describe('SYN-02: Answer payload validation', () => {
 
   it('rejects when answer values are objects', async () => {
     const answers = buildValidAnswers();
-    (answers as any)['Q1'] = { nested: 'value' }; // object instead of string
+    (answers as any)['SEG1'] = { nested: 'value' }; // object instead of string
     const body = buildValidBody({ answers });
     const res = await POST({ request: mockRequest(body) });
     expect(res.status).toBe(400);
@@ -205,7 +211,7 @@ describe('SYN-02: Answer payload validation', () => {
 
   it('rejects when answer values are arrays', async () => {
     const answers = buildValidAnswers();
-    (answers as any)['Q4'] = ['Q4-A', 'Q4-B']; // array instead of string
+    (answers as any)['NQ02'] = ['NQ02-A', 'NQ02-B']; // array instead of string
     const body = buildValidBody({ answers });
     const res = await POST({ request: mockRequest(body) });
     expect(res.status).toBe(400);
@@ -215,7 +221,7 @@ describe('SYN-02: Answer payload validation', () => {
 
   it('rejects when answer values are null', async () => {
     const answers = buildValidAnswers();
-    (answers as any)['Q1'] = null;
+    (answers as any)['SEG1'] = null;
     const body = buildValidBody({ answers });
     const res = await POST({ request: mockRequest(body) });
     expect(res.status).toBe(400);
@@ -226,8 +232,8 @@ describe('SYN-02: Answer payload validation', () => {
   it('rejects when question keys are not valid question IDs', async () => {
     const body = buildValidBody({
       answers: {
-        'INVALID_KEY': 'Q1-A',
-        'ANOTHER_BAD': 'Q2-B',
+        'INVALID_KEY': 'SEG1-A',
+        'ANOTHER_BAD': 'SEG2-B',
       },
     });
     const res = await POST({ request: mockRequest(body) });
@@ -237,9 +243,9 @@ describe('SYN-02: Answer payload validation', () => {
   });
 
   it('rejects when answer IDs do not belong to their declared question', async () => {
-    // Q1 should have Q1-A/B/C/D, not Q4-A
+    // SEG1 should have SEG1-A/B/C, not NQ01-A
     const answers = buildValidAnswers();
-    answers['Q1'] = 'Q4-A'; // cross-question answer ID
+    answers['SEG1'] = 'NQ01-A'; // cross-question answer ID
     const body = buildValidBody({ answers });
     const res = await POST({ request: mockRequest(body) });
     expect(res.status).toBe(400);
@@ -249,8 +255,8 @@ describe('SYN-02: Answer payload validation', () => {
 
   it('rejects when the same answer ID appears under multiple question keys', async () => {
     const answers = buildValidAnswers();
-    answers['Q1'] = 'Q1-A';
-    answers['Q4'] = 'Q1-A'; // same answer ID reused for different question
+    answers['SEG1'] = 'SEG1-A';
+    answers['NQ01'] = 'SEG1-A'; // same answer ID reused for different question
     const body = buildValidBody({ answers });
     const res = await POST({ request: mockRequest(body) });
     expect(res.status).toBe(400);
@@ -260,7 +266,7 @@ describe('SYN-02: Answer payload validation', () => {
 
   it('rejects answer IDs that do not exist in the quiz data', async () => {
     const answers = buildValidAnswers();
-    answers['Q1'] = 'Q1-Z'; // Z is not a valid answer option for Q1
+    answers['SEG1'] = 'SEG1-Z'; // Z is not a valid answer option for SEG1
     const body = buildValidBody({ answers });
     const res = await POST({ request: mockRequest(body) });
     expect(res.status).toBe(400);
@@ -269,12 +275,12 @@ describe('SYN-02: Answer payload validation', () => {
   });
 
   it('rejects when not all scored questions are answered', async () => {
-    // Only answer a few questions — scored questions are required
+    // Only answer segmentation questions — scored questions are required
     const body = buildValidBody({
       answers: {
-        Q1: 'Q1-A',
-        Q4: 'Q4-B',
-        // Missing Q5-Q18 scored questions
+        SEG1: 'SEG1-A',
+        SEG2: 'SEG2-A',
+        // Missing all scored questions (NQ01-NQ07, FP01-FP03)
       },
     });
     const res = await POST({ request: mockRequest(body) });
@@ -287,7 +293,7 @@ describe('SYN-02: Answer payload validation', () => {
     // Build answers with only scored questions
     const answers: Record<string, string> = {};
     for (const q of questions) {
-      if (q.scored) {
+      if (q.phase === 'scored') {
         answers[q.id] = q.answers[0].id;
       }
     }
@@ -708,5 +714,293 @@ describe('SYN-06: Loops.so fetch timeout and error handling', () => {
     expect(res.status).toBe(500);
     const data = await parseResponse(res);
     expect(data.error).toBeDefined();
+  });
+});
+
+// ===========================================================================
+// S-03: displayOrder validation (eval-quiz-v2 hardening)
+// ===========================================================================
+
+describe('S-03: displayOrder validation', () => {
+  it('rejects displayOrder with non-question-ID keys', async () => {
+    const body = buildValidBody({
+      displayOrder: {
+        archetype: 'shadow_dancer',
+        email: 'injected@example.com',
+      },
+    });
+    const res = await POST({ request: mockRequest(body) });
+    // Should either strip invalid keys or reject — server must not forward raw
+    expect(res.status).toBe(200);
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    // Injected keys MUST NOT appear in eventProperties at top level
+    expect(loopsBody.eventProperties.email).toBeUndefined();
+    // Archetype in eventProperties must be server-computed, not injected
+    expect(loopsBody.eventProperties.archetype).toBeDefined();
+    // If displayOrder is present, it should only contain valid question ID keys
+    if (loopsBody.eventProperties.displayOrder) {
+      const keys = Object.keys(loopsBody.eventProperties.displayOrder);
+      const validPattern = /^(SEG[12]|NQ0[1-7]|FP0[1-3])$/;
+      for (const key of keys) {
+        expect(key).toMatch(validPattern);
+      }
+    }
+  });
+
+  it('accepts valid displayOrder with question ID keys', async () => {
+    const validDisplayOrder: Record<string, number[]> = {};
+    for (const q of questions) {
+      validDisplayOrder[q.id] = q.answers.map((_, i) => i);
+    }
+    const body = buildValidBody({ displayOrder: validDisplayOrder });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+  });
+});
+
+// ===========================================================================
+// S-05: firstName sanitization (eval-quiz-v2 hardening)
+// ===========================================================================
+
+describe('S-05: firstName HTML sanitization', () => {
+  it('strips HTML tags from firstName before sending to Loops.so', async () => {
+    const body = buildValidBody({ firstName: '<script>alert(1)</script>' });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    expect(loopsBody.firstName).not.toContain('<');
+    expect(loopsBody.firstName).not.toContain('>');
+  });
+
+  it('strips HTML entities from firstName', async () => {
+    const body = buildValidBody({ firstName: 'Taylor<img src=x onerror=alert(1)>' });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    expect(loopsBody.firstName).not.toContain('<');
+    expect(loopsBody.firstName).not.toContain('>');
+  });
+
+  it('preserves valid firstName without HTML', async () => {
+    const body = buildValidBody({ firstName: 'Taylor' });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    expect(loopsBody.firstName).toBe('Taylor');
+  });
+});
+
+// ===========================================================================
+// S-06: Email normalization (eval-quiz-v2 hardening)
+// ===========================================================================
+
+describe('S-06: Email normalization', () => {
+  it('trims whitespace from email before Loops.so call', async () => {
+    const body = buildValidBody({ email: '  test@example.com  ' });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    expect(loopsBody.email).toBe('test@example.com');
+  });
+
+  it('lowercases email before Loops.so call', async () => {
+    const body = buildValidBody({ email: 'Test@Example.COM' });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    expect(loopsBody.email).toBe('test@example.com');
+  });
+
+  it('uses normalized email in Idempotency-Key', async () => {
+    const body = buildValidBody({ email: '  Test@Example.COM  ' });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const headers = loopsCall![1]!.headers as Record<string, string>;
+    expect(headers['Idempotency-Key']).toContain('test@example.com');
+    expect(headers['Idempotency-Key']).not.toContain(' ');
+    expect(headers['Idempotency-Key']).not.toMatch(/[A-Z]/);
+  });
+});
+
+// ===========================================================================
+// Product Research: productResearch field handling
+// ===========================================================================
+
+describe('Product research field handling', () => {
+  it('forwards productResearch to Loops.so contact properties', async () => {
+    const body = buildValidBody({
+      productResearch: {
+        cardBacks: 'reversible',
+        productInterest: ['guidebook', 'live_performance'],
+      },
+    });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    expect(loopsBody.card_back_preference).toBe('reversible');
+    expect(loopsBody.product_interest).toBe('guidebook,live_performance');
+  });
+
+  it('accepts payload without productResearch (backward compatible)', async () => {
+    const body = buildValidBody();
+    // No productResearch field
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    // Fields should be null or absent, not error
+    expect(loopsBody.card_back_preference ?? null).toBeNull();
+    expect(loopsBody.product_interest ?? null).toBeNull();
+  });
+
+  it('silently drops invalid cardBacks values', async () => {
+    const body = buildValidBody({
+      productResearch: {
+        cardBacks: 'hacked_value',
+        productInterest: ['guidebook'],
+      },
+    });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    // Invalid value should be dropped, not forwarded
+    expect(loopsBody.card_back_preference ?? null).toBeNull();
+  });
+
+  it('strips invalid productInterest items from array', async () => {
+    const body = buildValidBody({
+      productResearch: {
+        cardBacks: 'single',
+        productInterest: ['guidebook', 'hacked_item', 'app'],
+      },
+    });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    expect(loopsBody.card_back_preference).toBe('single');
+    // Only valid items forwarded
+    const interests = loopsBody.product_interest.split(',');
+    expect(interests).toContain('guidebook');
+    expect(interests).toContain('app');
+    expect(interests).not.toContain('hacked_item');
+  });
+
+  it('includes productResearch in event properties', async () => {
+    const body = buildValidBody({
+      productResearch: {
+        cardBacks: 'artist_choice',
+        productInterest: ['journal', 'cloth'],
+      },
+    });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    // Event properties should also contain product research data
+    expect(loopsBody.eventProperties.card_back_preference).toBe('artist_choice');
+    expect(loopsBody.eventProperties.product_interest).toBe('journal,cloth');
+  });
+});
+
+// ===========================================================================
+// Set-Cookie header (server-side cookie for Safari ITP bypass)
+// ===========================================================================
+
+describe('Set-Cookie header', () => {
+  it('sets thf_sub cookie on success response', async () => {
+    const res = await POST({ request: mockRequest(buildValidBody()) });
+    expect(res.status).toBe(200);
+    const setCookie = res.headers.get('set-cookie');
+    expect(setCookie).toBeTruthy();
+    expect(setCookie).toContain('thf_sub=');
+    expect(setCookie).toContain('Path=/');
+    expect(setCookie).toContain('Max-Age=15552000');
+    expect(setCookie).toContain('SameSite=Lax');
+    expect(setCookie).toContain('Secure');
+  });
+
+  it('does not set HttpOnly flag', async () => {
+    const res = await POST({ request: mockRequest(buildValidBody()) });
+    const setCookie = res.headers.get('set-cookie');
+    expect(setCookie).not.toContain('HttpOnly');
+  });
+
+  it('converts snake_case archetype to kebab-case in cookie', async () => {
+    const res = await POST({ request: mockRequest(buildValidBody()) });
+    const setCookie = res.headers.get('set-cookie');
+    // The archetype from classify() will be snake_case (e.g., air_weaver)
+    // Cookie should contain kebab-case (e.g., air-weaver)
+    expect(setCookie).not.toMatch(/thf_sub=[^;]*_/);
+  });
+
+  it('appends to existing thf_sub cookie without duplicating', async () => {
+    // Create request with existing cookie
+    const body = buildValidBody();
+    const req = new Request('https://example.com/api/quiz-submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'thf_sub=shadow-dancer',
+      },
+      body: JSON.stringify(body),
+    });
+
+    const res = await POST({ request: req });
+    expect(res.status).toBe(200);
+    const setCookie = res.headers.get('set-cookie');
+    expect(setCookie).toBeTruthy();
+    // Should contain both slugs (the exact new slug depends on classifier output)
+    const match = setCookie!.match(/thf_sub=([^;]+)/);
+    expect(match).toBeTruthy();
+    const cookieValue = decodeURIComponent(match![1]);
+    expect(cookieValue).toContain('shadow-dancer');
+    // Should have at least 2 entries (existing + new)
+    const slugs = cookieValue.split(',');
+    expect(slugs.length).toBeGreaterThanOrEqual(2);
   });
 });

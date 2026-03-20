@@ -2,11 +2,15 @@
 import Layout from '../layouts/Layout.astro';
 import { questions } from '../lib/quiz-data';
 import { archetypes } from '../lib/archetype-content';
+
+// Pre-compute sorted archetype entries for self-select rendering at build time.
+// The actual top-2 will be selected at runtime; we render all 6 and hide/show via JS.
+const archetypeEntries = Object.values(archetypes);
 ---
 
 <Layout
   title="What's Your Aerial Tarot Archetype? | The Hermetic Flight"
-  description="Discover your unique tarot archetype. Twenty questions, five minutes, one revelation about how you're wired to receive wisdom through the cards."
+  description="Discover your unique tarot archetype. Twelve questions, five minutes, one revelation about how you're wired to receive wisdom through the cards."
 >
   <main class="w-full min-h-screen flex flex-col items-center relative z-10 pt-6 pb-12 px-4">
 
@@ -18,18 +22,20 @@ import { archetypes } from '../lib/archetype-content';
       </a>
     </header>
 
-    <!-- Progress Bar (hidden on intro and results) -->
-    <div id="progress-bar" class="w-full max-w-2xl mb-6 opacity-0 transition-opacity duration-500">
+    <!-- Progress Bar (shown only during scored phase) -->
+    <div id="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-hidden="true" class="w-full max-w-2xl mb-6 opacity-0 transition-opacity duration-500">
       <div class="h-[2px] bg-hermetic-void/50 rounded-full overflow-hidden border border-hermetic-gold/10">
         <div id="progress-fill" class="h-full bg-gradient-to-r from-hermetic-gold via-hermetic-sulfur to-hermetic-gold transition-all duration-700 ease-out relative" style="width: 0%">
           <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
         </div>
       </div>
-      <p id="progress-text" class="text-hermetic-gold/40 text-xs mt-2 text-center font-sans tracking-wider"></p>
+      <p id="progress-text" class="text-hermetic-gold/60 text-xs mt-2 text-center font-sans tracking-wider"></p>
     </div>
 
     <!-- Quiz Container -->
     <div id="quiz-container" class="w-full max-w-2xl relative" style="min-height: 400px;">
+      <!-- S-02: Screen reader live region for phase transition announcements -->
+      <div id="quiz-announcer" aria-live="polite" aria-atomic="true" class="sr-only"></div>
 
       <!-- Intro Screen -->
       <section id="quiz-intro" class="quiz-step active">
@@ -51,20 +57,20 @@ import { archetypes } from '../lib/archetype-content';
           <div class="w-24 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/40 to-transparent mx-auto my-6"></div>
 
           <p class="text-gray-300 font-light font-sans mb-8 max-w-md mx-auto leading-relaxed">
-            Twenty questions. Five minutes. One revelation about how you receive wisdom through the cards.
+            Twelve questions. Five minutes. One revelation about how you receive wisdom through the cards.
           </p>
 
           <button id="start-quiz" class="btn-flame px-10 py-4 text-white font-sans font-bold text-sm tracking-widest uppercase">
             Begin the Reading
           </button>
 
-          <p class="text-hermetic-gold/30 text-xs font-sans mt-6 tracking-wider">No account needed</p>
+          <p class="text-hermetic-gold/60 text-xs font-sans mt-6 tracking-wider">No account needed</p>
         </div>
       </section>
 
       <!-- Question Screens (rendered from data at build time) -->
       {questions.map((q, i) => (
-        <section class="quiz-step" data-step={i + 1}>
+        <section class="quiz-step" data-step={i + 1} data-question-id={q.id} data-format={q.format} data-phase={q.phase}>
           <div class="glass-panel p-6 md:p-8 rounded-lg">
             <div class="absolute top-2 left-2 w-2 h-2 border-t border-l border-hermetic-gold/30"></div>
             <div class="absolute top-2 right-2 w-2 h-2 border-t border-r border-hermetic-gold/30"></div>
@@ -72,35 +78,161 @@ import { archetypes } from '../lib/archetype-content';
             <div class="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-hermetic-gold/30"></div>
 
             <p class="text-hermetic-gold/50 text-xs tracking-[0.2em] uppercase mb-1 font-sans">
-              Question {q.number}
+              {q.phase === 'segmentation' ? 'Before We Begin' : `Question ${i > 1 ? i - 1 : i + 1} of 10`}
             </p>
             <div class="w-12 h-[1px] bg-hermetic-gold/20 mb-5"></div>
 
             <h2 class="font-serif text-lg md:text-xl text-hermetic-white mb-6 leading-relaxed">
-              {q.text.replace(/^\d+\.\s*/, '')}
+              {q.text}
             </h2>
 
-            <div class="space-y-3">
-              {q.answers.map((a) => (
-                <button
-                  class="answer-btn w-full text-left p-4 border border-hermetic-gold/10 rounded-lg font-sans text-gray-300 font-light leading-relaxed transition-all duration-300 hover:border-hermetic-gold/40 hover:bg-hermetic-emerald/30 hover:text-hermetic-white hover:pl-5 group"
-                  data-question={q.id}
-                  data-answer={a.id}
-                >
-                  <span class="inline-block w-0 group-hover:w-2 transition-all duration-300 overflow-hidden text-hermetic-gold/50">&#x2022;</span>
-                  {a.text}
-                </button>
-              ))}
-            </div>
+            {q.format === 'single_select' && (
+              <div class="space-y-3">
+                {q.answers.map((a) => (
+                  <button
+                    class="answer-btn w-full text-left p-4 border border-hermetic-gold/10 rounded-lg font-sans text-gray-300 font-light leading-relaxed transition-all duration-300 hover:border-hermetic-gold/40 hover:bg-hermetic-emerald/30 hover:text-hermetic-white hover:pl-5 group"
+                    data-question={q.id}
+                    data-answer={a.id}
+                  >
+                    <span class="inline-block w-0 group-hover:w-2 transition-all duration-300 overflow-hidden text-hermetic-gold/50">&#x2022;</span>
+                    {a.text}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {q.format === 'forced_pair' && (
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
+                <div>
+                  <button
+                    class="pair-btn w-full text-left p-6 border border-hermetic-gold/20 rounded-lg font-sans text-gray-300 font-light leading-relaxed transition-all duration-300 hover:border-hermetic-gold/50 hover:bg-hermetic-emerald/30 hover:text-hermetic-white h-full"
+                    data-question={q.id}
+                    data-answer={q.answers[0].id}
+                  >
+                    {q.answers[0].text}
+                  </button>
+                </div>
+                <div class="flex items-center justify-center" aria-hidden="true">
+                  <span class="text-hermetic-gold/60 text-xs tracking-[0.3em] uppercase font-sans md:hidden">&mdash; or &mdash;</span>
+                  <span class="text-hermetic-gold/60 text-xs tracking-[0.3em] uppercase font-sans hidden md:block">or</span>
+                </div>
+                <div class="md:col-start-2 md:row-start-1">
+                  <button
+                    class="pair-btn w-full text-left p-6 border border-hermetic-gold/20 rounded-lg font-sans text-gray-300 font-light leading-relaxed transition-all duration-300 hover:border-hermetic-gold/50 hover:bg-hermetic-emerald/30 hover:text-hermetic-white h-full"
+                    data-question={q.id}
+                    data-answer={q.answers[1].id}
+                  >
+                    {q.answers[1].text}
+                  </button>
+                </div>
+              </div>
+            )}
 
             {i > 0 && (
-              <button class="back-btn mt-6 text-hermetic-gold/30 text-sm font-sans hover:text-hermetic-gold/60 transition-colors duration-300 flex items-center gap-2">
-                <span class="text-xs">&larr;</span> Previous
+              <button class="back-btn mt-6 text-hermetic-gold/60 text-sm font-sans hover:text-hermetic-gold/80 transition-colors duration-300 flex items-center gap-2">
+                <span class="text-xs" aria-hidden="true">&larr;</span> Previous
               </button>
             )}
           </div>
         </section>
       ))}
+
+      <!-- Email Gate -->
+      <section id="email-gate" class="quiz-step">
+        <div class="glass-panel p-8 md:p-12 rounded-lg">
+          <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-hermetic-gold opacity-50"></div>
+          <div class="absolute top-2 right-2 w-3 h-3 border-t border-r border-hermetic-gold opacity-50"></div>
+          <div class="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-hermetic-gold opacity-50"></div>
+          <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-hermetic-gold opacity-50"></div>
+
+          <div class="text-center mb-8">
+            <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/60 to-transparent mx-auto mb-6"></div>
+            <h2 class="font-serif text-2xl md:text-3xl text-hermetic-white mb-4 leading-tight">
+              Before we reveal your archetype...
+            </h2>
+            <p class="text-gray-300 font-light font-sans leading-relaxed max-w-md mx-auto">
+              Enter your email to receive your personalized archetype journey &mdash; a free guide tailored to how you engage with tarot.
+            </p>
+          </div>
+
+          <form id="email-gate-form" class="space-y-4 max-w-sm mx-auto">
+            <!-- Honeypot -->
+            <div style="position:absolute;left:-9999px;" aria-hidden="true">
+              <input type="text" name="website" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <input
+              type="text"
+              name="firstName"
+              placeholder="First Name (optional)"
+              aria-label="First Name (optional)"
+              class="w-full p-3 bg-hermetic-void/80 border border-hermetic-gold/20 rounded-lg text-hermetic-white font-sans placeholder:text-gray-500 focus:border-hermetic-gold/50 focus:outline-none focus:ring-2 focus:ring-hermetic-gold/50 transition-colors duration-300"
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              aria-label="Email Address"
+              required
+              class="w-full p-3 bg-hermetic-void/80 border border-hermetic-gold/20 rounded-lg text-hermetic-white font-sans placeholder:text-gray-500 focus:border-hermetic-gold/50 focus:outline-none focus:ring-2 focus:ring-hermetic-gold/50 transition-colors duration-300"
+            />
+            <button type="submit" id="email-gate-submit" class="btn-flame w-full py-3 text-white font-sans font-bold text-sm tracking-widest uppercase">
+              Reveal My Archetype
+            </button>
+          </form>
+
+          <div class="text-center mt-4">
+            <button id="email-gate-skip" class="text-hermetic-gold/60 text-sm font-sans hover:text-hermetic-gold/80 transition-colors duration-300">
+              Skip for now &mdash; show my results
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Calculating Interstitial -->
+      <section id="quiz-calculating" class="quiz-step">
+        <div class="glass-panel p-8 md:p-12 rounded-lg text-center">
+          <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-hermetic-gold opacity-50"></div>
+          <div class="absolute top-2 right-2 w-3 h-3 border-t border-r border-hermetic-gold opacity-50"></div>
+          <div class="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-hermetic-gold opacity-50"></div>
+          <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-hermetic-gold opacity-50"></div>
+
+          <div class="mb-8">
+            <div class="w-16 h-16 rounded-full border border-hermetic-gold/40 mx-auto mb-6 flex items-center justify-center animate-pulse">
+              <div class="w-8 h-8 rounded-full border border-hermetic-gold/60 animate-pulse" style="animation-delay: 0.2s;"></div>
+            </div>
+          </div>
+
+          <p id="calculating-phrase" role="status" class="font-serif text-xl md:text-2xl text-hermetic-white leading-relaxed transition-opacity duration-500">
+            Reading the pattern of your choices...
+          </p>
+
+          <div class="w-24 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/40 to-transparent mx-auto mt-6"></div>
+        </div>
+      </section>
+
+      <!-- Self-Select Phase (shown when confidence &lt; 0.15) -->
+      <section id="self-select" class="quiz-step">
+        <div class="glass-panel p-8 md:p-12 rounded-lg">
+          <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-hermetic-gold opacity-50"></div>
+          <div class="absolute top-2 right-2 w-3 h-3 border-t border-r border-hermetic-gold opacity-50"></div>
+          <div class="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-hermetic-gold opacity-50"></div>
+          <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-hermetic-gold opacity-50"></div>
+
+          <div class="text-center mb-8">
+            <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/60 to-transparent mx-auto mb-6"></div>
+            <p class="text-hermetic-gold text-xs tracking-[0.3em] uppercase font-sans mb-2">Your Reading</p>
+            <h2 class="font-serif text-2xl md:text-3xl text-hermetic-white leading-tight">
+              Two paths resonate with your choices
+            </h2>
+            <p class="text-gray-400 font-sans font-light text-sm mt-3">Which speaks to you more deeply?</p>
+          </div>
+
+          <div id="self-select-cards" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Cards populated by JS at runtime -->
+          </div>
+        </div>
+      </section>
 
       <!-- Results Screen -->
       <section id="quiz-results" class="quiz-step">
@@ -113,7 +245,8 @@ import { archetypes } from '../lib/archetype-content';
           <!-- Gold pulse behind title -->
           <div id="result-glow" class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full opacity-0 blur-[80px] transition-opacity duration-[2000ms]" style="background: radial-gradient(circle, rgba(197,160,89,0.4), transparent 70%);"></div>
 
-          <div class="relative">
+          <!-- Teaser: always visible -->
+          <div id="result-teaser" class="relative">
             <p id="result-label" class="text-hermetic-gold text-xs tracking-[0.3em] uppercase mb-2 font-sans opacity-0 translate-y-4 transition-all duration-700">Your Archetype Revealed</p>
 
             <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/60 to-transparent mx-auto mb-6 opacity-0 scale-x-0 transition-all duration-700 delay-300" id="result-divider"></div>
@@ -122,47 +255,158 @@ import { archetypes } from '../lib/archetype-content';
 
             <p id="result-element" class="text-hermetic-gold/60 text-xs tracking-[0.3em] uppercase font-sans mb-6 opacity-0 transition-opacity duration-700 delay-700"></p>
 
-            <p id="result-description" class="text-gray-300 font-light font-sans leading-relaxed mb-8 max-w-lg mx-auto opacity-0 translate-y-4 transition-all duration-700 delay-[900ms]"></p>
+            <img id="result-image" src="" alt="" class="w-full max-w-md mx-auto rounded-lg border border-hermetic-gold/20 mb-6 opacity-0 transition-opacity duration-700 delay-900 hidden" width="800" height="436" />
           </div>
 
-          <!-- Share + Journey CTA -->
-          <div id="share-section" class="border-t border-hermetic-gold/20 pt-8 mt-8 opacity-0 translate-y-4 transition-all duration-700 delay-[1200ms]">
-            <p class="text-hermetic-gold/60 text-xs tracking-[0.2em] uppercase font-sans mb-4">Share Your Archetype</p>
-            <div class="flex justify-center gap-3 flex-wrap">
-              <a id="share-x" href="#" target="_blank" rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                Post
-              </a>
-              <a id="share-fb" href="#" target="_blank" rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                Share
-              </a>
-              <button id="share-copy"
-                class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                <span id="share-copy-text">Copy Link</span>
-              </button>
+          <!-- Email re-capture: visible only for skip-path users -->
+          <div id="result-email-capture" class="hidden mt-6 border-t border-hermetic-gold/20 pt-8">
+            <div class="text-center mb-6">
+              <p class="font-serif text-lg text-hermetic-white mb-2">Unlock Your Full Archetype Journey</p>
+              <p class="text-gray-400 font-sans font-light text-sm leading-relaxed max-w-sm mx-auto">
+                Enter your email to receive your personalized archetype guide and access your full reading.
+              </p>
             </div>
 
-            <!-- Primary CTA: journey page -->
-            <a id="journey-cta" href="/archetype/"
-              class="btn-flame inline-block mt-6 px-8 py-3 text-white font-sans font-bold text-sm tracking-widest uppercase no-underline">
-              Begin Your Archetype Journey
-            </a>
+            <form id="result-recapture-form" class="space-y-4 max-w-sm mx-auto">
+              <!-- Honeypot -->
+              <div style="position:absolute;left:-9999px;" aria-hidden="true">
+                <input type="text" name="website" tabindex="-1" autocomplete="off" />
+              </div>
 
-            <!-- Secondary: result profile -->
-            <a id="result-profile-link" href="/quiz"
-              class="block mt-3 text-hermetic-gold/70 hover:text-hermetic-gold text-sm font-sans tracking-wider transition-colors">
-              View Your Result
-            </a>
+              <input
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                aria-label="Email Address"
+                required
+                class="w-full p-3 bg-hermetic-void/80 border border-hermetic-gold/20 rounded-lg text-hermetic-white font-sans placeholder:text-gray-500 focus:border-hermetic-gold/50 focus:outline-none focus:ring-2 focus:ring-hermetic-gold/50 transition-colors duration-300"
+              />
+              <button type="submit" class="btn-flame w-full py-3 text-white font-sans font-bold text-sm tracking-widest uppercase">
+                Reveal My Full Reading
+              </button>
+            </form>
+          </div>
 
-            <!-- Tertiary: return home -->
-            <a href="/"
-              class="block mt-3 text-hermetic-gold/50 hover:text-hermetic-gold text-xs font-sans tracking-widest uppercase transition-colors">
-              Return Home
-            </a>
+          <!-- Full content: shown only when email is confirmed -->
+          <div id="result-full" class="hidden">
+            <p id="result-tagline" class="text-hermetic-gold/80 font-serif text-sm italic mb-4 mt-4 opacity-0 transition-opacity duration-700"></p>
+
+            <p id="result-description" class="text-gray-300 font-light font-sans leading-relaxed mb-8 max-w-lg mx-auto opacity-0 translate-y-4 transition-all duration-700"></p>
+
+            <!-- Product Research -->
+            <div id="product-research" class="border-t border-hermetic-gold/20 pt-8 mt-8 text-left">
+              <div class="text-center mb-8">
+                <p class="text-hermetic-gold text-xs tracking-[0.3em] uppercase font-sans mb-2">Shape the Deck</p>
+                <h3 class="font-serif text-xl text-hermetic-white leading-tight">
+                  Two questions to guide the creation
+                </h3>
+              </div>
+
+              <!-- PR01: Card backs -->
+              <div id="pr-card-backs" class="mb-8" role="group" aria-labelledby="pr-card-backs-label">
+                <p id="pr-card-backs-label" class="font-serif text-base text-hermetic-white mb-4">
+                  What speaks to you for the card backs?
+                </p>
+                <div class="space-y-3">
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="radio" name="cardBacks" value="single" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">A single signature design &mdash; unified and elegant</span>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="radio" name="cardBacks" value="reversible" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">Reversible backs &mdash; so the orientation adds another layer of reading</span>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="radio" name="cardBacks" value="artist_choice" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">I trust the artist's vision</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- PR02: Product interest -->
+              <div id="pr-product-interest" class="mb-8" role="group" aria-labelledby="pr-product-interest-label">
+                <p id="pr-product-interest-label" class="font-serif text-base text-hermetic-white mb-4">
+                  What else calls to you? (Select all that apply)
+                </p>
+                <div class="space-y-3">
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="checkbox" name="productInterest" value="guidebook" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">Illustrated guidebook with card meanings and spreads</span>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="checkbox" name="productInterest" value="journal" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">Archetype-themed journal with prompts</span>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="checkbox" name="productInterest" value="app" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">Companion app with daily draws and tracking</span>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="checkbox" name="productInterest" value="cloth" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">Silk reading cloth with spread positions</span>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="checkbox" name="productInterest" value="live_performance" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">Live aerial tarot performance</span>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="checkbox" name="productInterest" value="cards_only" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">I just want the cards</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <button id="product-research-continue" class="btn-flame px-8 py-3 text-white font-sans font-bold text-sm tracking-widest uppercase">
+                  Continue to Your Journey
+                </button>
+                <div class="mt-4">
+                  <button id="product-research-skip" class="text-hermetic-gold/60 text-sm font-sans hover:text-hermetic-gold/80 transition-colors duration-300">
+                    Skip &mdash; take me to my journey
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Share + Journey CTA -->
+            <div id="share-section" class="border-t border-hermetic-gold/20 pt-8 mt-8 transition-all duration-700">
+              <p class="text-hermetic-gold/60 text-xs tracking-[0.2em] uppercase font-sans mb-4">Share Your Archetype</p>
+              <div class="flex justify-center gap-3 flex-wrap">
+                <a id="share-x" href="#" target="_blank" rel="noopener noreferrer" aria-label="Share on X"
+                  class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  Post
+                </a>
+                <a id="share-fb" href="#" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook"
+                  class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                  Share
+                </a>
+                <button id="share-copy" aria-label="Copy result link"
+                  class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  <span id="share-copy-text">Copy Link</span>
+                </button>
+              </div>
+
+              <!-- Primary CTA: journey page -->
+              <a id="journey-cta" href="/archetype/"
+                class="btn-flame inline-block mt-6 px-8 py-3 text-white font-sans font-bold text-sm tracking-widest uppercase no-underline">
+                Begin Your Archetype Journey
+              </a>
+
+              <!-- Secondary: result profile -->
+              <a id="result-profile-link" href="/quiz"
+                class="block mt-3 text-hermetic-gold/70 hover:text-hermetic-gold text-sm font-sans tracking-wider transition-colors">
+                View Your Result
+              </a>
+
+              <!-- Tertiary: return home -->
+              <a href="/"
+                class="block mt-3 text-hermetic-gold/50 hover:text-hermetic-gold text-xs font-sans tracking-widest uppercase transition-colors">
+                Return Home
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -170,97 +414,510 @@ import { archetypes } from '../lib/archetype-content';
     </div>
   </main>
 
+  <style>
+    /* Forced-pair button styles */
+    .pair-btn {
+      background: rgba(1, 53, 41, 0.2);
+      min-height: 120px;
+      display: flex;
+      align-items: flex-start;
+    }
+    .pair-btn.selected {
+      border-color: rgba(197, 160, 89, 0.6) !important;
+      background: rgba(1, 53, 41, 0.6) !important;
+      color: #FBFBFB !important;
+      box-shadow: 0 0 20px rgba(197, 160, 89, 0.12), inset 0 0 12px rgba(5, 79, 46, 0.3);
+    }
+    .pair-btn:active {
+      transform: scale(0.99);
+    }
+
+    /* Self-select archetype card */
+    .self-select-card {
+      background: rgba(1, 53, 41, 0.3);
+      border: 1px solid rgba(197, 160, 89, 0.2);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: left;
+    }
+    .self-select-card:hover {
+      border-color: rgba(197, 160, 89, 0.5);
+      background: rgba(1, 53, 41, 0.5);
+      box-shadow: 0 0 20px rgba(197, 160, 89, 0.1);
+    }
+
+    /* Calculating pulse keyframes */
+    @keyframes phrase-fade {
+      0%   { opacity: 0; transform: translateY(8px); }
+      15%  { opacity: 1; transform: translateY(0); }
+      85%  { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-8px); }
+    }
+    .calculating-phrase-anim {
+      animation: phrase-fade 0.8s ease-in-out forwards;
+    }
+
+    /* Email gate form */
+    #email-gate-form input {
+      width: 100%;
+    }
+
+    /* Hide the center gold line — bleeds through glass panels */
+    #center-line {
+      display: none;
+    }
+  </style>
+
   <!-- Quiz Logic -->
   <script>
-    import { questions } from '../lib/quiz-data';
-    import { classify, computeScores } from '../lib/classifier';
+    import { createQuizEngine } from '../lib/quiz-engine';
     import type { ArchetypeSlug } from '../lib/classifier';
     import { archetypes, toUrlSlug } from '../lib/archetype-content';
-    import { requireEl } from '../lib/dom-helpers';
+    import { requireEl, getEl } from '../lib/dom-helpers';
     import { trackShare, buildShareText, buildXShareUrl, buildFacebookShareUrl } from '../lib/share-utils';
 
-    const TOTAL_QUESTIONS = questions.length;
+    // ---------------------------------------------------------------------------
+    // Engine setup
+    // ---------------------------------------------------------------------------
+    const engine = createQuizEngine();
 
-    // Module-scoped variables for archetype and scores — avoids (window as any) casts.
-    let quizArchetype: string | null = null;
-    let quizScores: ReturnType<typeof computeScores> | null = null;
+    // Module-scoped variable for the final archetype slug
+    let quizArchetype: ArchetypeSlug | null = null;
+    // Track whether result came from self-select
+    let resultFromSelfSelect = false;
+    // Captured from email gate form for API submission
+    let capturedFirstName = '';
+    // S-03: Track displayOrder — maps questionId → shuffled answer indices array
+    const displayOrder: Record<string, number[]> = {};
 
-    const state = {
-      currentStep: 0,
-      answers: {} as Record<string, string>,
-      startTime: Date.now(),
-    };
-
+    // ---------------------------------------------------------------------------
     // DOM refs
+    // ---------------------------------------------------------------------------
     const allSteps = document.querySelectorAll<HTMLElement>('.quiz-step');
     const progressBar = requireEl('progress-bar');
     const progressFill = requireEl('progress-fill');
     const progressText = requireEl('progress-text');
     const startBtn = requireEl('start-quiz');
-    const resultTitle = requireEl('result-title');
-    const resultElement = requireEl('result-element');
-    const resultDescription = requireEl('result-description');
-    const resultLabel = requireEl('result-label');
-    const resultDivider = requireEl('result-divider');
-    const resultGlow = requireEl('result-glow');
 
-    function showStep(step: number) {
-      state.currentStep = step;
+    // ---------------------------------------------------------------------------
+    // Phase display helpers
+    // ---------------------------------------------------------------------------
 
-      // Fade out current, then show next
+    /** Hide all steps and remove active/exiting classes. */
+    function hideAllSteps() {
       allSteps.forEach(el => {
         if (el.classList.contains('active')) {
           el.classList.add('exiting');
           el.classList.remove('active');
         }
       });
+    }
 
-      // Small delay for exit animation
+    /** After exit animation, clear exiting class and show target. */
+    function transitionTo(targetId: string, afterShow?: () => void) {
+      hideAllSteps();
       setTimeout(() => {
         allSteps.forEach(el => el.classList.remove('exiting'));
-
-        if (step === 0) {
-          allSteps[0].classList.add('active');
-          progressBar.style.opacity = '0';
-        } else if (step <= TOTAL_QUESTIONS) {
-          const stepEl = document.querySelector<HTMLElement>(`[data-step="${step}"]`);
-          if (stepEl) {
-            stepEl.classList.add('active');
-            // Restore selected state
-            const qId = questions[step - 1].id;
-            if (state.answers[qId]) {
-              const btn = stepEl.querySelector(`[data-answer="${state.answers[qId]}"]`);
-              if (btn) btn.classList.add('selected');
-            }
-          }
-          progressBar.style.opacity = '1';
-          const pct = ((step - 1) / TOTAL_QUESTIONS) * 100;
-          progressFill.style.width = `${pct}%`;
-          progressText.textContent = `${step} of ${TOTAL_QUESTIONS}`;
-        } else {
-          // Results
-          progressBar.style.opacity = '0';
-          const resultsEl = requireEl('quiz-results');
-          resultsEl.classList.add('active');
-          revealResults();
+        const target = document.getElementById(targetId);
+        if (target) {
+          target.classList.add('active');
+          afterShow?.();
+          // S-01: Focus management — move focus into the newly active step
+          const focusTarget = target.querySelector<HTMLElement>('h1, h2, [tabindex="-1"], button, input, a[href]');
+          if (focusTarget) focusTarget.focus({ preventScroll: false });
         }
       }, 250);
     }
 
+    /** Show question by its 1-based step index (matches data-step attribute). */
+    function showQuestion(stepIndex: number) {
+      hideAllSteps();
+      setTimeout(() => {
+        allSteps.forEach(el => el.classList.remove('exiting'));
+
+        const stepEl = document.querySelector<HTMLElement>(`[data-step="${stepIndex}"]`);
+        if (!stepEl) return;
+        stepEl.classList.add('active');
+
+        // Shuffle answer display order using engine PRNG
+        const questionId = stepEl.dataset.questionId ?? '';
+        const format = stepEl.dataset.format;
+        const shuffledIndices = engine.getShuffledAnswerIndices(questionId);
+
+        // S-03: Record displayOrder for this question
+        if (questionId) displayOrder[questionId] = shuffledIndices;
+
+        if (format === 'single_select') {
+          const container = stepEl.querySelector('.space-y-3');
+          if (container) {
+            const buttons = Array.from(container.querySelectorAll<HTMLElement>('.answer-btn'));
+            if (buttons.length > 0 && !container.dataset.shuffled) {
+              shuffledIndices.forEach(i => container.appendChild(buttons[i]));
+              container.dataset.shuffled = '1';
+            }
+          }
+        } else if (format === 'forced_pair') {
+          const grid = stepEl.querySelector<HTMLElement>('.grid');
+          if (grid && !grid.dataset.shuffled) {
+            const buttons = Array.from(grid.querySelectorAll<HTMLElement>('.pair-btn'));
+            if (buttons.length === 2 && shuffledIndices[0] === 1) {
+              // Swap content and data-answer attributes (preserves grid layout/classes)
+              const tmpText = buttons[0].textContent ?? '';
+              const tmpAnswer = buttons[0].dataset.answer ?? '';
+              buttons[0].textContent = buttons[1].textContent ?? '';
+              buttons[0].dataset.answer = buttons[1].dataset.answer ?? '';
+              buttons[1].textContent = tmpText;
+              buttons[1].dataset.answer = tmpAnswer;
+            }
+            grid.dataset.shuffled = '1';
+          }
+        }
+
+        // Restore selected state for this question
+        const state = engine.getState();
+        const answeredId = state.answers[questionId];
+        if (answeredId) {
+          const answerBtn = stepEl.querySelector(`[data-answer="${answeredId}"]`);
+          if (answerBtn) answerBtn.classList.add('selected');
+        }
+
+        // Update progress bar: show only during scored phase
+        const phase = stepEl.dataset.phase;
+        if (phase === 'scored') {
+          const progress = engine.getProgress();
+          progressBar.style.opacity = '1';
+          // S-07: Update ARIA attributes for scored questions
+          progressBar.removeAttribute('aria-hidden');
+          const displayProgress = progress.current + 1;
+          progressBar.setAttribute('aria-valuenow', String(displayProgress));
+          const pct = (displayProgress / progress.total) * 100;
+          progressFill.style.width = `${pct}%`;
+          progressText.textContent = `${displayProgress} of ${progress.total}`;
+        } else {
+          // segmentation questions — hide progress bar from both display and a11y tree
+          progressBar.style.opacity = '0';
+          progressBar.setAttribute('aria-hidden', 'true');
+        }
+
+        // S-01: Focus management — move focus to the question heading
+        const heading = stepEl.querySelector<HTMLElement>('h2');
+        if (heading) {
+          // Make heading focusable if not already
+          if (!heading.hasAttribute('tabindex')) heading.setAttribute('tabindex', '-1');
+          heading.focus({ preventScroll: false });
+        }
+      }, 250);
+    }
+
+    // ---------------------------------------------------------------------------
+    // Engine → DOM phase routing
+    // ---------------------------------------------------------------------------
+
+    function syncToEngineState() {
+      const state = engine.getState();
+
+      switch (state.phase) {
+        case 'intro':
+          transitionTo('quiz-intro');
+          progressBar.style.opacity = '0';
+          break;
+
+        case 'segmentation':
+        case 'scored': {
+          showQuestion(state.questionIndex + 1);
+          break;
+        }
+
+        case 'email-gate':
+          transitionTo('email-gate');
+          progressBar.style.opacity = '0';
+          break;
+
+        case 'calculating':
+          transitionTo('quiz-calculating', startCalculating);
+          progressBar.style.opacity = '0';
+          break;
+
+        case 'self-select':
+          buildSelfSelectCards();
+          transitionTo('self-select');
+          progressBar.style.opacity = '0';
+          break;
+
+        case 'results':
+          transitionTo('quiz-results', revealResults);
+          progressBar.style.opacity = '0';
+          break;
+      }
+    }
+
+    // ---------------------------------------------------------------------------
+    // Calculating interstitial
+    // ---------------------------------------------------------------------------
+
+    const CALCULATING_PHRASES = [
+      'Reading the pattern of your choices...',
+      'Consulting the four elements...',
+      'Your archetype emerges...',
+    ];
+    let calculatingInterval: ReturnType<typeof setInterval> | null = null;
+
+    function startCalculating() {
+      let phraseIndex = 0;
+      const phraseEl = requireEl('calculating-phrase');
+
+      // Cycle phrases every 800ms
+      calculatingInterval = setInterval(() => {
+        phraseIndex = (phraseIndex + 1) % CALCULATING_PHRASES.length;
+        phraseEl.style.opacity = '0';
+        setTimeout(() => {
+          phraseEl.textContent = CALCULATING_PHRASES[phraseIndex];
+          phraseEl.style.opacity = '1';
+        }, 300);
+      }, 800);
+
+      // Auto-advance after 2.5 seconds
+      setTimeout(() => {
+        if (calculatingInterval !== null) {
+          clearInterval(calculatingInterval);
+          calculatingInterval = null;
+        }
+        engine.proceedFromCalculating();
+        syncToEngineState();
+      }, 2500);
+    }
+
+    // ---------------------------------------------------------------------------
+    // Self-select card builder
+    // ---------------------------------------------------------------------------
+
+    function buildSelfSelectCards() {
+      const state = engine.getState();
+      const result = state.classificationResult;
+      if (!result) return;
+
+      // Sort memberships and take top 2
+      const sorted = Object.entries(result.memberships)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 2) as [ArchetypeSlug, number][];
+
+      const container = requireEl('self-select-cards');
+      container.innerHTML = '';
+
+      for (const [slug] of sorted) {
+        const content = archetypes[slug];
+        if (!content) continue;
+
+        // First sentence of description as tagline
+        const tagline = content.description.split('.')[0] + '.';
+
+        const card = document.createElement('button');
+        card.className = 'self-select-card';
+        card.dataset.slug = slug;
+        card.innerHTML = `
+          <div class="mb-3">
+            <span class="text-xs tracking-[0.2em] uppercase font-sans" style="color: ${content.accentHex}; opacity: 0.8;">Element of ${content.element}</span>
+          </div>
+          <h3 class="font-serif text-xl text-hermetic-white mb-3" style="color: ${content.accentHex};">${content.title}</h3>
+          <p class="text-gray-300 font-sans font-light text-sm leading-relaxed">${tagline}</p>
+          <div class="mt-4 text-xs tracking-widest uppercase font-sans" style="color: ${content.accentHex}; opacity: 0.7;">Choose this path &rarr;</div>
+        `;
+
+        card.addEventListener('click', () => {
+          resultFromSelfSelect = true;
+          engine.selectArchetype(slug);
+          syncToEngineState();
+        });
+
+        container.appendChild(card);
+      }
+    }
+
+    // ---------------------------------------------------------------------------
+    // Results reveal
+    // ---------------------------------------------------------------------------
+
+    // ---------------------------------------------------------------------------
+    // Cookie helper
+    // ---------------------------------------------------------------------------
+
+    function setThfSubCookie(kebabSlug: string) {
+      const match = document.cookie.match(/(?:^|;\s*)thf_sub=([^;]*)/);
+      const existing = match ? decodeURIComponent(match[1]).split(',').filter(Boolean) : [];
+      if (!existing.includes(kebabSlug)) existing.push(kebabSlug);
+      document.cookie = `thf_sub=${encodeURIComponent(existing.join(','))};path=/;max-age=15552000;SameSite=Lax`;
+    }
+
+    // ---------------------------------------------------------------------------
+    // Show journey CTA (share section) — called after product research submit/skip
+    // ---------------------------------------------------------------------------
+
+    function showJourneyCta(archetypeSlugStr: string, content: typeof archetypes[keyof typeof archetypes]) {
+      const shareSection = document.getElementById('share-section');
+      const shareX = document.getElementById('share-x') as HTMLAnchorElement | null;
+      const shareFb = document.getElementById('share-fb') as HTMLAnchorElement | null;
+      const shareCopy = document.getElementById('share-copy');
+      const shareCopyText = document.getElementById('share-copy-text');
+      const journeyCta = document.getElementById('journey-cta') as HTMLAnchorElement | null;
+      const profileLink = document.getElementById('result-profile-link') as HTMLAnchorElement | null;
+      const productResearch = document.getElementById('product-research');
+
+      if (!shareSection) return;
+
+      const shareUrl = `https://www.thehermeticflight.com/quiz/result/${archetypeSlugStr}`;
+      const shareText = buildShareText(content.title, content.element);
+
+      if (shareX) shareX.href = buildXShareUrl(shareText, shareUrl);
+      if (shareFb) shareFb.href = buildFacebookShareUrl(shareUrl);
+
+      if (shareCopy && shareCopyText) {
+        shareCopy.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(shareUrl);
+            shareCopyText.textContent = 'Copied!';
+            trackShare('copy_link', 'quiz_result', archetypeSlugStr);
+          } catch {
+            shareCopyText.textContent = 'Copy failed';
+          }
+          setTimeout(() => { shareCopyText.textContent = 'Copy Link'; }, 2000);
+        });
+        if (shareX) shareX.addEventListener('click', () => trackShare('x', 'quiz_result', archetypeSlugStr));
+        if (shareFb) shareFb.addEventListener('click', () => trackShare('facebook', 'quiz_result', archetypeSlugStr));
+      }
+
+      if (journeyCta) journeyCta.href = `/archetype/${archetypeSlugStr}`;
+      if (profileLink) profileLink.href = `/quiz/result/${archetypeSlugStr}`;
+
+      // Hide product research, show share section
+      if (productResearch) productResearch.style.display = 'none';
+      shareSection.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        shareSection.style.opacity = '1';
+        shareSection.style.transform = 'translateY(0)';
+      });
+    }
+
+    // ---------------------------------------------------------------------------
+    // Reveal result-full (called after email confirmed — gate or re-capture)
+    // ---------------------------------------------------------------------------
+
+    function revealResultFull(archetypeSlugStr: string, content: typeof archetypes[keyof typeof archetypes]) {
+      const resultFull = document.getElementById('result-full');
+      const resultEmailCapture = document.getElementById('result-email-capture');
+      const resultTagline = document.getElementById('result-tagline');
+      const resultDescription = document.getElementById('result-description');
+
+      if (resultEmailCapture) resultEmailCapture.classList.add('hidden');
+      if (resultFull) {
+        resultFull.classList.remove('hidden');
+        // Animate tagline and description into view
+        requestAnimationFrame(() => {
+          if (resultTagline) {
+            resultTagline.style.opacity = '1';
+          }
+          if (resultDescription) {
+            resultDescription.style.opacity = '1';
+            resultDescription.style.transform = 'translateY(0)';
+          }
+        });
+      }
+
+      // Wire up product research continue + skip buttons
+      const prContinueBtn = document.getElementById('product-research-continue');
+      const prSkipBtn = document.getElementById('product-research-skip');
+
+      if (prSkipBtn) {
+        prSkipBtn.addEventListener('click', () => {
+          window.location.href = `/archetype/${archetypeSlugStr}`;
+        }, { once: true });
+      }
+
+      if (prContinueBtn) {
+        prContinueBtn.addEventListener('click', () => {
+          // Collect product research values
+          const cardBacksInput = document.querySelector<HTMLInputElement>('#pr-card-backs input[type="radio"]:checked');
+          const productInterestInputs = document.querySelectorAll<HTMLInputElement>('#pr-product-interest input[type="checkbox"]:checked');
+
+          const cardBacks = cardBacksInput?.value ?? null;
+          const productInterest = Array.from(productInterestInputs).map(el => el.value);
+
+          // Fire API call with product research data (fire-and-forget)
+          const state = engine.getState();
+          if (state.email) {
+            fetch('/api/quiz-submit', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: state.email,
+                firstName: capturedFirstName,
+                answers: state.answers,
+                website: '',
+                quizVersion: 'v2',
+                displayOrder,
+                ...(state.selectedArchetype && { selfSelected: state.selectedArchetype }),
+                productResearch: {
+                  ...(cardBacks && { cardBacks }),
+                  ...(productInterest.length > 0 && { productInterest }),
+                },
+              }),
+            }).catch((err) => console.error('Product research submit error:', err));
+          }
+
+          window.location.href = `/archetype/${archetypeSlugStr}`;
+        }, { once: true });
+      }
+    }
+
     function revealResults() {
-      const scores = computeScores(state.answers, questions);
-      const archetype = classify(scores);
-      const content = archetypes[archetype];
+      const state = engine.getState();
+      const result = state.classificationResult;
+      if (!result) return;
 
-      resultTitle.textContent = content.title;
+      // Determine final archetype: self-select overrides primary
+      const finalSlug: ArchetypeSlug = state.selectedArchetype ?? result.primary;
+      quizArchetype = finalSlug;
+      const content = archetypes[finalSlug];
+
+      // Build heading based on confidence + source
+      let headingText: string;
+      if (resultFromSelfSelect) {
+        headingText = `You chose ${content.title}.`;
+      } else if (result.confidence >= 0.4) {
+        headingText = `You are ${content.title}.`;
+      } else {
+        // Medium confidence (0.15 – 0.4): show primary with secondary undertones
+        const sortedSlugs = Object.entries(result.memberships)
+          .sort((a, b) => b[1] - a[1])
+          .map(([s]) => s as ArchetypeSlug);
+        const secondarySlug = sortedSlugs[1];
+        const secondaryContent = archetypes[secondarySlug];
+        headingText = `You are ${content.title} with ${secondaryContent.name} undertones.`;
+      }
+
+      const resultTitle = requireEl('result-title');
+      const resultElement = requireEl('result-element');
+      const resultTagline = getEl('result-tagline');
+      const resultDescription = document.getElementById('result-description');
+      const resultLabel = requireEl('result-label');
+      const resultDivider = requireEl('result-divider');
+      const resultGlow = requireEl('result-glow');
+
+      resultTitle.textContent = headingText;
       resultElement.textContent = `Element of ${content.element}`;
-      resultDescription.textContent = content.description;
+      if (resultTagline) resultTagline.textContent = content.description.split('.')[0] + '.';
+      if (resultDescription) resultDescription.textContent = content.description;
 
-      // Store for form submission
-      quizArchetype = archetype;
-      quizScores = scores;
+      // Set archetype image
+      const resultImage = document.getElementById('result-image') as HTMLImageElement | null;
+      if (resultImage) {
+        resultImage.src = `/images/archetypes/${toUrlSlug(finalSlug)}.jpg`;
+        resultImage.alt = `${content.title} archetype illustration`;
+        resultImage.classList.remove('hidden');
+      }
 
-      // Trigger staggered reveal animations
+      // Staggered reveal of teaser elements
       requestAnimationFrame(() => {
         resultGlow.style.opacity = '1';
         resultLabel.style.opacity = '1';
@@ -270,115 +927,211 @@ import { archetypes } from '../lib/archetype-content';
         resultTitle.style.opacity = '1';
         resultTitle.style.transform = 'translateY(0)';
         resultElement.style.opacity = '1';
-        resultDescription.style.opacity = '1';
-        resultDescription.style.transform = 'translateY(0)';
+        if (resultImage) resultImage.style.opacity = '1';
       });
 
-      // Analytics — retargetable quiz completion event
+      const archetypeSlugStr = toUrlSlug(finalSlug);
+
+      // Gating logic: show full content or re-capture form based on email
+      if (state.email) {
+        // Email provided — set cookie and show full content
+        setThfSubCookie(archetypeSlugStr);
+
+        // Submit to API (fire-and-forget)
+        fetch('/api/quiz-submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: state.email,
+            firstName: capturedFirstName,
+            answers: state.answers,
+            website: '',
+            quizVersion: 'v2',
+            displayOrder,
+            ...(state.selectedArchetype && { selfSelected: state.selectedArchetype }),
+          }),
+        }).catch((err) => console.error('Quiz submit error:', err));
+
+        // Show full content after a brief stagger (teaser reveals first)
+        setTimeout(() => {
+          revealResultFull(archetypeSlugStr, content);
+        }, 900);
+      } else {
+        // Skip path — show re-capture form, hide full content
+        const resultEmailCapture = document.getElementById('result-email-capture');
+        const resultFull = document.getElementById('result-full');
+        if (resultFull) resultFull.classList.add('hidden');
+        if (resultEmailCapture) {
+          setTimeout(() => {
+            resultEmailCapture.classList.remove('hidden');
+          }, 900);
+        }
+
+        // Wire re-capture form
+        const recaptureForm = document.getElementById('result-recapture-form') as HTMLFormElement | null;
+        if (recaptureForm) {
+          recaptureForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(recaptureForm);
+
+            // Honeypot check
+            if (formData.get('website')) return;
+
+            const recaptureEmail = (formData.get('email') as string)?.trim();
+            if (!recaptureEmail) return;
+
+            // Fire API (fire-and-forget)
+            fetch('/api/quiz-submit', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: recaptureEmail,
+                firstName: capturedFirstName,
+                answers: state.answers,
+                website: '',
+                quizVersion: 'v2',
+                displayOrder,
+                ...(state.selectedArchetype && { selfSelected: state.selectedArchetype }),
+              }),
+            }).catch((err) => console.error('Re-capture submit error:', err));
+
+            // Set cookie
+            setThfSubCookie(archetypeSlugStr);
+
+            // Reveal full content
+            revealResultFull(archetypeSlugStr, content);
+          }, { once: true });
+        }
+      }
+
+      // Analytics
       if (typeof gtag === 'function') {
-        gtag('event', 'quiz_completed', { archetype });
+        gtag('event', 'quiz_completed', { archetype: finalSlug });
         gtag('event', 'generate_lead', {
           event_category: 'quiz',
-          archetype,
+          archetype: finalSlug,
         });
       }
       if (typeof fbq === 'function') {
-        fbq('trackCustom', 'QuizCompleted', { archetype });
+        fbq('trackCustom', 'QuizCompleted', { archetype: finalSlug });
       }
-
-      // Populate share links and CTAs
-      const urlSlug = quizArchetype ? toUrlSlug(quizArchetype as ArchetypeSlug) : '';
-      const shareUrl = `https://www.thehermeticflight.com/quiz/result/${urlSlug}`;
-      const shareText = content
-        ? buildShareText(content.title, content.element)
-        : 'Discover your aerial tarot archetype:';
-
-      const shareX = requireEl<HTMLAnchorElement>('share-x');
-      const shareFb = requireEl<HTMLAnchorElement>('share-fb');
-      const shareCopy = requireEl('share-copy');
-      const shareCopyText = requireEl('share-copy-text');
-      const shareSection = requireEl('share-section');
-
-      shareX.href = buildXShareUrl(shareText, shareUrl);
-      shareFb.href = buildFacebookShareUrl(shareUrl);
-
-      shareCopy.addEventListener('click', async () => {
-        try {
-          await navigator.clipboard.writeText(shareUrl);
-          shareCopyText.textContent = 'Copied!';
-          trackShare('copy_link', 'quiz_result', quizArchetype ?? '');
-        } catch {
-          shareCopyText.textContent = 'Copy failed';
-        }
-        setTimeout(() => { shareCopyText.textContent = 'Copy Link'; }, 2000);
-      });
-
-      // Track share clicks
-      shareX.addEventListener('click', () => trackShare('x', 'quiz_result', quizArchetype ?? ''));
-      shareFb.addEventListener('click', () => trackShare('facebook', 'quiz_result', quizArchetype ?? ''));
-
-      // Set CTA hrefs
-      const journeyCta = requireEl<HTMLAnchorElement>('journey-cta');
-      const profileLink = requireEl<HTMLAnchorElement>('result-profile-link');
-      if (journeyCta && urlSlug) journeyCta.href = `/archetype/${urlSlug}`;
-      if (profileLink && urlSlug) profileLink.href = `/quiz/result/${urlSlug}`;
-
-      // Reveal share section
-      requestAnimationFrame(() => {
-        shareSection.style.opacity = '1';
-        shareSection.style.transform = 'translateY(0)';
-      });
     }
 
-    // Start button
-    startBtn.addEventListener('click', () => showStep(1));
-
-    // Auto-advance timer ID — stored so it can be cancelled on back navigation
+    // ---------------------------------------------------------------------------
+    // Auto-advance timer
+    // ---------------------------------------------------------------------------
+    // Stored so it can be cancelled on back navigation.
     let autoAdvanceTimer: ReturnType<typeof setTimeout> | null = null;
 
-    // Answer selection — auto-advance
+    // ---------------------------------------------------------------------------
+    // Event: Start button
+    // ---------------------------------------------------------------------------
+    startBtn.addEventListener('click', () => {
+      engine.start();
+      syncToEngineState();
+    });
+
+    // ---------------------------------------------------------------------------
+    // Event: Answer buttons (both .answer-btn and .pair-btn)
+    // ---------------------------------------------------------------------------
     document.addEventListener('click', (e) => {
-      const btn = (e.target as HTMLElement).closest('.answer-btn') as HTMLElement;
+      const target = e.target as HTMLElement;
+      const btn = (target.closest('.answer-btn') ?? target.closest('.pair-btn')) as HTMLElement | null;
       if (!btn) return;
 
-      // Cancel any pending auto-advance timer before recording a new answer
+      // Cancel any pending auto-advance before recording new answer
       if (autoAdvanceTimer !== null) {
         clearTimeout(autoAdvanceTimer);
         autoAdvanceTimer = null;
       }
 
-      const questionId = btn.dataset.question!;
-      const answerId = btn.dataset.answer!;
+      const answerId = btn.dataset.answer;
+      if (!answerId) return;
 
-      // Visual feedback
+      // Visual feedback: clear and set selected
       const parent = btn.closest('.quiz-step')!;
-      parent.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
+      const btnClass = btn.classList.contains('answer-btn') ? '.answer-btn' : '.pair-btn';
+      parent.querySelectorAll(btnClass).forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
 
-      // Record
-      state.answers[questionId] = answerId;
+      // Record via engine
+      engine.answerQuestion(answerId);
 
-      // Auto-advance after selection animation
+      // Auto-advance after 800ms
       autoAdvanceTimer = setTimeout(() => {
         autoAdvanceTimer = null;
-        const nextStep = state.currentStep + 1;
-        showStep(nextStep <= TOTAL_QUESTIONS ? nextStep : TOTAL_QUESTIONS + 1);
-      }, 500);
+        syncToEngineState();
+      }, 800);
     });
 
-    // Back button
+    // ---------------------------------------------------------------------------
+    // Event: Back buttons
+    // ---------------------------------------------------------------------------
     document.addEventListener('click', (e) => {
       const btn = (e.target as HTMLElement).closest('.back-btn');
       if (!btn) return;
-      // Cancel any pending auto-advance timer before navigating back
+
+      // Cancel any pending auto-advance before navigating back
       if (autoAdvanceTimer !== null) {
         clearTimeout(autoAdvanceTimer);
         autoAdvanceTimer = null;
       }
-      if (state.currentStep > 1) showStep(state.currentStep - 1);
+
+      engine.goBack();
+      syncToEngineState();
     });
 
-    // Initialize
-    showStep(0);
+    // ---------------------------------------------------------------------------
+    // Event: Email gate form submit
+    // ---------------------------------------------------------------------------
+    const emailGateForm = document.getElementById('email-gate-form') as HTMLFormElement | null;
+    if (emailGateForm) {
+      emailGateForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(emailGateForm);
+
+        // Honeypot check
+        if (formData.get('website')) return;
+
+        const email = (formData.get('email') as string)?.trim();
+        if (!email) return;
+
+        const firstName = (formData.get('firstName') as string)?.trim() ?? '';
+        capturedFirstName = firstName;
+
+        // Fire GA4 email captured event
+        if (typeof gtag === 'function') {
+          gtag('event', 'email_captured', { source: 'quiz_gate' });
+        }
+
+        // Submit email to engine state, then advance to calculating phase.
+        // The actual API POST to /api/quiz-submit fires in revealResults()
+        // once classification is complete and selfSelected is resolved.
+        engine.submitEmail(email);
+        syncToEngineState();
+      });
+    }
+
+    // ---------------------------------------------------------------------------
+    // Event: Email gate skip
+    // ---------------------------------------------------------------------------
+    const emailGateSkip = document.getElementById('email-gate-skip');
+    if (emailGateSkip) {
+      emailGateSkip.addEventListener('click', () => {
+        // Fire GA4 email skipped event
+        if (typeof gtag === 'function') {
+          gtag('event', 'email_skipped', { source: 'quiz_gate' });
+        }
+
+        engine.skipEmail();
+        syncToEngineState();
+      });
+    }
+
+    // ---------------------------------------------------------------------------
+    // Initialize — show intro (engine starts in 'intro' phase)
+    // ---------------------------------------------------------------------------
+    // The intro section starts as .active via HTML; no action needed.
+    // Engine is already in 'intro' phase by default.
   </script>
 </Layout>
