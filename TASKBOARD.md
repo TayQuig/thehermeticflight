@@ -59,8 +59,8 @@ this file at session start and reports current state to the operator.
 | 1 | FTF Baseline on E2E Specs | `completed` | 52 files frozen, tag: frozen-baseline-1773980647-10527 |
 | 2 | Build + Full E2E Suite | `completed` | 60/60 Playwright + 5/5 journey-pages ALL PASS |
 | 3 | Remediation via FTF | `skipped` | Phase 2 all-green — no remediation needed |
-| 4 | Harden — Live Cookie Verification | `in_progress` | 2 parallel: header audit + injection audit |
-| 5 | Eval Protocol | `pending` | 2 evaluators: functional + security |
+| 4 | Harden — Live Cookie Verification | `completed` | Headers 3/3 PASS (API untestable w/o LOOPS_API_KEY), Injection 10/10 PASS (1 remediated: CSS→conditional gate) |
+| 5 | Eval Protocol | `in_progress` | 2 evaluators: functional + security |
 | 6 | Memory + Commit | `pending` | Record learnings, commit artifacts |
 
 **Handoff Context:** Plan at `docs/plans/2026-03-19-e2e-verification-cookie-hardening.md`. All unit tests pass (639/639), build clean. E2E specs updated but never run against live server. FTF discipline: specs are frozen contracts.
