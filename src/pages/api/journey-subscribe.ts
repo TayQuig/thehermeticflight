@@ -107,7 +107,7 @@ const VALID_URL_SLUGS = new Set([
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { email, firstName, archetype, website } = body;
+    const { email: rawEmail, firstName: rawFirstName, archetype, website } = body;
 
     // Honeypot check — if the "website" honeypot field is present and non-empty,
     // reject as bot.
@@ -118,6 +118,9 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    // Normalize email (trim + lowercase) — parity with quiz-submit.ts
+    const email = typeof rawEmail === 'string' ? rawEmail.trim().toLowerCase() : rawEmail;
+
     // Email validation
     const emailError = validateEmail(email);
     if (emailError) {
@@ -126,6 +129,11 @@ export const POST: APIRoute = async ({ request }) => {
         { status: 400, headers: { 'Content-Type': 'application/json' } },
       );
     }
+
+    // Sanitize firstName — strip HTML tags, parity with quiz-submit.ts
+    const firstName = typeof rawFirstName === 'string'
+      ? rawFirstName.replace(/<[^>]*>/g, '')
+      : rawFirstName;
 
     // firstName validation
     const firstNameError = validateFirstName(firstName);

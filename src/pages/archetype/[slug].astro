@@ -366,7 +366,7 @@ const pageDescription = `Explore the ${archetypeData.name} archetype in depth: a
         // Soft gate: set cookie and reveal content immediately (optimistic).
         // The API call is fire-and-forget — email collection shouldn't block
         // the user from accessing their journey content.
-        document.cookie = `thf_sub=${currentSlug};path=/;max-age=2592000;SameSite=Lax`;
+        document.cookie = `thf_sub=${encodeURIComponent(currentSlug)};path=/;max-age=2592000;SameSite=Lax`;
 
         if (journeyContent) {
           journeyContent.style.display = '';

@@ -737,7 +737,7 @@ const archetypeEntries = Object.values(archetypes);
     // ---------------------------------------------------------------------------
 
     function setThfSubCookie(kebabSlug: string) {
-      document.cookie = `thf_sub=${kebabSlug};path=/;max-age=2592000;SameSite=Lax`;
+      document.cookie = `thf_sub=${encodeURIComponent(kebabSlug)};path=/;max-age=2592000;SameSite=Lax`;
     }
 
     // ---------------------------------------------------------------------------

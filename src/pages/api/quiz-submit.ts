@@ -370,7 +370,9 @@ export const POST: APIRoute = async ({ request }) => {
         headers: {
           'Authorization': `Bearer ${LOOPS_API_KEY}`,
           'Content-Type': 'application/json',
-          'Idempotency-Key': `quiz_${normalizedEmail}_${today}`,
+          'Idempotency-Key': productResearch
+            ? `quiz_pr_${normalizedEmail}_${today}`
+            : `quiz_${normalizedEmail}_${today}`,
         },
         body: JSON.stringify({
           email: normalizedEmail,
