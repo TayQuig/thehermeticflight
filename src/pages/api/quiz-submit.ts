@@ -181,7 +181,7 @@ function validateAnswers(answers: unknown): string | null {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { email, firstName, answers, website } = body;
+    const { email, firstName, answers, website, selfSelected, displayOrder } = body;
 
     // SYN-05: Server-side honeypot check
     // If the "website" honeypot field is present and non-empty, reject as bot.
@@ -243,7 +243,12 @@ export const POST: APIRoute = async ({ request }) => {
     // Server-side classification (integrity check — don't trust client)
     const validatedAnswers = answers as Record<string, string>;
     const scores = computeScores(validatedAnswers, questions);
-    const { primary: archetype } = classify(scores);
+    const classificationResult = classify(scores);
+    const VALID_SLUGS = new Set(['air_weaver', 'embodied_intuitive', 'ascending_seeker', 'shadow_dancer', 'flow_artist', 'grounded_mystic']);
+    function isValidArchetypeSlug(s: unknown): s is string {
+      return typeof s === 'string' && VALID_SLUGS.has(s);
+    }
+    const archetype = isValidArchetypeSlug(selfSelected) ? selfSelected : classificationResult.primary;
 
     // Helper: look up human-readable answer text from quiz-data by question+answer ID.
     // Returns null if the question or answer ID is not found (defensive — validation
@@ -257,11 +262,8 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Extract non-scored answers for segmentation — resolved to human-readable text.
-    const experienceLevel = resolveAnswerText('Q2', validatedAnswers['Q2']);
-    const painPoint = resolveAnswerText('Q3', validatedAnswers['Q3']);
-    const flowState = resolveAnswerText('Q11', validatedAnswers['Q11']);
-    const cardBackPref = resolveAnswerText('Q19', validatedAnswers['Q19']);
-    const productInterest = resolveAnswerText('Q20', validatedAnswers['Q20']);
+    const experienceLevel = resolveAnswerText('SEG1', validatedAnswers['SEG1']);
+    const painPoint = resolveAnswerText('SEG2', validatedAnswers['SEG2']);
 
     // Push to Loops.so
     // import.meta.env works in Vitest; Vite transforms it to process.env for
@@ -318,17 +320,21 @@ export const POST: APIRoute = async ({ request }) => {
           source: 'quiz',
           ...(experienceLevel && { experienceLevel }),
           ...(painPoint && { painPoint }),
-          ...(flowState && { flowState }),
-          ...(cardBackPref && { cardBackPref }),
-          ...(productInterest && { productInterest }),
+          ...(selfSelected && isValidArchetypeSlug(selfSelected) && { selfSelected }),
 
           // Event properties (temporary, available in triggered emails)
           eventProperties: {
             archetype,
+            quizVersion: 'v2',
             scoreA: scores.A,
             scoreB: scores.B,
             scoreC: scores.C,
             scoreD: scores.D,
+            confidence: classificationResult.confidence,
+            ...Object.fromEntries(
+              Object.entries(classificationResult.memberships).map(([k, v]) => [`membership_${k}`, v])
+            ),
+            ...(displayOrder && typeof displayOrder === 'object' && !Array.isArray(displayOrder) && { displayOrder }),
           },
         }),
       });
@@ -393,7 +399,7 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    return new Response(JSON.stringify({ success: true, archetype }), {
+    return new Response(JSON.stringify({ success: true, archetype, quizVersion: 'v2' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });

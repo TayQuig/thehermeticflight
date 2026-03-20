@@ -71,12 +71,12 @@ segmentation, rewrite classifier to cosine-similarity centroids, add email gate
 | 6 | Integration Testing | `pending` | dep: Phases 1-5. E2E + unit test sweep. |
 | 7 | Eval Protocol + Harden | `pending` | dep: Phase 6. 3 evaluators (Functional, Security, UX/a11y). |
 
-**Handoff Context (2026-03-19):** Phases 0-3 complete. Branch: `feature/quiz-design-overhaul`.
-- Phase 3: quiz-engine.ts state machine created. 7-phase flow: intro → segmentation → scored → email-gate → calculating → [self-select] → results. createQuizEngine(seed?) factory. Seeded mulberry32 PRNG for Fisher-Yates answer shuffle. CV² confidence attenuation gates classifier confidence by raw score spread — suppresses false confidence when dimension scores cluster together (fixes z-score amplification of small differences). 54/54 tests. FTF verified (SHA baseline match).
-- All prior phases stable: quiz-data 57/57, classifier+distribution 66/66.
-- 9 pre-existing failures remain in quiz-submit-medium.test.ts only — old v1 Q-IDs. Resolved by Phase 5.
-- **Next:** Phase 4 — UI Implementation. Major rewrite of quiz.astro to consume quiz-engine.ts. Two question renderers (single_select + forced_pair), email gate, calculating interstitial, self-select, answer shuffle, 800ms auto-advance. Phase 5 (API Integration) can run in parallel.
-- **Process note:** FTF protocol followed strictly. Opus Test Author → baseline recorded → Sonnet+Opus implement → verify-frozen → clean.
+**Handoff Context (2026-03-19):** Phases 0-5 complete. Branch: `feature/quiz-design-overhaul`.
+- Phase 4: quiz.astro fully rewritten to consume quiz-engine.ts. Engine is sole state manager. Two renderers (single_select: stacked .answer-btn, forced_pair: 2-col grid .pair-btn + "or" divider). Email gate (honeypot, GA4 events). Calculating interstitial (rotating phrases, 2.5s auto-advance). Self-select phase (top-2 archetype cards from memberships). Answer shuffle via engine.getShuffledAnswerIndices() + DOM reorder at runtime. 800ms auto-advance. Confidence-based result messaging (high/medium/self-select). Build passes.
+- Phase 5: quiz-submit.ts updated for v2. Segmentation: Q2/Q3→SEG1/SEG2, removed flowState/cardBackPref/productInterest. Full ClassificationResult: memberships + confidence forwarded to Loops.so eventProperties. New fields: quizVersion:'v2', selfSelected override with isValidArchetypeSlug, displayOrder forwarding. Tests updated: old Q-IDs replaced, SYN-11 rewritten as V2 segmentation tests, 67/67 pass.
+- Full suite: 600/600 tests, 26 files, 0 failures. Build clean.
+- Phases 4+5 ran in parallel via isolated worktrees, reviewed by Opus, merged, shuffle gap fixed.
+- **Next:** Phase 6 — Integration Testing. E2E + unit test sweep. Then Phase 7 (Eval Protocol + Harden).
 
 **Paused task:** Sprint Roadmap — Pre-Launch (6/8 phases complete). Phases 7-8
 externally blocked until May-July. Resume when blockers clear.

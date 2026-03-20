@@ -114,6 +114,12 @@ describe('Baseline: valid submission', () => {
     expect(data.archetype).toBeDefined();
     expect(typeof data.archetype).toBe('string');
   });
+
+  it('returns quizVersion v2 in response', async () => {
+    const res = await POST({ request: mockRequest(buildValidBody()) });
+    const data = await parseResponse(res);
+    expect(data.quizVersion).toBe('v2');
+  });
 });
 
 // ===========================================================================
@@ -185,7 +191,7 @@ describe('SYN-02: Answer payload validation', () => {
 
   it('rejects when answer values are not strings', async () => {
     const answers = buildValidAnswers();
-    (answers as any)['Q1'] = 42; // number instead of string
+    (answers as any)['SEG1'] = 42; // number instead of string
     const body = buildValidBody({ answers });
     const res = await POST({ request: mockRequest(body) });
     expect(res.status).toBe(400);
@@ -195,7 +201,7 @@ describe('SYN-02: Answer payload validation', () => {
 
   it('rejects when answer values are objects', async () => {
     const answers = buildValidAnswers();
-    (answers as any)['Q1'] = { nested: 'value' }; // object instead of string
+    (answers as any)['SEG1'] = { nested: 'value' }; // object instead of string
     const body = buildValidBody({ answers });
     const res = await POST({ request: mockRequest(body) });
     expect(res.status).toBe(400);
@@ -205,7 +211,7 @@ describe('SYN-02: Answer payload validation', () => {
 
   it('rejects when answer values are arrays', async () => {
     const answers = buildValidAnswers();
-    (answers as any)['Q4'] = ['Q4-A', 'Q4-B']; // array instead of string
+    (answers as any)['NQ02'] = ['NQ02-A', 'NQ02-B']; // array instead of string
     const body = buildValidBody({ answers });
     const res = await POST({ request: mockRequest(body) });
     expect(res.status).toBe(400);
@@ -215,7 +221,7 @@ describe('SYN-02: Answer payload validation', () => {
 
   it('rejects when answer values are null', async () => {
     const answers = buildValidAnswers();
-    (answers as any)['Q1'] = null;
+    (answers as any)['SEG1'] = null;
     const body = buildValidBody({ answers });
     const res = await POST({ request: mockRequest(body) });
     expect(res.status).toBe(400);
@@ -226,8 +232,8 @@ describe('SYN-02: Answer payload validation', () => {
   it('rejects when question keys are not valid question IDs', async () => {
     const body = buildValidBody({
       answers: {
-        'INVALID_KEY': 'Q1-A',
-        'ANOTHER_BAD': 'Q2-B',
+        'INVALID_KEY': 'SEG1-A',
+        'ANOTHER_BAD': 'SEG2-B',
       },
     });
     const res = await POST({ request: mockRequest(body) });
@@ -237,9 +243,9 @@ describe('SYN-02: Answer payload validation', () => {
   });
 
   it('rejects when answer IDs do not belong to their declared question', async () => {
-    // Q1 should have Q1-A/B/C/D, not Q4-A
+    // SEG1 should have SEG1-A/B/C, not NQ01-A
     const answers = buildValidAnswers();
-    answers['Q1'] = 'Q4-A'; // cross-question answer ID
+    answers['SEG1'] = 'NQ01-A'; // cross-question answer ID
     const body = buildValidBody({ answers });
     const res = await POST({ request: mockRequest(body) });
     expect(res.status).toBe(400);
@@ -249,8 +255,8 @@ describe('SYN-02: Answer payload validation', () => {
 
   it('rejects when the same answer ID appears under multiple question keys', async () => {
     const answers = buildValidAnswers();
-    answers['Q1'] = 'Q1-A';
-    answers['Q4'] = 'Q1-A'; // same answer ID reused for different question
+    answers['SEG1'] = 'SEG1-A';
+    answers['NQ01'] = 'SEG1-A'; // same answer ID reused for different question
     const body = buildValidBody({ answers });
     const res = await POST({ request: mockRequest(body) });
     expect(res.status).toBe(400);
@@ -260,7 +266,7 @@ describe('SYN-02: Answer payload validation', () => {
 
   it('rejects answer IDs that do not exist in the quiz data', async () => {
     const answers = buildValidAnswers();
-    answers['Q1'] = 'Q1-Z'; // Z is not a valid answer option for Q1
+    answers['SEG1'] = 'SEG1-Z'; // Z is not a valid answer option for SEG1
     const body = buildValidBody({ answers });
     const res = await POST({ request: mockRequest(body) });
     expect(res.status).toBe(400);
@@ -269,12 +275,12 @@ describe('SYN-02: Answer payload validation', () => {
   });
 
   it('rejects when not all scored questions are answered', async () => {
-    // Only answer a few questions — scored questions are required
+    // Only answer segmentation questions — scored questions are required
     const body = buildValidBody({
       answers: {
-        Q1: 'Q1-A',
-        Q4: 'Q4-B',
-        // Missing Q5-Q18 scored questions
+        SEG1: 'SEG1-A',
+        SEG2: 'SEG2-A',
+        // Missing all scored questions (NQ01-NQ07, FP01-FP03)
       },
     });
     const res = await POST({ request: mockRequest(body) });
