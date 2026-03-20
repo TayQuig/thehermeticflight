@@ -50,20 +50,7 @@ this file at session start and reports current state to the operator.
 
 ## Active Task
 
-### E2E Verification — Cookie Hardening
-
-**Brief:** Run full E2E suite against live preview server, remediate failures via FTF, harden cookie behavior with live curl tests, evaluate.
-
-| # | Phase | Status | Notes |
-|---|-------|--------|-------|
-| 1 | FTF Baseline on E2E Specs | `completed` | 52 files frozen, tag: frozen-baseline-1773980647-10527 |
-| 2 | Build + Full E2E Suite | `completed` | 60/60 Playwright + 5/5 journey-pages ALL PASS |
-| 3 | Remediation via FTF | `skipped` | Phase 2 all-green — no remediation needed |
-| 4 | Harden — Live Cookie Verification | `completed` | Headers 3/3 PASS (API untestable w/o LOOPS_API_KEY), Injection 10/10 PASS (1 remediated: CSS→conditional gate) |
-| 5 | Eval Protocol | `completed` | Functional 4.1/5.0, Security 4.4/5.0. 2 findings remediated (CSS gate, decodeURIComponent) |
-| 6 | Memory + Commit | `completed` | Memory updated, all artifacts committed |
-
-**Handoff Context:** All 6 phases complete. 65 E2E tests pass, 639 unit tests pass. Two hardening findings remediated (CSS gate, decodeURIComponent). Eval: Functional 4.1/5, Security 4.4/5.
+[Empty — no task in progress.]
 
 **Paused task:** Sprint Roadmap — Pre-Launch (6/8 phases complete). Phases 7-8
 externally blocked until May-July. Resume when blockers clear.
