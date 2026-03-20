@@ -56,8 +56,8 @@ this file at session start and reports current state to the operator.
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 1 | FTF Baseline on E2E Specs | `pending` | record-baseline.sh on tests/ |
-| 2 | Build + Full E2E Suite | `pending` | Playwright + raw journey-pages |
+| 1 | FTF Baseline on E2E Specs | `completed` | 52 files frozen, tag: frozen-baseline-1773980647-10527 |
+| 2 | Build + Full E2E Suite | `in_progress` | Playwright + raw journey-pages |
 | 3 | Remediation via FTF | `pending` | Conditional — skip if Phase 2 green |
 | 4 | Harden — Live Cookie Verification | `pending` | 2 parallel: header audit + injection audit |
 | 5 | Eval Protocol | `pending` | 2 evaluators: functional + security |
