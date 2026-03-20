@@ -364,6 +364,8 @@ const archetypeEntries = Object.values(archetypes);
     let quizArchetype: ArchetypeSlug | null = null;
     // Track whether result came from self-select
     let resultFromSelfSelect = false;
+    // Captured from email gate form for API submission
+    let capturedFirstName = '';
 
     // ---------------------------------------------------------------------------
     // DOM refs
@@ -647,6 +649,23 @@ const archetypeEntries = Object.values(archetypes);
         resultDescription.style.transform = 'translateY(0)';
       });
 
+      // Submit to API: push email + answers to Loops.so via server-side handler.
+      // Fire-and-forget — result display does not depend on the API response.
+      // Only fires when user provided an email (skip path bypasses this).
+      if (state.email) {
+        fetch('/api/quiz-submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: state.email,
+            firstName: capturedFirstName,
+            answers: state.answers,
+            website: '',
+            ...(state.selectedArchetype && { selfSelected: state.selectedArchetype }),
+          }),
+        }).catch((err) => console.error('Quiz submit error:', err));
+      }
+
       // Analytics
       const archetypeSlugStr = toUrlSlug(finalSlug);
       if (typeof gtag === 'function') {
@@ -779,12 +798,17 @@ const archetypeEntries = Object.values(archetypes);
         const email = (formData.get('email') as string)?.trim();
         if (!email) return;
 
+        const firstName = (formData.get('firstName') as string)?.trim() ?? '';
+        capturedFirstName = firstName;
+
         // Fire GA4 email captured event
         if (typeof gtag === 'function') {
           gtag('event', 'email_captured', { source: 'quiz_gate' });
         }
 
-        // Submit to engine (local capture only — API call is handled separately)
+        // Submit email to engine state, then advance to calculating phase.
+        // The actual API POST to /api/quiz-submit fires in revealResults()
+        // once classification is complete and selfSelected is resolved.
         engine.submitEmail(email);
         syncToEngineState();
       });

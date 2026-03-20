@@ -71,12 +71,10 @@ segmentation, rewrite classifier to cosine-similarity centroids, add email gate
 | 6 | Integration Testing | `completed` | 7/7 new E2E tests + 22 existing Playwright tests pass. Integration gap fixed: API call added to quiz.astro. quiz-browser.test.mjs replaced by quiz-v2-e2e.spec.ts. |
 | 7 | Eval Protocol + Harden | `pending` | dep: Phase 6. 3 evaluators (Functional, Security, UX/a11y). |
 
-**Handoff Context (2026-03-19):** Phases 0-5 complete. Branch: `feature/quiz-design-overhaul`.
-- Phase 4: quiz.astro fully rewritten to consume quiz-engine.ts. Engine is sole state manager. Two renderers (single_select: stacked .answer-btn, forced_pair: 2-col grid .pair-btn + "or" divider). Email gate (honeypot, GA4 events). Calculating interstitial (rotating phrases, 2.5s auto-advance). Self-select phase (top-2 archetype cards from memberships). Answer shuffle via engine.getShuffledAnswerIndices() + DOM reorder at runtime. 800ms auto-advance. Confidence-based result messaging (high/medium/self-select). Build passes.
-- Phase 5: quiz-submit.ts updated for v2. Segmentation: Q2/Q3→SEG1/SEG2, removed flowState/cardBackPref/productInterest. Full ClassificationResult: memberships + confidence forwarded to Loops.so eventProperties. New fields: quizVersion:'v2', selfSelected override with isValidArchetypeSlug, displayOrder forwarding. Tests updated: old Q-IDs replaced, SYN-11 rewritten as V2 segmentation tests, 67/67 pass.
-- Full suite: 600/600 tests, 26 files, 0 failures. Build clean.
-- Phases 4+5 ran in parallel via isolated worktrees, reviewed by Opus, merged, shuffle gap fixed.
-- **Next:** Phase 6 — Integration Testing. E2E + unit test sweep. Then Phase 7 (Eval Protocol + Harden).
+**Handoff Context (2026-03-19):** Phases 0-6 complete. Branch: `feature/quiz-design-overhaul`.
+- Phase 6: Integration gap found and fixed — quiz.astro was missing fire-and-forget POST to /api/quiz-submit in revealResults(). New quiz-v2-e2e.spec.ts covers 7-test matrix (happy path, skip, self-select, back nav, forced-pair, progress bar, API interception). quiz-browser.test.mjs deleted (superseded). Pre-existing quiz-flow.spec.ts strict mode failures fixed (h1 → main h1 scoping).
+- Full suite: 600/600 unit tests, 29/29 E2E tests. Build clean.
+- **Next:** Phase 7 — Eval Protocol + Harden. 3 evaluators (Functional, Security, UX/a11y).
 
 **Paused task:** Sprint Roadmap — Pre-Launch (6/8 phases complete). Phases 7-8
 externally blocked until May-July. Resume when blockers clear.
