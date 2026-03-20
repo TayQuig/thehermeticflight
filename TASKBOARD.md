@@ -50,19 +50,7 @@ this file at session start and reports current state to the operator.
 
 ## Active Task
 
-### Close Side Door + Cookie Hardening
-
-**Brief:** Remove journey page email gate form (side door), replace with quiz CTA. Harden cookie with server-side Set-Cookie (Safari ITP bypass), multi-slug format, 180-day expiry.
-
-| # | Phase | Status | Notes |
-|---|-------|--------|-------|
-| 1 | Cookie Helpers (FTF) | `completed` | 17/17 tests, FTF verified |
-| 2 | Server-Side Set-Cookie | `completed` | quiz-submit 63/63, journey-subscribe 29/29 |
-| 3 | Close Side Door + Client-Side Cookie | `completed` | Gate form removed, quiz CTA added, cookie renewal, SEO structured data |
-| 4 | E2E Test Updates + Integration | `completed` | Layer 2 updated, multi-slug test added, journey-pages.spec.ts fixed, 639/639 unit tests |
-| 5 | Eval Protocol | `completed` | Security 4.1/5.0, UX 3.9/5.0. HIGH-1 remediated (cookie regex). |
-
-**Handoff Context:** All 5 phases complete. Side door closed, cookie hardened (server-side Set-Cookie, multi-slug, 180-day). 639/639 unit tests pass, build clean. E2E tests updated but not run against live server (require `npx playwright test` with dev server). Security eval 4.1/5.0, UX eval 3.9/5.0 — no critical findings remaining. Ready for completion flow: triage Ideas, archive, clear.
+[Empty — no task in progress.]
 
 **Paused task:** Sprint Roadmap — Pre-Launch (6/8 phases complete). Phases 7-8
 externally blocked until May-July. Resume when blockers clear.
@@ -142,8 +130,8 @@ placeholders — review before launch.
 ### Post-Launch Monitoring & Polish
 
 - **Self-select decision fatigue monitoring.** Operator observation — track drop-off at self-select step vs direct results. If significant, consider removing self-select and defaulting to top archetype regardless of confidence.
-- **Multi-archetype cookie support.** Current `thf_sub` stores single slug. Retaking quiz with different result locks out previous journey. Eval finding M-1 (UX Funnel). Low priority until traffic scales.
-- **Cookie max-age extension.** Currently 30 days, Kickstarter launch ~4.5 months away. Extend to 180 days before launch. Eval finding N-2.
+- ~~**Multi-archetype cookie support.**~~ COMPLETED 2026-03-19. Multi-slug cookie format implemented in Close Side Door task.
+- ~~**Cookie max-age extension.**~~ COMPLETED 2026-03-19. Extended to 180 days (15552000s) in Close Side Door task.
 - **generate_lead analytics cleanup.** Currently fires for skip-path users who didn't provide email. Gate behind `if (state.email)`. Eval finding N-1.
 
 ### Completed / Absorbed
