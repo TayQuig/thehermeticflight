@@ -50,7 +50,19 @@ this file at session start and reports current state to the operator.
 
 ## Active Task
 
-[Empty — no task in progress.]
+### Close Side Door + Cookie Hardening
+
+**Brief:** Remove journey page email gate form (side door), replace with quiz CTA. Harden cookie with server-side Set-Cookie (Safari ITP bypass), multi-slug format, 180-day expiry.
+
+| # | Phase | Status | Notes |
+|---|-------|--------|-------|
+| 1 | Cookie Helpers (FTF) | `pending` | plan: docs/plans/2026-03-19-close-side-door-cookie-hardening.md |
+| 2 | Server-Side Set-Cookie | `pending` | 2 parallel subagents: quiz-submit + journey-subscribe |
+| 3 | Close Side Door + Client-Side Cookie | `pending` | Main UI change + SEO structured data |
+| 4 | E2E Test Updates + Integration | `pending` | Update quiz-gate-e2e.spec.ts Layer 2 |
+| 5 | Eval Protocol | `pending` | 2 evaluators: security + UX |
+
+**Handoff Context:** Mastermind completed (2 rounds, conditional consensus). Plan written and reviewed. All 5 phases pending. Key constraint: server-side Set-Cookie bypasses Safari ITP 7-day cap. Multi-slug cookie format prevents retake from destroying previous access. Frozen tests in quiz-v2-e2e.spec.ts must not be modified.
 
 **Paused task:** Sprint Roadmap — Pre-Launch (6/8 phases complete). Phases 7-8
 externally blocked until May-July. Resume when blockers clear.
