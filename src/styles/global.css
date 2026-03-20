@@ -104,6 +104,40 @@
     animation: shimmer 2s ease-in-out infinite;
 }
 
+/* S-10: prefers-reduced-motion — disable quiz animations */
+@media (prefers-reduced-motion: reduce) {
+    .quiz-step,
+    .quiz-step.active,
+    .quiz-step.exiting {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+    }
+    .animate-shimmer {
+        animation: none !important;
+    }
+    .animate-pulse {
+        animation: none !important;
+    }
+    .calculating-phrase-anim {
+        animation: none !important;
+    }
+    #progress-fill,
+    #result-glow,
+    #result-label,
+    #result-divider,
+    #result-title,
+    #result-element,
+    #result-tagline,
+    #result-description,
+    #share-section {
+        transition-duration: 0.01ms !important;
+    }
+    .stars,
+    .fog-layer {
+        animation: none !important;
+    }
+}
+
 
 
 

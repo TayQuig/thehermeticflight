@@ -69,7 +69,7 @@ segmentation, rewrite classifier to cosine-similarity centroids, add email gate
 | 4 | UI Implementation | `completed` | quiz.astro rewrite: engine-driven state, format-conditional rendering, email gate, calculating interstitial, self-select, answer shuffle, 800ms auto-advance, confidence messaging. |
 | 5 | API Integration | `completed` | quiz-submit.ts: SEG1/SEG2 extraction, quizVersion v2, selfSelected override, memberships forwarding, displayOrder. Tests: 67/67 pass. |
 | 6 | Integration Testing | `completed` | 7/7 new E2E tests + 22 existing Playwright tests pass. Integration gap fixed: API call added to quiz.astro. quiz-browser.test.mjs replaced by quiz-v2-e2e.spec.ts. |
-| 7 | Eval Protocol + Harden | `pending` | dep: Phase 6. 3 evaluators (Functional, Security, UX/a11y). |
+| 7 | Eval Protocol + Harden | `in_progress` | dep: Phase 6. 3 evaluators (Functional, Security, UX/a11y). |
 
 **Handoff Context (2026-03-19):** Phases 0-6 complete. Branch: `feature/quiz-design-overhaul`.
 - Phase 6: Integration gap found and fixed — quiz.astro was missing fire-and-forget POST to /api/quiz-submit in revealResults(). New quiz-v2-e2e.spec.ts covers 7-test matrix (happy path, skip, self-select, back nav, forced-pair, progress bar, API interception). quiz-browser.test.mjs deleted (superseded). Pre-existing quiz-flow.spec.ts strict mode failures fixed (h1 → main h1 scoping).

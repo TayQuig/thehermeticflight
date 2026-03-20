@@ -716,3 +716,135 @@ describe('SYN-06: Loops.so fetch timeout and error handling', () => {
     expect(data.error).toBeDefined();
   });
 });
+
+// ===========================================================================
+// S-03: displayOrder validation (eval-quiz-v2 hardening)
+// ===========================================================================
+
+describe('S-03: displayOrder validation', () => {
+  it('rejects displayOrder with non-question-ID keys', async () => {
+    const body = buildValidBody({
+      displayOrder: {
+        archetype: 'shadow_dancer',
+        email: 'injected@example.com',
+      },
+    });
+    const res = await POST({ request: mockRequest(body) });
+    // Should either strip invalid keys or reject — server must not forward raw
+    expect(res.status).toBe(200);
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    // Injected keys MUST NOT appear in eventProperties at top level
+    expect(loopsBody.eventProperties.email).toBeUndefined();
+    // Archetype in eventProperties must be server-computed, not injected
+    expect(loopsBody.eventProperties.archetype).toBeDefined();
+    // If displayOrder is present, it should only contain valid question ID keys
+    if (loopsBody.eventProperties.displayOrder) {
+      const keys = Object.keys(loopsBody.eventProperties.displayOrder);
+      const validPattern = /^(SEG[12]|NQ0[1-7]|FP0[1-3])$/;
+      for (const key of keys) {
+        expect(key).toMatch(validPattern);
+      }
+    }
+  });
+
+  it('accepts valid displayOrder with question ID keys', async () => {
+    const validDisplayOrder: Record<string, number[]> = {};
+    for (const q of questions) {
+      validDisplayOrder[q.id] = q.answers.map((_, i) => i);
+    }
+    const body = buildValidBody({ displayOrder: validDisplayOrder });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+  });
+});
+
+// ===========================================================================
+// S-05: firstName sanitization (eval-quiz-v2 hardening)
+// ===========================================================================
+
+describe('S-05: firstName HTML sanitization', () => {
+  it('strips HTML tags from firstName before sending to Loops.so', async () => {
+    const body = buildValidBody({ firstName: '<script>alert(1)</script>' });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    expect(loopsBody.firstName).not.toContain('<');
+    expect(loopsBody.firstName).not.toContain('>');
+  });
+
+  it('strips HTML entities from firstName', async () => {
+    const body = buildValidBody({ firstName: 'Taylor<img src=x onerror=alert(1)>' });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    expect(loopsBody.firstName).not.toContain('<');
+    expect(loopsBody.firstName).not.toContain('>');
+  });
+
+  it('preserves valid firstName without HTML', async () => {
+    const body = buildValidBody({ firstName: 'Taylor' });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    expect(loopsBody.firstName).toBe('Taylor');
+  });
+});
+
+// ===========================================================================
+// S-06: Email normalization (eval-quiz-v2 hardening)
+// ===========================================================================
+
+describe('S-06: Email normalization', () => {
+  it('trims whitespace from email before Loops.so call', async () => {
+    const body = buildValidBody({ email: '  test@example.com  ' });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    expect(loopsBody.email).toBe('test@example.com');
+  });
+
+  it('lowercases email before Loops.so call', async () => {
+    const body = buildValidBody({ email: 'Test@Example.COM' });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    expect(loopsBody.email).toBe('test@example.com');
+  });
+
+  it('uses normalized email in Idempotency-Key', async () => {
+    const body = buildValidBody({ email: '  Test@Example.COM  ' });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const headers = loopsCall![1]!.headers as Record<string, string>;
+    expect(headers['Idempotency-Key']).toContain('test@example.com');
+    expect(headers['Idempotency-Key']).not.toContain(' ');
+    expect(headers['Idempotency-Key']).not.toMatch(/[A-Z]/);
+  });
+});

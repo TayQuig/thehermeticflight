@@ -192,8 +192,11 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    // S-06: Email normalization — trim and lowercase before validation and use
+    const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : email;
+
     // SYN-03: Email validation
-    const emailError = validateEmail(email);
+    const emailError = validateEmail(normalizedEmail);
     if (emailError) {
       return new Response(
         JSON.stringify({ error: emailError }),
@@ -233,7 +236,7 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    if (checkEmailRateLimit(buckets, email)) {
+    if (checkEmailRateLimit(buckets, normalizedEmail)) {
       return new Response(
         JSON.stringify({ error: 'Too many requests from this email — please try again later' }),
         { status: 429, headers: { 'Content-Type': 'application/json' } },
@@ -264,6 +267,11 @@ export const POST: APIRoute = async ({ request }) => {
     // Extract non-scored answers for segmentation — resolved to human-readable text.
     const experienceLevel = resolveAnswerText('SEG1', validatedAnswers['SEG1']);
     const painPoint = resolveAnswerText('SEG2', validatedAnswers['SEG2']);
+
+    // S-05: firstName sanitization — strip HTML tags before forwarding to Loops.so
+    const sanitizedFirstName = typeof firstName === 'string'
+      ? firstName.replace(/<[^>]*>/g, '')
+      : '';
 
     // Push to Loops.so
     // import.meta.env works in Vitest; Vite transforms it to process.env for
@@ -302,20 +310,36 @@ export const POST: APIRoute = async ({ request }) => {
 
     let loopsRes: Response;
     try {
+      // S-03: Validate and sanitize displayOrder before forwarding to Loops.so.
+      // Only allow keys matching valid question ID pattern; strip the rest.
+      const VALID_DISPLAY_ORDER_KEY = /^(SEG[12]|NQ0[1-7]|FP0[1-3])$/;
+      let sanitizedDisplayOrder: Record<string, number[]> | undefined;
+      if (displayOrder && typeof displayOrder === 'object' && !Array.isArray(displayOrder)) {
+        const filtered: Record<string, number[]> = {};
+        for (const [key, value] of Object.entries(displayOrder as Record<string, unknown>)) {
+          if (VALID_DISPLAY_ORDER_KEY.test(key) && Array.isArray(value)) {
+            filtered[key] = value as number[];
+          }
+        }
+        if (Object.keys(filtered).length > 0) {
+          sanitizedDisplayOrder = filtered;
+        }
+      }
+
       const fetchPromise = fetch('https://app.loops.so/api/v1/events/send', {
         method: 'POST',
         signal: controller.signal,
         headers: {
           'Authorization': `Bearer ${LOOPS_API_KEY}`,
           'Content-Type': 'application/json',
-          'Idempotency-Key': `quiz_${email.toLowerCase()}_${today}`,
+          'Idempotency-Key': `quiz_${normalizedEmail}_${today}`,
         },
         body: JSON.stringify({
-          email,
+          email: normalizedEmail,
           eventName: 'quiz_completed',
 
           // Contact properties (saved permanently)
-          firstName: typeof firstName === 'string' ? firstName : '',
+          firstName: sanitizedFirstName,
           archetype,
           source: 'quiz',
           ...(experienceLevel && { experienceLevel }),
@@ -334,7 +358,7 @@ export const POST: APIRoute = async ({ request }) => {
             ...Object.fromEntries(
               Object.entries(classificationResult.memberships).map(([k, v]) => [`membership_${k}`, v])
             ),
-            ...(displayOrder && typeof displayOrder === 'object' && !Array.isArray(displayOrder) && { displayOrder }),
+            ...(sanitizedDisplayOrder && { displayOrder: sanitizedDisplayOrder }),
           },
         }),
       });

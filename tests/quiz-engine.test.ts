@@ -252,14 +252,9 @@ describe('Quiz Engine — Self-select', () => {
     engine.proceedFromCalculating();
 
     const state = engine.getState();
-    // If confidence < 0.15, should be in self-select
-    if (state.classificationResult!.confidence < 0.15) {
-      expect(state.phase).toBe('self-select');
-    } else {
-      // If this answer pattern doesn't produce low confidence,
-      // the test will still pass — but we verify the logic is consistent
-      expect(state.phase).toBe('results');
-    }
+    // S-12: Unconditional assertion — even distribution MUST produce low confidence
+    expect(state.classificationResult!.confidence).toBeLessThan(0.15);
+    expect(state.phase).toBe('self-select');
   });
 
   it('does NOT trigger self-select when confidence >= 0.15', () => {
@@ -283,16 +278,14 @@ describe('Quiz Engine — Self-select', () => {
     engine.skipEmail();
     engine.proceedFromCalculating();
 
+    // S-12: Unconditional assertion — even distribution reaches self-select
     const state = engine.getState();
-    if (state.phase === 'self-select') {
-      const slug: ArchetypeSlug = 'shadow_dancer';
-      engine.selectArchetype(slug);
-      const afterSelect = engine.getState();
-      expect(afterSelect.phase).toBe('results');
-      expect(afterSelect.selectedArchetype).toBe(slug);
-    }
-    // If not in self-select (high confidence), this is a no-op test
-    // — the contract is: selectArchetype works when in self-select phase
+    expect(state.phase).toBe('self-select');
+    const slug: ArchetypeSlug = 'shadow_dancer';
+    engine.selectArchetype(slug);
+    const afterSelect = engine.getState();
+    expect(afterSelect.phase).toBe('results');
+    expect(afterSelect.selectedArchetype).toBe(slug);
   });
 });
 
@@ -646,12 +639,12 @@ describe('Quiz Engine — selectArchetype()', () => {
     engine.skipEmail();
     engine.proceedFromCalculating();
 
-    if (engine.getState().phase === 'self-select') {
-      const slug: ArchetypeSlug = 'flow_artist';
-      engine.selectArchetype(slug);
-      expect(engine.getState().selectedArchetype).toBe(slug);
-      expect(engine.getState().phase).toBe('results');
-    }
+    // S-12: Unconditional assertion — even distribution reaches self-select
+    expect(engine.getState().phase).toBe('self-select');
+    const slug: ArchetypeSlug = 'flow_artist';
+    engine.selectArchetype(slug);
+    expect(engine.getState().selectedArchetype).toBe(slug);
+    expect(engine.getState().phase).toBe('results');
   });
 });
 

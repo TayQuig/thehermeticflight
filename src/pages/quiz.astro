@@ -23,17 +23,19 @@ const archetypeEntries = Object.values(archetypes);
     </header>
 
     <!-- Progress Bar (shown only during scored phase) -->
-    <div id="progress-bar" class="w-full max-w-2xl mb-6 opacity-0 transition-opacity duration-500">
+    <div id="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-hidden="true" class="w-full max-w-2xl mb-6 opacity-0 transition-opacity duration-500">
       <div class="h-[2px] bg-hermetic-void/50 rounded-full overflow-hidden border border-hermetic-gold/10">
         <div id="progress-fill" class="h-full bg-gradient-to-r from-hermetic-gold via-hermetic-sulfur to-hermetic-gold transition-all duration-700 ease-out relative" style="width: 0%">
           <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
         </div>
       </div>
-      <p id="progress-text" class="text-hermetic-gold/40 text-xs mt-2 text-center font-sans tracking-wider"></p>
+      <p id="progress-text" class="text-hermetic-gold/60 text-xs mt-2 text-center font-sans tracking-wider"></p>
     </div>
 
     <!-- Quiz Container -->
     <div id="quiz-container" class="w-full max-w-2xl relative" style="min-height: 400px;">
+      <!-- S-02: Screen reader live region for phase transition announcements -->
+      <div id="quiz-announcer" aria-live="polite" aria-atomic="true" class="sr-only"></div>
 
       <!-- Intro Screen -->
       <section id="quiz-intro" class="quiz-step active">
@@ -62,7 +64,7 @@ const archetypeEntries = Object.values(archetypes);
             Begin the Reading
           </button>
 
-          <p class="text-hermetic-gold/30 text-xs font-sans mt-6 tracking-wider">No account needed</p>
+          <p class="text-hermetic-gold/60 text-xs font-sans mt-6 tracking-wider">No account needed</p>
         </div>
       </section>
 
@@ -101,30 +103,34 @@ const archetypeEntries = Object.values(archetypes);
 
             {q.format === 'forced_pair' && (
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
-                <button
-                  class="pair-btn text-left p-6 border border-hermetic-gold/20 rounded-lg font-sans text-gray-300 font-light leading-relaxed transition-all duration-300 hover:border-hermetic-gold/50 hover:bg-hermetic-emerald/30 hover:text-hermetic-white"
-                  data-question={q.id}
-                  data-answer={q.answers[0].id}
-                >
-                  {q.answers[0].text}
-                </button>
-                <div class="flex items-center justify-center">
-                  <span class="text-hermetic-gold/30 text-xs tracking-[0.3em] uppercase font-sans md:hidden">— or —</span>
-                  <span class="text-hermetic-gold/30 text-xs tracking-[0.3em] uppercase font-sans hidden md:block">or</span>
+                <div>
+                  <button
+                    class="pair-btn w-full text-left p-6 border border-hermetic-gold/20 rounded-lg font-sans text-gray-300 font-light leading-relaxed transition-all duration-300 hover:border-hermetic-gold/50 hover:bg-hermetic-emerald/30 hover:text-hermetic-white h-full"
+                    data-question={q.id}
+                    data-answer={q.answers[0].id}
+                  >
+                    {q.answers[0].text}
+                  </button>
                 </div>
-                <button
-                  class="pair-btn text-left p-6 border border-hermetic-gold/20 rounded-lg font-sans text-gray-300 font-light leading-relaxed transition-all duration-300 hover:border-hermetic-gold/50 hover:bg-hermetic-emerald/30 hover:text-hermetic-white md:col-start-2 md:row-start-1"
-                  data-question={q.id}
-                  data-answer={q.answers[1].id}
-                >
-                  {q.answers[1].text}
-                </button>
+                <div class="flex items-center justify-center" aria-hidden="true">
+                  <span class="text-hermetic-gold/60 text-xs tracking-[0.3em] uppercase font-sans md:hidden">— or —</span>
+                  <span class="text-hermetic-gold/60 text-xs tracking-[0.3em] uppercase font-sans hidden md:block">or</span>
+                </div>
+                <div class="md:col-start-2 md:row-start-1">
+                  <button
+                    class="pair-btn w-full text-left p-6 border border-hermetic-gold/20 rounded-lg font-sans text-gray-300 font-light leading-relaxed transition-all duration-300 hover:border-hermetic-gold/50 hover:bg-hermetic-emerald/30 hover:text-hermetic-white h-full"
+                    data-question={q.id}
+                    data-answer={q.answers[1].id}
+                  >
+                    {q.answers[1].text}
+                  </button>
+                </div>
               </div>
             )}
 
             {i > 0 && (
-              <button class="back-btn mt-6 text-hermetic-gold/30 text-sm font-sans hover:text-hermetic-gold/60 transition-colors duration-300 flex items-center gap-2">
-                <span class="text-xs">&larr;</span> Previous
+              <button class="back-btn mt-6 text-hermetic-gold/60 text-sm font-sans hover:text-hermetic-gold/80 transition-colors duration-300 flex items-center gap-2">
+                <span class="text-xs" aria-hidden="true">&larr;</span> Previous
               </button>
             )}
           </div>
@@ -159,14 +165,16 @@ const archetypeEntries = Object.values(archetypes);
               type="text"
               name="firstName"
               placeholder="First Name (optional)"
-              class="w-full p-3 bg-hermetic-void/80 border border-hermetic-gold/20 rounded-lg text-hermetic-white font-sans placeholder:text-gray-500 focus:border-hermetic-gold/50 focus:outline-none transition-colors duration-300"
+              aria-label="First Name (optional)"
+              class="w-full p-3 bg-hermetic-void/80 border border-hermetic-gold/20 rounded-lg text-hermetic-white font-sans placeholder:text-gray-500 focus:border-hermetic-gold/50 focus:outline-none focus:ring-2 focus:ring-hermetic-gold/50 transition-colors duration-300"
             />
             <input
               type="email"
               name="email"
               placeholder="Email Address"
+              aria-label="Email Address"
               required
-              class="w-full p-3 bg-hermetic-void/80 border border-hermetic-gold/20 rounded-lg text-hermetic-white font-sans placeholder:text-gray-500 focus:border-hermetic-gold/50 focus:outline-none transition-colors duration-300"
+              class="w-full p-3 bg-hermetic-void/80 border border-hermetic-gold/20 rounded-lg text-hermetic-white font-sans placeholder:text-gray-500 focus:border-hermetic-gold/50 focus:outline-none focus:ring-2 focus:ring-hermetic-gold/50 transition-colors duration-300"
             />
             <button type="submit" id="email-gate-submit" class="btn-flame w-full py-3 text-white font-sans font-bold text-sm tracking-widest uppercase">
               Reveal My Archetype
@@ -174,7 +182,7 @@ const archetypeEntries = Object.values(archetypes);
           </form>
 
           <div class="text-center mt-4">
-            <button id="email-gate-skip" class="text-hermetic-gold/40 text-sm font-sans hover:text-hermetic-gold/60 transition-colors duration-300">
+            <button id="email-gate-skip" class="text-hermetic-gold/60 text-sm font-sans hover:text-hermetic-gold/80 transition-colors duration-300">
               Skip for now — show my results
             </button>
           </div>
@@ -195,7 +203,7 @@ const archetypeEntries = Object.values(archetypes);
             </div>
           </div>
 
-          <p id="calculating-phrase" class="font-serif text-xl md:text-2xl text-hermetic-white leading-relaxed transition-opacity duration-500">
+          <p id="calculating-phrase" role="status" class="font-serif text-xl md:text-2xl text-hermetic-white leading-relaxed transition-opacity duration-500">
             Reading the pattern of your choices...
           </p>
 
@@ -255,19 +263,19 @@ const archetypeEntries = Object.values(archetypes);
           <div id="share-section" class="border-t border-hermetic-gold/20 pt-8 mt-8 opacity-0 translate-y-4 transition-all duration-700 delay-[1200ms]">
             <p class="text-hermetic-gold/60 text-xs tracking-[0.2em] uppercase font-sans mb-4">Share Your Archetype</p>
             <div class="flex justify-center gap-3 flex-wrap">
-              <a id="share-x" href="#" target="_blank" rel="noopener noreferrer"
+              <a id="share-x" href="#" target="_blank" rel="noopener noreferrer" aria-label="Share on X"
                 class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                 Post
               </a>
-              <a id="share-fb" href="#" target="_blank" rel="noopener noreferrer"
+              <a id="share-fb" href="#" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook"
                 class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                 Share
               </a>
-              <button id="share-copy"
+              <button id="share-copy" aria-label="Copy result link"
                 class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                 <span id="share-copy-text">Copy Link</span>
               </button>
             </div>
@@ -366,6 +374,8 @@ const archetypeEntries = Object.values(archetypes);
     let resultFromSelfSelect = false;
     // Captured from email gate form for API submission
     let capturedFirstName = '';
+    // S-03: Track displayOrder — maps questionId → shuffled answer indices array
+    const displayOrder: Record<string, number[]> = {};
 
     // ---------------------------------------------------------------------------
     // DOM refs
@@ -399,6 +409,9 @@ const archetypeEntries = Object.values(archetypes);
         if (target) {
           target.classList.add('active');
           afterShow?.();
+          // S-01: Focus management — move focus into the newly active step
+          const focusTarget = target.querySelector<HTMLElement>('h1, h2, [tabindex="-1"], button, input, a[href]');
+          if (focusTarget) focusTarget.focus({ preventScroll: false });
         }
       }, 250);
     }
@@ -417,6 +430,9 @@ const archetypeEntries = Object.values(archetypes);
         const questionId = stepEl.dataset.questionId ?? '';
         const format = stepEl.dataset.format;
         const shuffledIndices = engine.getShuffledAnswerIndices(questionId);
+
+        // S-03: Record displayOrder for this question
+        if (questionId) displayOrder[questionId] = shuffledIndices;
 
         if (format === 'single_select') {
           const container = stepEl.querySelector('.space-y-3');
@@ -457,12 +473,25 @@ const archetypeEntries = Object.values(archetypes);
         if (phase === 'scored') {
           const progress = engine.getProgress();
           progressBar.style.opacity = '1';
-          const pct = (progress.current / progress.total) * 100;
+          // S-07: Update ARIA attributes for scored questions
+          progressBar.removeAttribute('aria-hidden');
+          const displayProgress = progress.current + 1;
+          progressBar.setAttribute('aria-valuenow', String(displayProgress));
+          const pct = (displayProgress / progress.total) * 100;
           progressFill.style.width = `${pct}%`;
-          progressText.textContent = `${progress.current} of ${progress.total}`;
+          progressText.textContent = `${displayProgress} of ${progress.total}`;
         } else {
-          // segmentation questions — hide progress bar
+          // segmentation questions — hide progress bar from both display and a11y tree
           progressBar.style.opacity = '0';
+          progressBar.setAttribute('aria-hidden', 'true');
+        }
+
+        // S-01: Focus management — move focus to the question heading
+        const heading = stepEl.querySelector<HTMLElement>('h2');
+        if (heading) {
+          // Make heading focusable if not already
+          if (!heading.hasAttribute('tabindex')) heading.setAttribute('tabindex', '-1');
+          heading.focus({ preventScroll: false });
         }
       }, 250);
     }
@@ -661,6 +690,8 @@ const archetypeEntries = Object.values(archetypes);
             firstName: capturedFirstName,
             answers: state.answers,
             website: '',
+            quizVersion: 'v2',
+            displayOrder,
             ...(state.selectedArchetype && { selfSelected: state.selectedArchetype }),
           }),
         }).catch((err) => console.error('Quiz submit error:', err));
