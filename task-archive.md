@@ -29,6 +29,13 @@ Completed tasks. Append-only; new entries at the bottom.
 ---
 
 ---
+## Email Gate Enforcement + Post-Results Product Research
+**Completed:** 2026-03-19
+**Phases:** 6/6
+**Summary:** Implemented two-layer soft email gate (cookie-based) and post-reveal product research. Quiz results screen: split into teaser (archetype name/element, always visible) and full reveal (tagline, description, product research, share/journey CTAs, gated behind email). Email re-capture form for skip-path users. Journey page: converted from static to SSR (`export const prerender = false`) for server-side `Astro.cookies` check; optimistic client-side reveal on gate form submit (soft gate — content reveals even if API fails). Product research: PR01 card back reversibility (3 radio), PR02 product interest (6 checkbox incl. live aerial performance). Cookie contract: `thf_sub=kebab-slug`, 30d, path=/, SameSite=Lax. Eval protocol (2 evaluators, UX Funnel 3.2/5 + Functional 3.8/5) identified 18 findings, 4 critical/major remediated: idempotency key differentiation for product research API call, email normalization + firstName sanitization parity in journey-subscribe.ts, cookie URL encoding. 60 E2E, 613 unit, 5 FTF baselines verified.
+**Files touched:** src/pages/quiz.astro, src/pages/archetype/[slug].astro, src/pages/api/quiz-submit.ts, src/pages/api/journey-subscribe.ts, tests/quiz-gate-e2e.spec.ts, tests/quiz-submit.test.ts, operations/eval-email-gate-ux-funnel.md, operations/eval-email-gate-functional.md, docs/plans/2026-03-19-email-gate-product-research.md
+
+---
 ## Quiz Design Overhaul — 10-Flaw Resolution
 **Completed:** 2026-03-19
 **Phases:** 8/8

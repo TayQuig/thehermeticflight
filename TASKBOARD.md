@@ -50,26 +50,7 @@ this file at session start and reports current state to the operator.
 
 ## Active Task
 
-### Email Gate Enforcement + Post-Results Product Research
-
-**Brief:** Make the email gate actually gate journey content (two-layer soft gate
-with cookie), add 2 product research questions (card backs, product interest)
-after archetype reveal.
-
-**Plan:** `docs/plans/2026-03-19-email-gate-product-research.md`
-
-| # | Phase | Status | Notes |
-|---|-------|--------|-------|
-| 1 | Content Approval (HUMAN GATE) | `completed` | Approved 2026-03-19. PR01 (card backs, 3 options) + PR02 (product interest, 6 options incl. live aerial performance). |
-| 2 | Quiz Results Gating + Product Research UI [FTF] | `completed` | dep: Phase 1. quiz.astro: split results, email re-capture, product research, cookie. 13 E2E + 5 unit contracts, all pass. |
-| 3 | API Update for Product Research [FTF] | `completed` | dep: Phase 2. quiz-submit.ts: productResearch validation + Loops.so forwarding. 59/59 unit tests. |
-| 4 | Journey Page Gating [FTF] | `completed` | dep: Phase 2. archetype/[slug].astro: SSR cookie check, soft-gate (optimistic reveal). 60/60 E2E. |
-| 5 | Integration Testing | `completed` | 60/60 Playwright, 613/613 unit, 5/5 FTF baselines verified, build clean. |
-| 6 | Eval Protocol (2 evaluators) | `completed` | UX Funnel (3.2/5) + Functional (3.8/5). 4 findings remediated: F-09 idempotency key, F-02 email normalization, F-03 firstName sanitization, F-01 cookie encoding. 60/60 E2E, 613/613 unit, 5/5 FTF. |
-
-**Handoff Context:** All 6 phases complete. Task ready for completion flow. Push to
-remote for Vercel preview. Non-blocking eval notes: multi-archetype cookie (future),
-generate_lead event for skip-path (analytics cleanup), cookie max-age extension (pre-launch).
+[Empty — no task in progress.]
 
 **Paused task:** Sprint Roadmap — Pre-Launch (6/8 phases complete). Phases 7-8
 externally blocked until May-July. Resume when blockers clear.
@@ -82,7 +63,7 @@ placeholders — review before launch.
 
 ## Ideas
 
-- **Self-select "choose your path" may cause decision fatigue.** Operator observation — no action for now. Monitor post-launch for drop-off at self-select step vs direct results. If drop-off is significant, consider removing self-select and defaulting to top archetype regardless of confidence.
+[Empty]
 
 ---
 
@@ -145,6 +126,13 @@ placeholders — review before launch.
 - **Archetype result page copy optimization.** Metric: share_rate + journey_subscribe_rate. Medium leverage — funnel conversion-to-advocacy pivot.
 - **Kickstarter page copy optimization.** Post-launch only. Metric: pledge conversion rate. High leverage.
 - **Journaling prompt quality loop.** Currently AI-generated placeholders. Metric: 7-day return visitor rate. Low leverage pre-launch.
+
+### Post-Launch Monitoring & Polish
+
+- **Self-select decision fatigue monitoring.** Operator observation — track drop-off at self-select step vs direct results. If significant, consider removing self-select and defaulting to top archetype regardless of confidence.
+- **Multi-archetype cookie support.** Current `thf_sub` stores single slug. Retaking quiz with different result locks out previous journey. Eval finding M-1 (UX Funnel). Low priority until traffic scales.
+- **Cookie max-age extension.** Currently 30 days, Kickstarter launch ~4.5 months away. Extend to 180 days before launch. Eval finding N-2.
+- **generate_lead analytics cleanup.** Currently fires for skip-path users who didn't provide email. Gate behind `if (state.email)`. Eval finding N-1.
 
 ### Completed / Absorbed
 
