@@ -66,17 +66,17 @@ segmentation, rewrite classifier to cosine-similarity centroids, add email gate
 | 1 | Data Model + Scoring Pipeline [FTF] | `completed` | 57/57 tests. FTF verified (record-baseline.sh + verify-frozen.sh). Downstream .scored→.phase migrated by subagent. |
 | 2 | Classifier Redesign [FTF] | `completed` | 66/66 tests. Z-score + cosine-sim + softmax(T=6). Monte Carlo: all 6 >5%, none >40%, AS 9.7%, self-select 3.5%. FTF verified. |
 | 3 | Quiz Engine [FTF] | `completed` | 54/54 tests. CV² confidence attenuation. FTF verified. |
-| 4 | UI Implementation | `pending` | dep: Phase 3. Major rewrite of quiz.astro. |
-| 5 | API Integration | `pending` | dep: Phase 2. Parallel with 3-4. Update quiz-submit.ts for v2 payloads. |
+| 4 | UI Implementation | `completed` | quiz.astro rewrite: engine-driven state, format-conditional rendering, email gate, calculating interstitial, self-select, answer shuffle, 800ms auto-advance, confidence messaging. |
+| 5 | API Integration | `completed` | quiz-submit.ts: SEG1/SEG2 extraction, quizVersion v2, selfSelected override, memberships forwarding, displayOrder. Tests: 67/67 pass. |
 | 6 | Integration Testing | `pending` | dep: Phases 1-5. E2E + unit test sweep. |
 | 7 | Eval Protocol + Harden | `pending` | dep: Phase 6. 3 evaluators (Functional, Security, UX/a11y). |
 
-**Handoff Context (2026-03-19):** Phases 0-2 complete. Branch: `feature/quiz-design-overhaul`.
-- Phase 2: classifier.ts rewritten to cosine-similarity centroids. Z-score normalization removes forced-pair structural bias. Bipolar composite centroids ([1,-1,-1,1] for grounded_mystic). Softmax T=6. ClassificationResult type exported. classifyLegacy() shim added. Caller migration done (quiz.astro, quiz-submit.ts destructure .primary).
-- 66/66 classifier + distribution tests pass. Monte Carlo: EI 26.9%, SD 26.2%, GM 14.1%, FA 13.8%, AS 9.7%, AW 9.3%. Self-select 3.5%.
-- 9 pre-existing failures remain in quiz-submit-medium.test.ts only — old v1 Q-IDs (Q2, Q3, Q11, Q19, Q20). Resolved by Phase 5.
-- **Next:** Phase 3 — Quiz Engine [FTF]. Write quiz-engine.test.ts (Test Author), record baseline, dispatch Sonnet for quiz-engine.ts state machine. 7-phase flow: intro → segmentation → scored → email-gate → calculating → [self-select] → results.
-- **Process note:** FTF protocol followed strictly. record-baseline.sh → Sonnet implements → verify-frozen.sh → clean.
+**Handoff Context (2026-03-19):** Phases 0-3 complete. Branch: `feature/quiz-design-overhaul`.
+- Phase 3: quiz-engine.ts state machine created. 7-phase flow: intro → segmentation → scored → email-gate → calculating → [self-select] → results. createQuizEngine(seed?) factory. Seeded mulberry32 PRNG for Fisher-Yates answer shuffle. CV² confidence attenuation gates classifier confidence by raw score spread — suppresses false confidence when dimension scores cluster together (fixes z-score amplification of small differences). 54/54 tests. FTF verified (SHA baseline match).
+- All prior phases stable: quiz-data 57/57, classifier+distribution 66/66.
+- 9 pre-existing failures remain in quiz-submit-medium.test.ts only — old v1 Q-IDs. Resolved by Phase 5.
+- **Next:** Phase 4 — UI Implementation. Major rewrite of quiz.astro to consume quiz-engine.ts. Two question renderers (single_select + forced_pair), email gate, calculating interstitial, self-select, answer shuffle, 800ms auto-advance. Phase 5 (API Integration) can run in parallel.
+- **Process note:** FTF protocol followed strictly. Opus Test Author → baseline recorded → Sonnet+Opus implement → verify-frozen → clean.
 
 **Paused task:** Sprint Roadmap — Pre-Launch (6/8 phases complete). Phases 7-8
 externally blocked until May-July. Resume when blockers clear.
