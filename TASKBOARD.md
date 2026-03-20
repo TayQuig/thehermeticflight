@@ -60,7 +60,7 @@ this file at session start and reports current state to the operator.
 | 2 | Server-Side Set-Cookie | `completed` | quiz-submit 63/63, journey-subscribe 29/29 |
 | 3 | Close Side Door + Client-Side Cookie | `completed` | Gate form removed, quiz CTA added, cookie renewal, SEO structured data |
 | 4 | E2E Test Updates + Integration | `completed` | Layer 2 updated, multi-slug test added, journey-pages.spec.ts fixed, 639/639 unit tests |
-| 5 | Eval Protocol | `pending` | 2 evaluators: security + UX |
+| 5 | Eval Protocol | `completed` | Security 4.1/5.0, UX 3.9/5.0. HIGH-1 remediated (cookie regex). |
 
 **Handoff Context:** Mastermind completed (2 rounds, conditional consensus). Plan written and reviewed. All 5 phases pending. Key constraint: server-side Set-Cookie bypasses Safari ITP 7-day cap. Multi-slug cookie format prevents retake from destroying previous access. Frozen tests in quiz-v2-e2e.spec.ts must not be modified.
 
