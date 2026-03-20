@@ -830,7 +830,7 @@ const archetypeEntries = Object.values(archetypes);
 
       if (prSkipBtn) {
         prSkipBtn.addEventListener('click', () => {
-          showJourneyCta(archetypeSlugStr, content);
+          window.location.href = `/archetype/${archetypeSlugStr}`;
         }, { once: true });
       }
 
@@ -865,7 +865,7 @@ const archetypeEntries = Object.values(archetypes);
             }).catch((err) => console.error('Product research submit error:', err));
           }
 
-          showJourneyCta(archetypeSlugStr, content);
+          window.location.href = `/archetype/${archetypeSlugStr}`;
         }, { once: true });
       }
     }
