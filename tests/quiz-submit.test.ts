@@ -946,3 +946,61 @@ describe('Product research field handling', () => {
     expect(loopsBody.eventProperties.product_interest).toBe('journal,cloth');
   });
 });
+
+// ===========================================================================
+// Set-Cookie header (server-side cookie for Safari ITP bypass)
+// ===========================================================================
+
+describe('Set-Cookie header', () => {
+  it('sets thf_sub cookie on success response', async () => {
+    const res = await POST({ request: mockRequest(buildValidBody()) });
+    expect(res.status).toBe(200);
+    const setCookie = res.headers.get('set-cookie');
+    expect(setCookie).toBeTruthy();
+    expect(setCookie).toContain('thf_sub=');
+    expect(setCookie).toContain('Path=/');
+    expect(setCookie).toContain('Max-Age=15552000');
+    expect(setCookie).toContain('SameSite=Lax');
+    expect(setCookie).toContain('Secure');
+  });
+
+  it('does not set HttpOnly flag', async () => {
+    const res = await POST({ request: mockRequest(buildValidBody()) });
+    const setCookie = res.headers.get('set-cookie');
+    expect(setCookie).not.toContain('HttpOnly');
+  });
+
+  it('converts snake_case archetype to kebab-case in cookie', async () => {
+    const res = await POST({ request: mockRequest(buildValidBody()) });
+    const setCookie = res.headers.get('set-cookie');
+    // The archetype from classify() will be snake_case (e.g., air_weaver)
+    // Cookie should contain kebab-case (e.g., air-weaver)
+    expect(setCookie).not.toMatch(/thf_sub=[^;]*_/);
+  });
+
+  it('appends to existing thf_sub cookie without duplicating', async () => {
+    // Create request with existing cookie
+    const body = buildValidBody();
+    const req = new Request('https://example.com/api/quiz-submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'thf_sub=shadow-dancer',
+      },
+      body: JSON.stringify(body),
+    });
+
+    const res = await POST({ request: req });
+    expect(res.status).toBe(200);
+    const setCookie = res.headers.get('set-cookie');
+    expect(setCookie).toBeTruthy();
+    // Should contain both slugs (the exact new slug depends on classifier output)
+    const match = setCookie!.match(/thf_sub=([^;]+)/);
+    expect(match).toBeTruthy();
+    const cookieValue = decodeURIComponent(match![1]);
+    expect(cookieValue).toContain('shadow-dancer');
+    // Should have at least 2 entries (existing + new)
+    const slugs = cookieValue.split(',');
+    expect(slugs.length).toBeGreaterThanOrEqual(2);
+  });
+});

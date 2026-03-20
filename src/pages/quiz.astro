@@ -737,7 +737,10 @@ const archetypeEntries = Object.values(archetypes);
     // ---------------------------------------------------------------------------
 
     function setThfSubCookie(kebabSlug: string) {
-      document.cookie = `thf_sub=${encodeURIComponent(kebabSlug)};path=/;max-age=2592000;SameSite=Lax`;
+      const match = document.cookie.match(/(?:^|;\s*)thf_sub=([^;]*)/);
+      const existing = match ? decodeURIComponent(match[1]).split(',').filter(Boolean) : [];
+      if (!existing.includes(kebabSlug)) existing.push(kebabSlug);
+      document.cookie = `thf_sub=${encodeURIComponent(existing.join(','))};path=/;max-age=15552000;SameSite=Lax`;
     }
 
     // ---------------------------------------------------------------------------

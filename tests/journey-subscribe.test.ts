@@ -316,3 +316,77 @@ describe('Loops.so integration', () => {
     expect(data.error).toBeDefined();
   });
 });
+
+// ===========================================================================
+// Set-Cookie header (server-side cookie for Safari ITP bypass)
+// ===========================================================================
+
+describe('Set-Cookie header', () => {
+  it('sets thf_sub cookie on success response', async () => {
+    const res = await POST({ request: mockRequest(buildValidBody()) });
+    expect(res.status).toBe(200);
+    const setCookie = res.headers.get('set-cookie');
+    expect(setCookie).toBeTruthy();
+    expect(setCookie).toContain('thf_sub=');
+    expect(setCookie).toContain('Path=/');
+    expect(setCookie).toContain('Max-Age=15552000');
+    expect(setCookie).toContain('SameSite=Lax');
+    expect(setCookie).toContain('Secure');
+  });
+
+  it('does not set HttpOnly flag', async () => {
+    const res = await POST({ request: mockRequest(buildValidBody()) });
+    const setCookie = res.headers.get('set-cookie');
+    expect(setCookie).not.toContain('HttpOnly');
+  });
+
+  it('cookie value contains the archetype slug', async () => {
+    const res = await POST({ request: mockRequest(buildValidBody({ archetype: 'shadow-dancer' })) });
+    const setCookie = res.headers.get('set-cookie');
+    expect(setCookie).toBeTruthy();
+    const match = setCookie!.match(/thf_sub=([^;]+)/);
+    expect(match).toBeTruthy();
+    const cookieValue = decodeURIComponent(match![1]);
+    expect(cookieValue).toContain('shadow-dancer');
+  });
+
+  it('appends to existing thf_sub cookie without duplicating', async () => {
+    const body = buildValidBody({ archetype: 'shadow-dancer' });
+    const req = new Request('https://example.com/api/journey-subscribe', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'thf_sub=air-weaver',
+      },
+      body: JSON.stringify(body),
+    });
+
+    const res = await POST({ request: req });
+    expect(res.status).toBe(200);
+    const setCookie = res.headers.get('set-cookie');
+    expect(setCookie).toBeTruthy();
+    const match = setCookie!.match(/thf_sub=([^;]+)/);
+    expect(match).toBeTruthy();
+    const cookieValue = decodeURIComponent(match![1]);
+    expect(cookieValue).toBe('air-weaver,shadow-dancer');
+  });
+
+  it('does not duplicate slug if already in cookie', async () => {
+    const body = buildValidBody({ archetype: 'air-weaver' });
+    const req = new Request('https://example.com/api/journey-subscribe', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'thf_sub=air-weaver',
+      },
+      body: JSON.stringify(body),
+    });
+
+    const res = await POST({ request: req });
+    expect(res.status).toBe(200);
+    const setCookie = res.headers.get('set-cookie');
+    const match = setCookie!.match(/thf_sub=([^;]+)/);
+    const cookieValue = decodeURIComponent(match![1]);
+    expect(cookieValue).toBe('air-weaver');
+  });
+});

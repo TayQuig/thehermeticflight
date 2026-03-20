@@ -202,7 +202,15 @@ async function testResultPageLinksToJourney() {
 // ---------------------------------------------------------------------------
 async function testJourneyPageBackLink() {
   const browser = await chromium.launch();
-  const page = await browser.newPage();
+  const context = await browser.newContext();
+  // Set cookie so the page renders in ungated mode (footer CTA visible)
+  await context.addCookies([{
+    name: 'thf_sub',
+    value: 'flow-artist',
+    domain: 'localhost',
+    path: '/',
+  }]);
+  const page = await context.newPage();
   try {
     await page.goto(`${BASE_URL}/archetype/flow-artist`);
 

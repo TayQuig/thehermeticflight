@@ -10,10 +10,10 @@
  *
  * Cookie contract:
  *   Name: thf_sub
- *   Value: archetype slug (kebab-case, e.g. "air-weaver")
- *   Max-age: 30 days
- *   Set by: quiz.astro client-side JS after email submission
- *   Read by: archetype/[slug].astro server-side (Astro.cookies)
+ *   Value: comma-separated kebab-case archetype slugs (e.g. "air-weaver,shadow-dancer")
+ *   Max-Age: 15552000 (180 days)
+ *   Set by: server-side Set-Cookie header (primary) + client-side document.cookie (fallback)
+ *   Read by: archetype/[slug].astro server-side — multi-slug parse with .split(',').filter(Boolean)
  */
 
 import { test, expect, type Page } from '@playwright/test';
@@ -168,7 +168,9 @@ test.describe('Email gate — quiz results gating', () => {
     const cookies = await context.cookies();
     const thfCookie = cookies.find(c => c.name === 'thf_sub');
     expect(thfCookie).toBeDefined();
-    expect(thfCookie!.value).toMatch(/^[a-z]+-[a-z]+$/); // kebab-case slug
+    // Cookie value may be single slug or multi-slug (URL-encoded commas)
+    const decoded = decodeURIComponent(thfCookie!.value);
+    expect(decoded).toMatch(/^[a-z]+-[a-z]+(,[a-z]+-[a-z]+)*$/);
     expect(thfCookie!.path).toBe('/');
   });
 
@@ -189,7 +191,8 @@ test.describe('Email gate — quiz results gating', () => {
     cookies = await context.cookies();
     const thfCookie = cookies.find(c => c.name === 'thf_sub');
     expect(thfCookie).toBeDefined();
-    expect(thfCookie!.value).toMatch(/^[a-z]+-[a-z]+$/);
+    const decodedRecapture = decodeURIComponent(thfCookie!.value);
+    expect(decodedRecapture).toMatch(/^[a-z]+-[a-z]+(,[a-z]+-[a-z]+)*$/);
   });
 
   test('product research: skip link allows bypassing questions', async ({ page }) => {
@@ -265,7 +268,7 @@ test.describe('Journey page — cookie-based gating', () => {
 
     // Gated view: hero visible, journey content hidden
     await expect(page.locator('#journey-hero')).toBeVisible();
-    await expect(page.locator('#journey-gate-form')).toBeVisible();
+    await expect(page.locator('#journey-quiz-cta')).toBeVisible();
 
     // Deep content not visible
     await expect(page.locator('#journey-content')).not.toBeVisible();
@@ -286,7 +289,7 @@ test.describe('Journey page — cookie-based gating', () => {
     await expect(page.locator('#journey-content')).toBeVisible();
 
     // Gate form not visible
-    await expect(page.locator('#journey-gate-form')).not.toBeVisible();
+    await expect(page.locator('#journey-quiz-cta')).not.toBeVisible();
   });
 
   test('with wrong archetype cookie: shows gated view', async ({ page, context }) => {
@@ -301,28 +304,25 @@ test.describe('Journey page — cookie-based gating', () => {
     await page.goto('/archetype/air-weaver');
 
     // Still gated — cookie doesn't match this archetype
-    await expect(page.locator('#journey-gate-form')).toBeVisible();
+    await expect(page.locator('#journey-quiz-cta')).toBeVisible();
     await expect(page.locator('#journey-content')).not.toBeVisible();
   });
 
-  test('submitting email on gated page sets cookie and reveals content', async ({ page, context }) => {
+  test('multi-slug cookie unlocks matching journey', async ({ page, context }) => {
+    // Set a multi-slug cookie containing multiple archetypes
+    await context.addCookies([{
+      name: 'thf_sub',
+      value: encodeURIComponent('shadow-dancer,air-weaver'),
+      domain: 'localhost',
+      path: '/',
+    }]);
+
     await page.goto('/archetype/air-weaver');
 
-    // Initially gated
-    await expect(page.locator('#journey-gate-form')).toBeVisible();
-    await expect(page.locator('#journey-content')).not.toBeVisible();
+    // Full content visible — air-weaver is in the multi-slug cookie
+    await expect(page.locator('#journey-content')).toBeVisible();
 
-    // Submit email on the gate form
-    await page.locator('#journey-gate-form input[name="email"]').fill('gate@example.com');
-    await page.locator('#journey-gate-form [type="submit"]').click();
-
-    // Content revealed (page reloads or JS reveals)
-    await expect(page.locator('#journey-content')).toBeVisible({ timeout: 5000 });
-
-    // Cookie now set
-    const cookies = await context.cookies();
-    const thfCookie = cookies.find(c => c.name === 'thf_sub');
-    expect(thfCookie).toBeDefined();
-    expect(thfCookie!.value).toBe('air-weaver');
+    // Quiz CTA not visible (user already has access)
+    await expect(page.locator('#journey-quiz-cta')).not.toBeVisible();
   });
 });

@@ -3,6 +3,7 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { questions } from '../../lib/quiz-data';
 import { classify, computeScores } from '../../lib/classifier';
+import { parseCookieValue, appendSlug } from '../../lib/cookie-helpers';
 
 // ---------------------------------------------------------------------------
 // SYN-04: In-memory rate limiter
@@ -477,9 +478,18 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    // Server-side Set-Cookie: bypasses Safari ITP 7-day cap on document.cookie.
+    // Read existing thf_sub from request Cookie header, append new slug, deduplicate.
+    const existingCookie = parseCookieValue(request.headers.get('cookie') || '', 'thf_sub');
+    const kebabSlug = archetype.replace(/_/g, '-');
+    const mergedSlugs = appendSlug(existingCookie, kebabSlug);
+
     return new Response(JSON.stringify({ success: true, archetype, quizVersion: 'v2' }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Set-Cookie': `thf_sub=${encodeURIComponent(mergedSlugs)};Path=/;Max-Age=15552000;SameSite=Lax;Secure`,
+      },
     });
   } catch (error) {
     console.error('Quiz submit error:', error);

@@ -2,6 +2,7 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import { archetypeByUrlSlug } from '../../lib/archetype-content';
+import { parseCookieValue, appendSlug } from '../../lib/cookie-helpers';
 
 // ---------------------------------------------------------------------------
 // In-memory rate limiter
@@ -291,9 +292,17 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    // Server-side Set-Cookie: bypasses Safari ITP 7-day cap on document.cookie.
+    // Read existing thf_sub from request Cookie header, append new slug, deduplicate.
+    const existingCookie = parseCookieValue(request.headers.get('cookie') || '', 'thf_sub');
+    const mergedSlugs = appendSlug(existingCookie, archetype);
+
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Set-Cookie': `thf_sub=${encodeURIComponent(mergedSlugs)};Path=/;Max-Age=15552000;SameSite=Lax;Secure`,
+      },
     });
   } catch (error) {
     console.error('Journey subscribe error:', error);
