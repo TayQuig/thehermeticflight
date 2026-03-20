@@ -65,11 +65,11 @@ after archetype reveal.
 | 3 | API Update for Product Research [FTF] | `completed` | dep: Phase 2. quiz-submit.ts: productResearch validation + Loops.so forwarding. 59/59 unit tests. |
 | 4 | Journey Page Gating [FTF] | `completed` | dep: Phase 2. archetype/[slug].astro: SSR cookie check, soft-gate (optimistic reveal). 60/60 E2E. |
 | 5 | Integration Testing | `completed` | 60/60 Playwright, 613/613 unit, 5/5 FTF baselines verified, build clean. |
-| 6 | Eval Protocol (2 evaluators) | `pending` | dep: Phase 5. UX Funnel + Functional. |
+| 6 | Eval Protocol (2 evaluators) | `completed` | UX Funnel (3.2/5) + Functional (3.8/5). 4 findings remediated: F-09 idempotency key, F-02 email normalization, F-03 firstName sanitization, F-01 cookie encoding. 60/60 E2E, 613/613 unit, 5/5 FTF. |
 
-**Handoff Context:** Plan written and reviewed (READY TO BUILD). Phase 1 is a
-HUMAN GATE — operator must approve product research question text before build
-phases can begin.
+**Handoff Context:** All 6 phases complete. Task ready for completion flow. Push to
+remote for Vercel preview. Non-blocking eval notes: multi-archetype cookie (future),
+generate_lead event for skip-path (analytics cleanup), cookie max-age extension (pre-launch).
 
 **Paused task:** Sprint Roadmap — Pre-Launch (6/8 phases complete). Phases 7-8
 externally blocked until May-July. Resume when blockers clear.
