@@ -113,7 +113,7 @@ const archetypeEntries = Object.values(archetypes);
                   </button>
                 </div>
                 <div class="flex items-center justify-center" aria-hidden="true">
-                  <span class="text-hermetic-gold/60 text-xs tracking-[0.3em] uppercase font-sans md:hidden">— or —</span>
+                  <span class="text-hermetic-gold/60 text-xs tracking-[0.3em] uppercase font-sans md:hidden">&mdash; or &mdash;</span>
                   <span class="text-hermetic-gold/60 text-xs tracking-[0.3em] uppercase font-sans hidden md:block">or</span>
                 </div>
                 <div class="md:col-start-2 md:row-start-1">
@@ -151,7 +151,7 @@ const archetypeEntries = Object.values(archetypes);
               Before we reveal your archetype...
             </h2>
             <p class="text-gray-300 font-light font-sans leading-relaxed max-w-md mx-auto">
-              Enter your email to receive your personalized archetype journey — a free guide tailored to how you engage with tarot.
+              Enter your email to receive your personalized archetype journey &mdash; a free guide tailored to how you engage with tarot.
             </p>
           </div>
 
@@ -183,7 +183,7 @@ const archetypeEntries = Object.values(archetypes);
 
           <div class="text-center mt-4">
             <button id="email-gate-skip" class="text-hermetic-gold/60 text-sm font-sans hover:text-hermetic-gold/80 transition-colors duration-300">
-              Skip for now — show my results
+              Skip for now &mdash; show my results
             </button>
           </div>
         </div>
@@ -254,6 +254,8 @@ const archetypeEntries = Object.values(archetypes);
             <h2 id="result-title" class="font-serif text-3xl md:text-5xl text-hermetic-white mb-2 tracking-wide opacity-0 translate-y-4 transition-all duration-700 delay-500"></h2>
 
             <p id="result-element" class="text-hermetic-gold/60 text-xs tracking-[0.3em] uppercase font-sans mb-6 opacity-0 transition-opacity duration-700 delay-700"></p>
+
+            <img id="result-image" src="" alt="" class="w-full max-w-md mx-auto rounded-lg border border-hermetic-gold/20 mb-6 opacity-0 transition-opacity duration-700 delay-900 hidden" width="800" height="436" />
           </div>
 
           <!-- Email re-capture: visible only for skip-path users -->
@@ -308,11 +310,11 @@ const archetypeEntries = Object.values(archetypes);
                 <div class="space-y-3">
                   <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
                     <input type="radio" name="cardBacks" value="single" class="mt-1 accent-hermetic-gold" />
-                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">A single signature design — unified and elegant</span>
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">A single signature design &mdash; unified and elegant</span>
                   </label>
                   <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
                     <input type="radio" name="cardBacks" value="reversible" class="mt-1 accent-hermetic-gold" />
-                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">Reversible backs — so the orientation adds another layer of reading</span>
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">Reversible backs &mdash; so the orientation adds another layer of reading</span>
                   </label>
                   <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
                     <input type="radio" name="cardBacks" value="artist_choice" class="mt-1 accent-hermetic-gold" />
@@ -360,7 +362,7 @@ const archetypeEntries = Object.values(archetypes);
                 </button>
                 <div class="mt-4">
                   <button id="product-research-skip" class="text-hermetic-gold/60 text-sm font-sans hover:text-hermetic-gold/80 transition-colors duration-300">
-                    Skip — take me to my journey
+                    Skip &mdash; take me to my journey
                   </button>
                 </div>
               </div>
@@ -902,6 +904,14 @@ const archetypeEntries = Object.values(archetypes);
       if (resultTagline) resultTagline.textContent = content.description.split('.')[0] + '.';
       if (resultDescription) resultDescription.textContent = content.description;
 
+      // Set archetype image
+      const resultImage = document.getElementById('result-image') as HTMLImageElement | null;
+      if (resultImage) {
+        resultImage.src = `/images/archetypes/${toUrlSlug(finalSlug)}.jpg`;
+        resultImage.alt = `${content.title} archetype illustration`;
+        resultImage.classList.remove('hidden');
+      }
+
       // Staggered reveal of teaser elements
       requestAnimationFrame(() => {
         resultGlow.style.opacity = '1';
@@ -912,6 +922,7 @@ const archetypeEntries = Object.values(archetypes);
         resultTitle.style.opacity = '1';
         resultTitle.style.transform = 'translateY(0)';
         resultElement.style.opacity = '1';
+        if (resultImage) resultImage.style.opacity = '1';
       });
 
       const archetypeSlugStr = toUrlSlug(finalSlug);

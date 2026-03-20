@@ -160,7 +160,7 @@ const pageDescription = `Explore the ${archetypeData.name} archetype in depth: a
               This Journey Awaits Your Archetype
             </h2>
             <p class="text-gray-300 font-sans font-light leading-relaxed mb-8 max-w-lg mx-auto">
-              Affiliated cards, personalized spreads, journaling prompts, and curated reading guides —
+              Affiliated cards, personalized spreads, journaling prompts, and curated reading guides &mdash;
               unlocked when you discover which archetype speaks through your cards.
             </p>
             <a href="/quiz" class="btn-flame inline-block px-10 py-4 text-white font-sans font-bold text-sm tracking-widest uppercase no-underline">
@@ -229,7 +229,7 @@ const pageDescription = `Explore the ${archetypeData.name} archetype in depth: a
           <div class="absolute top-2 right-2 w-3 h-3 border-t border-r border-hermetic-gold opacity-30"></div>
 
           <h2 class="font-serif text-xl md:text-2xl text-hermetic-gold mb-1 tracking-wide">Journaling Prompts</h2>
-          <p class="text-gray-500 font-sans text-sm mb-6">Questions calibrated to your archetype's edge — where growth actually lives.</p>
+          <p class="text-gray-500 font-sans text-sm mb-6">Questions calibrated to your archetype's edge &mdash; where growth actually lives.</p>
 
           <ol class="space-y-4">
             {journey.data.journaling_prompts.map((prompt: string, i: number) => (
@@ -280,7 +280,7 @@ const pageDescription = `Explore the ${archetypeData.name} archetype in depth: a
 
         <h2 class="font-serif text-xl md:text-2xl text-hermetic-gold mb-1 tracking-wide">Continue the Path</h2>
         <p class="text-gray-400 font-sans text-sm leading-relaxed mb-6">
-          Receive an 8-week email series tailored to the {archetypeData.name} archetype — one reflection per week, designed for where you are now.
+          Receive an 8-week email series tailored to the {archetypeData.name} archetype &mdash; one reflection per week, designed for where you are now.
         </p>
 
         <form id="journey-email-form" class="space-y-3 max-w-sm mx-auto">
@@ -312,7 +312,7 @@ const pageDescription = `Explore the ${archetypeData.name} archetype in depth: a
             <span class="text-hermetic-gold text-xl">&#x2713;</span>
           </div>
           <p class="text-hermetic-gold font-serif text-xl mb-2">You're In</p>
-          <p class="text-gray-300 font-sans font-light">Check your inbox — your first reflection arrives this week.</p>
+          <p class="text-gray-300 font-sans font-light">Check your inbox &mdash; your first reflection arrives this week.</p>
         </div>
       </section>
       )}
@@ -400,12 +400,12 @@ const pageDescription = `Explore the ${archetypeData.name} archetype in depth: a
             }
             if (typeof fbq === 'function') fbq('track', 'Lead');
           } else {
-            journeySubmitBtn.textContent = 'Something went wrong — try again';
+            journeySubmitBtn.textContent = 'Something went wrong - try again';
             journeySubmitBtn.disabled = false;
             journeySubmitBtn.style.opacity = '1';
           }
         } catch {
-          journeySubmitBtn.textContent = 'Something went wrong — try again';
+          journeySubmitBtn.textContent = 'Something went wrong - try again';
           journeySubmitBtn.disabled = false;
           journeySubmitBtn.style.opacity = '1';
         }

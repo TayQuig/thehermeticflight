@@ -20,7 +20,7 @@ const accentColor = archetype.accentHex;
 ---
 
 <Layout
-  title={`${archetype.title} — Your Aerial Tarot Archetype | The Hermetic Flight`}
+  title={`${archetype.title} &mdash; Your Aerial Tarot Archetype | The Hermetic Flight`}
   description={archetype.description}
   ogImage={`/images/og/${urlSlug}.png`}
 >
@@ -51,6 +51,16 @@ const accentColor = archetype.accentHex;
 
           <h1 class="font-serif text-3xl md:text-5xl text-hermetic-white mb-2 tracking-wide">{archetype.title}</h1>
           <p class={`${archetype.color} text-xs tracking-[0.3em] uppercase font-sans mb-6`}>Element of {archetype.element}</p>
+
+          <img
+            src={`/images/archetypes/${urlSlug}.jpg`}
+            alt={`${archetype.title} archetype illustration`}
+            class="w-full max-w-md mx-auto rounded-lg border border-hermetic-gold/20 mb-6"
+            width="800"
+            height="436"
+            loading="eager"
+          />
+
           <p class="text-gray-300 font-light font-sans leading-relaxed mb-8 max-w-lg mx-auto">{archetype.description}</p>
 
           <!-- Share Section -->
@@ -80,7 +90,7 @@ const accentColor = archetype.accentHex;
             </div>
             <!-- Secondary CTA for new visitors who arrived via share -->
             <div class="border-t border-hermetic-gold/10 pt-6">
-              <p class="text-gray-500 font-sans text-sm mb-4">Not your archetype? Discover yours — twenty questions, five minutes.</p>
+              <p class="text-gray-500 font-sans text-sm mb-4">Not your archetype? Discover yours &mdash; twenty questions, five minutes.</p>
               <a href="/quiz" class="btn-flame inline-block px-8 py-3 text-white font-sans font-bold text-sm tracking-widest uppercase no-underline">
                 Take the Quiz
               </a>
