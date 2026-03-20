@@ -69,12 +69,12 @@ segmentation, rewrite classifier to cosine-similarity centroids, add email gate
 | 4 | UI Implementation | `completed` | quiz.astro rewrite: engine-driven state, format-conditional rendering, email gate, calculating interstitial, self-select, answer shuffle, 800ms auto-advance, confidence messaging. |
 | 5 | API Integration | `completed` | quiz-submit.ts: SEG1/SEG2 extraction, quizVersion v2, selfSelected override, memberships forwarding, displayOrder. Tests: 67/67 pass. |
 | 6 | Integration Testing | `completed` | 7/7 new E2E tests + 22 existing Playwright tests pass. Integration gap fixed: API call added to quiz.astro. quiz-browser.test.mjs replaced by quiz-v2-e2e.spec.ts. |
-| 7 | Eval Protocol + Harden | `in_progress` | dep: Phase 6. 3 evaluators (Functional, Security, UX/a11y). |
+| 7 | Eval Protocol + Harden | `completed` | 3 evaluators × 45 raw findings → 12 remediated (S-01–S-12), 33 deferred. FTF verified. 608/608 unit + 48/48 E2E. Verification playbook produced. |
 
-**Handoff Context (2026-03-19):** Phases 0-6 complete. Branch: `feature/quiz-design-overhaul`.
-- Phase 6: Integration gap found and fixed — quiz.astro was missing fire-and-forget POST to /api/quiz-submit in revealResults(). New quiz-v2-e2e.spec.ts covers 7-test matrix (happy path, skip, self-select, back nav, forced-pair, progress bar, API interception). quiz-browser.test.mjs deleted (superseded). Pre-existing quiz-flow.spec.ts strict mode failures fixed (h1 → main h1 scoping).
-- Full suite: 600/600 unit tests, 29/29 E2E tests. Build clean.
-- **Next:** Phase 7 — Eval Protocol + Harden. 3 evaluators (Functional, Security, UX/a11y).
+**Handoff Context (2026-03-19):** All 7 phases complete. Branch: `feature/quiz-design-overhaul`.
+- Phase 7: Eval protocol full cycle — 3 independent Opus evaluators (Functional, Security, UX/a11y) produced 45 raw findings. Synthesis deduplicated to 12 actionable (2 Critical, 10 High). 4 FTF remediation cycles: a11y (S-01–S-02, S-07–S-11), security (S-03–S-06), test hardening (S-12). 33 findings deferred with rationale (CSRF, rate limiting, etc.). All tests green: 608 unit + 48 E2E.
+- Reports: `operations/eval-quiz-v2-2026-03-19/` (3 evaluator reports, synthesis, verification playbook).
+- **Next:** Completion flow — triage Ideas, archive task, clear Active Task, commit, auto-promote.
 
 **Paused task:** Sprint Roadmap — Pre-Launch (6/8 phases complete). Phases 7-8
 externally blocked until May-July. Resume when blockers clear.
