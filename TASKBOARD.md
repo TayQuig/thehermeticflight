@@ -68,7 +68,7 @@ segmentation, rewrite classifier to cosine-similarity centroids, add email gate
 | 3 | Quiz Engine [FTF] | `completed` | 54/54 tests. CV² confidence attenuation. FTF verified. |
 | 4 | UI Implementation | `completed` | quiz.astro rewrite: engine-driven state, format-conditional rendering, email gate, calculating interstitial, self-select, answer shuffle, 800ms auto-advance, confidence messaging. |
 | 5 | API Integration | `completed` | quiz-submit.ts: SEG1/SEG2 extraction, quizVersion v2, selfSelected override, memberships forwarding, displayOrder. Tests: 67/67 pass. |
-| 6 | Integration Testing | `pending` | dep: Phases 1-5. E2E + unit test sweep. |
+| 6 | Integration Testing | `completed` | 7/7 new E2E tests + 22 existing Playwright tests pass. Integration gap fixed: API call added to quiz.astro. quiz-browser.test.mjs replaced by quiz-v2-e2e.spec.ts. |
 | 7 | Eval Protocol + Harden | `pending` | dep: Phase 6. 3 evaluators (Functional, Security, UX/a11y). |
 
 **Handoff Context (2026-03-19):** Phases 0-5 complete. Branch: `feature/quiz-design-overhaul`.
