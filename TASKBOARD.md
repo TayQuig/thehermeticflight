@@ -61,7 +61,7 @@ after archetype reveal.
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
 | 1 | Content Approval (HUMAN GATE) | `completed` | Approved 2026-03-19. PR01 (card backs, 3 options) + PR02 (product interest, 6 options incl. live aerial performance). |
-| 2 | Quiz Results Gating + Product Research UI [FTF] | `pending` | dep: Phase 1. quiz.astro: split results, email re-capture, product research, cookie. plan: docs/plans/2026-03-19-email-gate-product-research.md |
+| 2 | Quiz Results Gating + Product Research UI [FTF] | `in_progress` | dep: Phase 1. quiz.astro: split results, email re-capture, product research, cookie. plan: docs/plans/2026-03-19-email-gate-product-research.md |
 | 3 | API Update for Product Research [FTF] | `pending` | dep: Phase 2. quiz-submit.ts: productResearch field. Parallel with Phase 4. |
 | 4 | Journey Page Gating [FTF] | `pending` | dep: Phase 2. archetype/[slug].astro: cookie-based gating. Parallel with Phase 3. |
 | 5 | Integration Testing | `pending` | dep: Phases 3+4. Full E2E flow verification. |

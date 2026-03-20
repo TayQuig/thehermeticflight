@@ -848,3 +848,101 @@ describe('S-06: Email normalization', () => {
     expect(headers['Idempotency-Key']).not.toMatch(/[A-Z]/);
   });
 });
+
+// ===========================================================================
+// Product Research: productResearch field handling
+// ===========================================================================
+
+describe('Product research field handling', () => {
+  it('forwards productResearch to Loops.so contact properties', async () => {
+    const body = buildValidBody({
+      productResearch: {
+        cardBacks: 'reversible',
+        productInterest: ['guidebook', 'live_performance'],
+      },
+    });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    expect(loopsBody.card_back_preference).toBe('reversible');
+    expect(loopsBody.product_interest).toBe('guidebook,live_performance');
+  });
+
+  it('accepts payload without productResearch (backward compatible)', async () => {
+    const body = buildValidBody();
+    // No productResearch field
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    // Fields should be null or absent, not error
+    expect(loopsBody.card_back_preference ?? null).toBeNull();
+    expect(loopsBody.product_interest ?? null).toBeNull();
+  });
+
+  it('silently drops invalid cardBacks values', async () => {
+    const body = buildValidBody({
+      productResearch: {
+        cardBacks: 'hacked_value',
+        productInterest: ['guidebook'],
+      },
+    });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    // Invalid value should be dropped, not forwarded
+    expect(loopsBody.card_back_preference ?? null).toBeNull();
+  });
+
+  it('strips invalid productInterest items from array', async () => {
+    const body = buildValidBody({
+      productResearch: {
+        cardBacks: 'single',
+        productInterest: ['guidebook', 'hacked_item', 'app'],
+      },
+    });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    expect(loopsBody.card_back_preference).toBe('single');
+    // Only valid items forwarded
+    const interests = loopsBody.product_interest.split(',');
+    expect(interests).toContain('guidebook');
+    expect(interests).toContain('app');
+    expect(interests).not.toContain('hacked_item');
+  });
+
+  it('includes productResearch in event properties', async () => {
+    const body = buildValidBody({
+      productResearch: {
+        cardBacks: 'artist_choice',
+        productInterest: ['journal', 'cloth'],
+      },
+    });
+    const res = await POST({ request: mockRequest(body) });
+    expect(res.status).toBe(200);
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    const loopsCall = fetchCalls.find(c => String(c[0]).includes('loops.so'));
+    expect(loopsCall).toBeDefined();
+    const loopsBody = JSON.parse(loopsCall![1]!.body as string);
+    // Event properties should also contain product research data
+    expect(loopsBody.eventProperties.card_back_preference).toBe('artist_choice');
+    expect(loopsBody.eventProperties.product_interest).toBe('journal,cloth');
+  });
+});

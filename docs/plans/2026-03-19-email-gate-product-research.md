@@ -69,6 +69,7 @@ Beyond the deck itself, what would enhance your practice?
   ☐ Archetype-themed journal with prompts
   ☐ Companion app with daily draws and tracking
   ☐ Silk reading cloth with spread positions
+  ☐ Live aerial tarot performance
   ☐ I just want the cards
 ```
 
@@ -164,7 +165,7 @@ Implementer (Sonnet) makes tests pass → verify frozen.
    ```typescript
    productResearch?: {
      cardBacks?: 'single' | 'reversible' | 'artist_choice';
-     productInterest?: string[];  // ['guidebook', 'journal', 'app', 'cloth', 'cards_only']
+     productInterest?: string[];  // ['guidebook', 'journal', 'app', 'cloth', 'live_performance', 'cards_only']
    }
    ```
 2. Forward as Loops.so contact properties (useful for segmentation):
@@ -174,7 +175,7 @@ Implementer (Sonnet) makes tests pass → verify frozen.
    ```
 3. Include in GA4 event properties.
 4. Validate `productInterest` items against allowlist:
-   `['guidebook', 'journal', 'app', 'cloth', 'cards_only']`. Strip unknown values
+   `['guidebook', 'journal', 'app', 'cloth', 'live_performance', 'cards_only']`. Strip unknown values
    silently. Validate `cardBacks` against `['single', 'reversible', 'artist_choice']`.
 
 **Test contracts (Vitest — written by Test Author, Opus):**
