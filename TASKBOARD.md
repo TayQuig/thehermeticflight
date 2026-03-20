@@ -56,9 +56,9 @@ this file at session start and reports current state to the operator.
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 1 | Cookie Helpers (FTF) | `pending` | plan: docs/plans/2026-03-19-close-side-door-cookie-hardening.md |
-| 2 | Server-Side Set-Cookie | `pending` | 2 parallel subagents: quiz-submit + journey-subscribe |
-| 3 | Close Side Door + Client-Side Cookie | `pending` | Main UI change + SEO structured data |
+| 1 | Cookie Helpers (FTF) | `completed` | 17/17 tests, FTF verified |
+| 2 | Server-Side Set-Cookie | `in_progress` | 2 parallel subagents: quiz-submit + journey-subscribe |
+| 3 | Close Side Door + Client-Side Cookie | `in_progress` | Main UI change + SEO structured data |
 | 4 | E2E Test Updates + Integration | `pending` | Update quiz-gate-e2e.spec.ts Layer 2 |
 | 5 | Eval Protocol | `pending` | 2 evaluators: security + UX |
 
