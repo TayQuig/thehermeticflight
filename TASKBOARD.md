@@ -57,9 +57,9 @@ this file at session start and reports current state to the operator.
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
 | 1 | FTF Baseline on E2E Specs | `completed` | 52 files frozen, tag: frozen-baseline-1773980647-10527 |
-| 2 | Build + Full E2E Suite | `in_progress` | Playwright + raw journey-pages |
-| 3 | Remediation via FTF | `pending` | Conditional — skip if Phase 2 green |
-| 4 | Harden — Live Cookie Verification | `pending` | 2 parallel: header audit + injection audit |
+| 2 | Build + Full E2E Suite | `completed` | 60/60 Playwright + 5/5 journey-pages ALL PASS |
+| 3 | Remediation via FTF | `skipped` | Phase 2 all-green — no remediation needed |
+| 4 | Harden — Live Cookie Verification | `in_progress` | 2 parallel: header audit + injection audit |
 | 5 | Eval Protocol | `pending` | 2 evaluators: functional + security |
 | 6 | Memory + Commit | `pending` | Record learnings, commit artifacts |
 
