@@ -50,7 +50,26 @@ this file at session start and reports current state to the operator.
 
 ## Active Task
 
-[Empty — no task in progress.]
+### Email Gate Enforcement + Post-Results Product Research
+
+**Brief:** Make the email gate actually gate journey content (two-layer soft gate
+with cookie), add 2 product research questions (card backs, product interest)
+after archetype reveal.
+
+**Plan:** `docs/plans/2026-03-19-email-gate-product-research.md`
+
+| # | Phase | Status | Notes |
+|---|-------|--------|-------|
+| 1 | Content Approval (HUMAN GATE) | `pending` | Operator approves PR01/PR02 question text + tone |
+| 2 | Quiz Results Gating + Product Research UI [FTF] | `pending` | dep: Phase 1. quiz.astro: split results, email re-capture, product research, cookie. plan: docs/plans/2026-03-19-email-gate-product-research.md |
+| 3 | API Update for Product Research [FTF] | `pending` | dep: Phase 2. quiz-submit.ts: productResearch field. Parallel with Phase 4. |
+| 4 | Journey Page Gating [FTF] | `pending` | dep: Phase 2. archetype/[slug].astro: cookie-based gating. Parallel with Phase 3. |
+| 5 | Integration Testing | `pending` | dep: Phases 3+4. Full E2E flow verification. |
+| 6 | Eval Protocol (2 evaluators) | `pending` | dep: Phase 5. UX Funnel + Functional. |
+
+**Handoff Context:** Plan written and reviewed (READY TO BUILD). Phase 1 is a
+HUMAN GATE — operator must approve product research question text before build
+phases can begin.
 
 **Paused task:** Sprint Roadmap — Pre-Launch (6/8 phases complete). Phases 7-8
 externally blocked until May-July. Resume when blockers clear.
@@ -63,7 +82,7 @@ placeholders — review before launch.
 
 ## Ideas
 
-[Empty]
+- **Self-select "choose your path" may cause decision fatigue.** Operator observation — no action for now. Monitor post-launch for drop-off at self-select step vs direct results. If drop-off is significant, consider removing self-select and defaulting to top archetype regardless of confidence.
 
 ---
 
