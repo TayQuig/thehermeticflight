@@ -178,10 +178,45 @@ function validateAnswers(answers: unknown): string | null {
 // Main handler
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Product research allowlists
+// ---------------------------------------------------------------------------
+
+const VALID_CARD_BACKS = new Set(['single', 'reversible', 'artist_choice']);
+const VALID_PRODUCT_INTEREST = new Set([
+  'guidebook', 'journal', 'app', 'cloth', 'live_performance', 'cards_only',
+]);
+
+function validateProductResearch(pr: unknown): {
+  cardBacks: string | null;
+  productInterest: string[] | null;
+} | null {
+  if (pr === undefined || pr === null) return null;
+  if (typeof pr !== 'object' || Array.isArray(pr)) return { cardBacks: null, productInterest: null };
+
+  const prObj = pr as Record<string, unknown>;
+
+  const rawCardBacks = prObj.cardBacks;
+  const validatedCardBacks =
+    typeof rawCardBacks === 'string' && VALID_CARD_BACKS.has(rawCardBacks)
+      ? rawCardBacks
+      : null;
+
+  const rawInterest = prObj.productInterest;
+  let validatedInterest: string[] | null = null;
+  if (Array.isArray(rawInterest)) {
+    const filtered = (rawInterest as unknown[])
+      .filter((item): item is string => typeof item === 'string' && VALID_PRODUCT_INTEREST.has(item));
+    validatedInterest = filtered.length > 0 ? filtered : null;
+  }
+
+  return { cardBacks: validatedCardBacks, productInterest: validatedInterest };
+}
+
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { email, firstName, answers, website, selfSelected, displayOrder } = body;
+    const { email, firstName, answers, website, selfSelected, displayOrder, productResearch } = body;
 
     // SYN-05: Server-side honeypot check
     // If the "website" honeypot field is present and non-empty, reject as bot.
@@ -273,6 +308,9 @@ export const POST: APIRoute = async ({ request }) => {
       ? firstName.replace(/<[^>]*>/g, '')
       : '';
 
+    // Product research: validate and sanitize
+    const validatedProductResearch = validateProductResearch(productResearch);
+
     // Push to Loops.so
     // import.meta.env works in Vitest; Vite transforms it to process.env for
     // SSR builds. Explicit process.env fallback covers Vercel runtime.
@@ -345,6 +383,13 @@ export const POST: APIRoute = async ({ request }) => {
           ...(experienceLevel && { experienceLevel }),
           ...(painPoint && { painPoint }),
           ...(selfSelected && isValidArchetypeSlug(selfSelected) && { selfSelected }),
+          // Product research contact properties (only when productResearch was submitted)
+          ...(validatedProductResearch !== null && {
+            card_back_preference: validatedProductResearch.cardBacks,
+            product_interest: validatedProductResearch.productInterest
+              ? validatedProductResearch.productInterest.join(',')
+              : null,
+          }),
 
           // Event properties (temporary, available in triggered emails)
           eventProperties: {
@@ -359,6 +404,13 @@ export const POST: APIRoute = async ({ request }) => {
               Object.entries(classificationResult.memberships).map(([k, v]) => [`membership_${k}`, v])
             ),
             ...(sanitizedDisplayOrder && { displayOrder: sanitizedDisplayOrder }),
+            // Product research event properties (only when productResearch was submitted)
+            ...(validatedProductResearch !== null && {
+              card_back_preference: validatedProductResearch.cardBacks,
+              product_interest: validatedProductResearch.productInterest
+                ? validatedProductResearch.productInterest.join(',')
+                : null,
+            }),
           },
         }),
       });

@@ -245,7 +245,8 @@ const archetypeEntries = Object.values(archetypes);
           <!-- Gold pulse behind title -->
           <div id="result-glow" class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full opacity-0 blur-[80px] transition-opacity duration-[2000ms]" style="background: radial-gradient(circle, rgba(197,160,89,0.4), transparent 70%);"></div>
 
-          <div class="relative">
+          <!-- Teaser: always visible -->
+          <div id="result-teaser" class="relative">
             <p id="result-label" class="text-hermetic-gold text-xs tracking-[0.3em] uppercase mb-2 font-sans opacity-0 translate-y-4 transition-all duration-700">Your Archetype Revealed</p>
 
             <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-hermetic-gold/60 to-transparent mx-auto mb-6 opacity-0 scale-x-0 transition-all duration-700 delay-300" id="result-divider"></div>
@@ -253,50 +254,157 @@ const archetypeEntries = Object.values(archetypes);
             <h2 id="result-title" class="font-serif text-3xl md:text-5xl text-hermetic-white mb-2 tracking-wide opacity-0 translate-y-4 transition-all duration-700 delay-500"></h2>
 
             <p id="result-element" class="text-hermetic-gold/60 text-xs tracking-[0.3em] uppercase font-sans mb-6 opacity-0 transition-opacity duration-700 delay-700"></p>
-
-            <p id="result-tagline" class="text-hermetic-gold/80 font-serif text-sm italic mb-4 opacity-0 transition-opacity duration-700 delay-[800ms]"></p>
-
-            <p id="result-description" class="text-gray-300 font-light font-sans leading-relaxed mb-8 max-w-lg mx-auto opacity-0 translate-y-4 transition-all duration-700 delay-[900ms]"></p>
           </div>
 
-          <!-- Share + Journey CTA -->
-          <div id="share-section" class="border-t border-hermetic-gold/20 pt-8 mt-8 opacity-0 translate-y-4 transition-all duration-700 delay-[1200ms]">
-            <p class="text-hermetic-gold/60 text-xs tracking-[0.2em] uppercase font-sans mb-4">Share Your Archetype</p>
-            <div class="flex justify-center gap-3 flex-wrap">
-              <a id="share-x" href="#" target="_blank" rel="noopener noreferrer" aria-label="Share on X"
-                class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                Post
-              </a>
-              <a id="share-fb" href="#" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook"
-                class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                Share
-              </a>
-              <button id="share-copy" aria-label="Copy result link"
-                class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                <span id="share-copy-text">Copy Link</span>
-              </button>
+          <!-- Email re-capture: visible only for skip-path users -->
+          <div id="result-email-capture" class="hidden mt-6 border-t border-hermetic-gold/20 pt-8">
+            <div class="text-center mb-6">
+              <p class="font-serif text-lg text-hermetic-white mb-2">Unlock Your Full Archetype Journey</p>
+              <p class="text-gray-400 font-sans font-light text-sm leading-relaxed max-w-sm mx-auto">
+                Enter your email to receive your personalized archetype guide and access your full reading.
+              </p>
             </div>
 
-            <!-- Primary CTA: journey page -->
-            <a id="journey-cta" href="/archetype/"
-              class="btn-flame inline-block mt-6 px-8 py-3 text-white font-sans font-bold text-sm tracking-widest uppercase no-underline">
-              Begin Your Archetype Journey
-            </a>
+            <form id="result-recapture-form" class="space-y-4 max-w-sm mx-auto">
+              <!-- Honeypot -->
+              <div style="position:absolute;left:-9999px;" aria-hidden="true">
+                <input type="text" name="website" tabindex="-1" autocomplete="off" />
+              </div>
 
-            <!-- Secondary: result profile -->
-            <a id="result-profile-link" href="/quiz"
-              class="block mt-3 text-hermetic-gold/70 hover:text-hermetic-gold text-sm font-sans tracking-wider transition-colors">
-              View Your Result
-            </a>
+              <input
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                aria-label="Email Address"
+                required
+                class="w-full p-3 bg-hermetic-void/80 border border-hermetic-gold/20 rounded-lg text-hermetic-white font-sans placeholder:text-gray-500 focus:border-hermetic-gold/50 focus:outline-none focus:ring-2 focus:ring-hermetic-gold/50 transition-colors duration-300"
+              />
+              <button type="submit" class="btn-flame w-full py-3 text-white font-sans font-bold text-sm tracking-widest uppercase">
+                Reveal My Full Reading
+              </button>
+            </form>
+          </div>
 
-            <!-- Tertiary: return home -->
-            <a href="/"
-              class="block mt-3 text-hermetic-gold/50 hover:text-hermetic-gold text-xs font-sans tracking-widest uppercase transition-colors">
-              Return Home
-            </a>
+          <!-- Full content: shown only when email is confirmed -->
+          <div id="result-full" class="hidden">
+            <p id="result-tagline" class="text-hermetic-gold/80 font-serif text-sm italic mb-4 mt-4 opacity-0 transition-opacity duration-700"></p>
+
+            <p id="result-description" class="text-gray-300 font-light font-sans leading-relaxed mb-8 max-w-lg mx-auto opacity-0 translate-y-4 transition-all duration-700"></p>
+
+            <!-- Product Research -->
+            <div id="product-research" class="border-t border-hermetic-gold/20 pt-8 mt-8 text-left">
+              <div class="text-center mb-8">
+                <p class="text-hermetic-gold text-xs tracking-[0.3em] uppercase font-sans mb-2">Shape the Deck</p>
+                <h3 class="font-serif text-xl text-hermetic-white leading-tight">
+                  Two questions to guide the creation
+                </h3>
+              </div>
+
+              <!-- PR01: Card backs -->
+              <div id="pr-card-backs" class="mb-8" role="group" aria-labelledby="pr-card-backs-label">
+                <p id="pr-card-backs-label" class="font-serif text-base text-hermetic-white mb-4">
+                  What speaks to you for the card backs?
+                </p>
+                <div class="space-y-3">
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="radio" name="cardBacks" value="single" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">A single signature design — unified and elegant</span>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="radio" name="cardBacks" value="reversible" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">Reversible backs — so the orientation adds another layer of reading</span>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="radio" name="cardBacks" value="artist_choice" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">I trust the artist's vision</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- PR02: Product interest -->
+              <div id="pr-product-interest" class="mb-8" role="group" aria-labelledby="pr-product-interest-label">
+                <p id="pr-product-interest-label" class="font-serif text-base text-hermetic-white mb-4">
+                  What else calls to you? (Select all that apply)
+                </p>
+                <div class="space-y-3">
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="checkbox" name="productInterest" value="guidebook" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">Illustrated guidebook with card meanings and spreads</span>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="checkbox" name="productInterest" value="journal" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">Archetype-themed journal with prompts</span>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="checkbox" name="productInterest" value="app" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">Companion app with daily draws and tracking</span>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="checkbox" name="productInterest" value="cloth" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">Silk reading cloth with spread positions</span>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="checkbox" name="productInterest" value="live_performance" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">Live aerial tarot performance</span>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 border border-hermetic-gold/10 rounded-lg cursor-pointer hover:border-hermetic-gold/30 transition-colors">
+                    <input type="checkbox" name="productInterest" value="cards_only" class="mt-1 accent-hermetic-gold" />
+                    <span class="text-gray-300 font-sans font-light text-sm leading-relaxed">I just want the cards</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <button id="product-research-continue" class="btn-flame px-8 py-3 text-white font-sans font-bold text-sm tracking-widest uppercase">
+                  Continue to Your Journey
+                </button>
+                <div class="mt-4">
+                  <button id="product-research-skip" class="text-hermetic-gold/60 text-sm font-sans hover:text-hermetic-gold/80 transition-colors duration-300">
+                    Skip — take me to my journey
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Share + Journey CTA -->
+            <div id="share-section" class="border-t border-hermetic-gold/20 pt-8 mt-8 transition-all duration-700">
+              <p class="text-hermetic-gold/60 text-xs tracking-[0.2em] uppercase font-sans mb-4">Share Your Archetype</p>
+              <div class="flex justify-center gap-3 flex-wrap">
+                <a id="share-x" href="#" target="_blank" rel="noopener noreferrer" aria-label="Share on X"
+                  class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  Post
+                </a>
+                <a id="share-fb" href="#" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook"
+                  class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                  Share
+                </a>
+                <button id="share-copy" aria-label="Copy result link"
+                  class="inline-flex items-center gap-2 px-4 py-2 border border-hermetic-gold/30 rounded-lg text-hermetic-gold/80 hover:text-hermetic-gold hover:border-hermetic-gold/60 transition-colors text-sm font-sans">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  <span id="share-copy-text">Copy Link</span>
+                </button>
+              </div>
+
+              <!-- Primary CTA: journey page -->
+              <a id="journey-cta" href="/archetype/"
+                class="btn-flame inline-block mt-6 px-8 py-3 text-white font-sans font-bold text-sm tracking-widest uppercase no-underline">
+                Begin Your Archetype Journey
+              </a>
+
+              <!-- Secondary: result profile -->
+              <a id="result-profile-link" href="/quiz"
+                class="block mt-3 text-hermetic-gold/70 hover:text-hermetic-gold text-sm font-sans tracking-wider transition-colors">
+                View Your Result
+              </a>
+
+              <!-- Tertiary: return home -->
+              <a href="/"
+                class="block mt-3 text-hermetic-gold/50 hover:text-hermetic-gold text-xs font-sans tracking-widest uppercase transition-colors">
+                Return Home
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -624,6 +732,134 @@ const archetypeEntries = Object.values(archetypes);
     // Results reveal
     // ---------------------------------------------------------------------------
 
+    // ---------------------------------------------------------------------------
+    // Cookie helper
+    // ---------------------------------------------------------------------------
+
+    function setThfSubCookie(kebabSlug: string) {
+      document.cookie = `thf_sub=${kebabSlug};path=/;max-age=2592000;SameSite=Lax`;
+    }
+
+    // ---------------------------------------------------------------------------
+    // Show journey CTA (share section) — called after product research submit/skip
+    // ---------------------------------------------------------------------------
+
+    function showJourneyCta(archetypeSlugStr: string, content: typeof archetypes[keyof typeof archetypes]) {
+      const shareSection = document.getElementById('share-section');
+      const shareX = document.getElementById('share-x') as HTMLAnchorElement | null;
+      const shareFb = document.getElementById('share-fb') as HTMLAnchorElement | null;
+      const shareCopy = document.getElementById('share-copy');
+      const shareCopyText = document.getElementById('share-copy-text');
+      const journeyCta = document.getElementById('journey-cta') as HTMLAnchorElement | null;
+      const profileLink = document.getElementById('result-profile-link') as HTMLAnchorElement | null;
+      const productResearch = document.getElementById('product-research');
+
+      if (!shareSection) return;
+
+      const shareUrl = `https://www.thehermeticflight.com/quiz/result/${archetypeSlugStr}`;
+      const shareText = buildShareText(content.title, content.element);
+
+      if (shareX) shareX.href = buildXShareUrl(shareText, shareUrl);
+      if (shareFb) shareFb.href = buildFacebookShareUrl(shareUrl);
+
+      if (shareCopy && shareCopyText) {
+        shareCopy.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(shareUrl);
+            shareCopyText.textContent = 'Copied!';
+            trackShare('copy_link', 'quiz_result', archetypeSlugStr);
+          } catch {
+            shareCopyText.textContent = 'Copy failed';
+          }
+          setTimeout(() => { shareCopyText.textContent = 'Copy Link'; }, 2000);
+        });
+        if (shareX) shareX.addEventListener('click', () => trackShare('x', 'quiz_result', archetypeSlugStr));
+        if (shareFb) shareFb.addEventListener('click', () => trackShare('facebook', 'quiz_result', archetypeSlugStr));
+      }
+
+      if (journeyCta) journeyCta.href = `/archetype/${archetypeSlugStr}`;
+      if (profileLink) profileLink.href = `/quiz/result/${archetypeSlugStr}`;
+
+      // Hide product research, show share section
+      if (productResearch) productResearch.style.display = 'none';
+      shareSection.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        shareSection.style.opacity = '1';
+        shareSection.style.transform = 'translateY(0)';
+      });
+    }
+
+    // ---------------------------------------------------------------------------
+    // Reveal result-full (called after email confirmed — gate or re-capture)
+    // ---------------------------------------------------------------------------
+
+    function revealResultFull(archetypeSlugStr: string, content: typeof archetypes[keyof typeof archetypes]) {
+      const resultFull = document.getElementById('result-full');
+      const resultEmailCapture = document.getElementById('result-email-capture');
+      const resultTagline = document.getElementById('result-tagline');
+      const resultDescription = document.getElementById('result-description');
+
+      if (resultEmailCapture) resultEmailCapture.classList.add('hidden');
+      if (resultFull) {
+        resultFull.classList.remove('hidden');
+        // Animate tagline and description into view
+        requestAnimationFrame(() => {
+          if (resultTagline) {
+            resultTagline.style.opacity = '1';
+          }
+          if (resultDescription) {
+            resultDescription.style.opacity = '1';
+            resultDescription.style.transform = 'translateY(0)';
+          }
+        });
+      }
+
+      // Wire up product research continue + skip buttons
+      const prContinueBtn = document.getElementById('product-research-continue');
+      const prSkipBtn = document.getElementById('product-research-skip');
+
+      if (prSkipBtn) {
+        prSkipBtn.addEventListener('click', () => {
+          showJourneyCta(archetypeSlugStr, content);
+        }, { once: true });
+      }
+
+      if (prContinueBtn) {
+        prContinueBtn.addEventListener('click', () => {
+          // Collect product research values
+          const cardBacksInput = document.querySelector<HTMLInputElement>('#pr-card-backs input[type="radio"]:checked');
+          const productInterestInputs = document.querySelectorAll<HTMLInputElement>('#pr-product-interest input[type="checkbox"]:checked');
+
+          const cardBacks = cardBacksInput?.value ?? null;
+          const productInterest = Array.from(productInterestInputs).map(el => el.value);
+
+          // Fire API call with product research data (fire-and-forget)
+          const state = engine.getState();
+          if (state.email) {
+            fetch('/api/quiz-submit', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: state.email,
+                firstName: capturedFirstName,
+                answers: state.answers,
+                website: '',
+                quizVersion: 'v2',
+                displayOrder,
+                ...(state.selectedArchetype && { selfSelected: state.selectedArchetype }),
+                productResearch: {
+                  ...(cardBacks && { cardBacks }),
+                  ...(productInterest.length > 0 && { productInterest }),
+                },
+              }),
+            }).catch((err) => console.error('Product research submit error:', err));
+          }
+
+          showJourneyCta(archetypeSlugStr, content);
+        }, { once: true });
+      }
+    }
+
     function revealResults() {
       const state = engine.getState();
       const result = state.classificationResult;
@@ -653,7 +889,7 @@ const archetypeEntries = Object.values(archetypes);
       const resultTitle = requireEl('result-title');
       const resultElement = requireEl('result-element');
       const resultTagline = getEl('result-tagline');
-      const resultDescription = requireEl('result-description');
+      const resultDescription = document.getElementById('result-description');
       const resultLabel = requireEl('result-label');
       const resultDivider = requireEl('result-divider');
       const resultGlow = requireEl('result-glow');
@@ -661,9 +897,9 @@ const archetypeEntries = Object.values(archetypes);
       resultTitle.textContent = headingText;
       resultElement.textContent = `Element of ${content.element}`;
       if (resultTagline) resultTagline.textContent = content.description.split('.')[0] + '.';
-      resultDescription.textContent = content.description;
+      if (resultDescription) resultDescription.textContent = content.description;
 
-      // Staggered reveal animations
+      // Staggered reveal of teaser elements
       requestAnimationFrame(() => {
         resultGlow.style.opacity = '1';
         resultLabel.style.opacity = '1';
@@ -673,15 +909,16 @@ const archetypeEntries = Object.values(archetypes);
         resultTitle.style.opacity = '1';
         resultTitle.style.transform = 'translateY(0)';
         resultElement.style.opacity = '1';
-        if (resultTagline) resultTagline.style.opacity = '1';
-        resultDescription.style.opacity = '1';
-        resultDescription.style.transform = 'translateY(0)';
       });
 
-      // Submit to API: push email + answers to Loops.so via server-side handler.
-      // Fire-and-forget — result display does not depend on the API response.
-      // Only fires when user provided an email (skip path bypasses this).
+      const archetypeSlugStr = toUrlSlug(finalSlug);
+
+      // Gating logic: show full content or re-capture form based on email
       if (state.email) {
+        // Email provided — set cookie and show full content
+        setThfSubCookie(archetypeSlugStr);
+
+        // Submit to API (fire-and-forget)
         fetch('/api/quiz-submit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -695,10 +932,60 @@ const archetypeEntries = Object.values(archetypes);
             ...(state.selectedArchetype && { selfSelected: state.selectedArchetype }),
           }),
         }).catch((err) => console.error('Quiz submit error:', err));
+
+        // Show full content after a brief stagger (teaser reveals first)
+        setTimeout(() => {
+          revealResultFull(archetypeSlugStr, content);
+        }, 900);
+      } else {
+        // Skip path — show re-capture form, hide full content
+        const resultEmailCapture = document.getElementById('result-email-capture');
+        const resultFull = document.getElementById('result-full');
+        if (resultFull) resultFull.classList.add('hidden');
+        if (resultEmailCapture) {
+          setTimeout(() => {
+            resultEmailCapture.classList.remove('hidden');
+          }, 900);
+        }
+
+        // Wire re-capture form
+        const recaptureForm = document.getElementById('result-recapture-form') as HTMLFormElement | null;
+        if (recaptureForm) {
+          recaptureForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(recaptureForm);
+
+            // Honeypot check
+            if (formData.get('website')) return;
+
+            const recaptureEmail = (formData.get('email') as string)?.trim();
+            if (!recaptureEmail) return;
+
+            // Fire API (fire-and-forget)
+            fetch('/api/quiz-submit', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: recaptureEmail,
+                firstName: capturedFirstName,
+                answers: state.answers,
+                website: '',
+                quizVersion: 'v2',
+                displayOrder,
+                ...(state.selectedArchetype && { selfSelected: state.selectedArchetype }),
+              }),
+            }).catch((err) => console.error('Re-capture submit error:', err));
+
+            // Set cookie
+            setThfSubCookie(archetypeSlugStr);
+
+            // Reveal full content
+            revealResultFull(archetypeSlugStr, content);
+          }, { once: true });
+        }
       }
 
       // Analytics
-      const archetypeSlugStr = toUrlSlug(finalSlug);
       if (typeof gtag === 'function') {
         gtag('event', 'quiz_completed', { archetype: finalSlug });
         gtag('event', 'generate_lead', {
@@ -709,45 +996,6 @@ const archetypeEntries = Object.values(archetypes);
       if (typeof fbq === 'function') {
         fbq('trackCustom', 'QuizCompleted', { archetype: finalSlug });
       }
-
-      // Populate share links
-      const shareUrl = `https://www.thehermeticflight.com/quiz/result/${archetypeSlugStr}`;
-      const shareText = buildShareText(content.title, content.element);
-
-      const shareX = requireEl<HTMLAnchorElement>('share-x');
-      const shareFb = requireEl<HTMLAnchorElement>('share-fb');
-      const shareCopy = requireEl('share-copy');
-      const shareCopyText = requireEl('share-copy-text');
-      const shareSection = requireEl('share-section');
-
-      shareX.href = buildXShareUrl(shareText, shareUrl);
-      shareFb.href = buildFacebookShareUrl(shareUrl);
-
-      shareCopy.addEventListener('click', async () => {
-        try {
-          await navigator.clipboard.writeText(shareUrl);
-          shareCopyText.textContent = 'Copied!';
-          trackShare('copy_link', 'quiz_result', archetypeSlugStr);
-        } catch {
-          shareCopyText.textContent = 'Copy failed';
-        }
-        setTimeout(() => { shareCopyText.textContent = 'Copy Link'; }, 2000);
-      });
-
-      shareX.addEventListener('click', () => trackShare('x', 'quiz_result', archetypeSlugStr));
-      shareFb.addEventListener('click', () => trackShare('facebook', 'quiz_result', archetypeSlugStr));
-
-      // Set CTA hrefs
-      const journeyCta = requireEl<HTMLAnchorElement>('journey-cta');
-      const profileLink = requireEl<HTMLAnchorElement>('result-profile-link');
-      if (journeyCta) journeyCta.href = `/archetype/${archetypeSlugStr}`;
-      if (profileLink) profileLink.href = `/quiz/result/${archetypeSlugStr}`;
-
-      // Reveal share section
-      requestAnimationFrame(() => {
-        shareSection.style.opacity = '1';
-        shareSection.style.transform = 'translateY(0)';
-      });
     }
 
     // ---------------------------------------------------------------------------
