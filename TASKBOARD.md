@@ -50,7 +50,20 @@ this file at session start and reports current state to the operator.
 
 ## Active Task
 
-[Empty — no task in progress.]
+### E2E Verification — Cookie Hardening
+
+**Brief:** Run full E2E suite against live preview server, remediate failures via FTF, harden cookie behavior with live curl tests, evaluate.
+
+| # | Phase | Status | Notes |
+|---|-------|--------|-------|
+| 1 | FTF Baseline on E2E Specs | `pending` | record-baseline.sh on tests/ |
+| 2 | Build + Full E2E Suite | `pending` | Playwright + raw journey-pages |
+| 3 | Remediation via FTF | `pending` | Conditional — skip if Phase 2 green |
+| 4 | Harden — Live Cookie Verification | `pending` | 2 parallel: header audit + injection audit |
+| 5 | Eval Protocol | `pending` | 2 evaluators: functional + security |
+| 6 | Memory + Commit | `pending` | Record learnings, commit artifacts |
+
+**Handoff Context:** Plan at `docs/plans/2026-03-19-e2e-verification-cookie-hardening.md`. All unit tests pass (639/639), build clean. E2E specs updated but never run against live server. FTF discipline: specs are frozen contracts.
 
 **Paused task:** Sprint Roadmap — Pre-Launch (6/8 phases complete). Phases 7-8
 externally blocked until May-July. Resume when blockers clear.
